@@ -1,0 +1,25 @@
+{
+  "Navbar": {
+    "home": "Home",
+    "accommodation": "Accommodation",
+    "training": "Training",
+    "about": "About",
+    "restaurant": "Restaurant",
+    "menu": "Menu",
+    "menuDescription": "Use the menu to navigate the site",
+    "aboutus": "About Jordan Ranger",
+    "ourclients": "Our Clients",
+    "contactus": "Contact Us",
+    "facilities": "Facilities",
+    "Orienteering": "Orienteering",
+    "expedition activities": "Expedition Activities",
+    "Ranger Camp Activity": "Ranger Camp Activity",
+    "tour operators": "Tour Operators",
+    "training room": "Training Room"
+  },
+  "stats": {
+    "projects": "Projects Completed",
+    "clients": "Clients Served",
+    "experience": "Years of Experience"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "Navbar": {
+    "home": "الرئيسية",
+    "accommodation": "الإقامة",
+    "training": "التدريب",
+    "about": "من نحن",
+    "restaurant": "المطعم",
+    "facilities": "المرافق",
+    "Orienteering": "التوجيه",
+    "expedition activities": " الرحلات الاستكشافية",
+    "Ranger Camp Activity": "نشاط معسكر الرينجر",
+    "tour operators": "منظمو الرحلات",
+    "training room": "غرفة التدريب",
+  
+  
+    "menu": "القائمة",
+    "menuDescription": "استخدم القائمة للتنقل داخل الموقع",
+    "aboutus": "عن جوردان رينجر",
+    "ourclients": "عملائنا",  
+    "contactus": "اتصل بنا"
+  },
+  "stats": {
+    "projects": "المشاريع المكتملة",
+    "clients": "العملاء",
+    "experience": "سنوات الخبرة"
+  }
+}
