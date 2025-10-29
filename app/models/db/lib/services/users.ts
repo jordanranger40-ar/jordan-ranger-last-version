@@ -18,9 +18,14 @@ export const register = async (newUser: newUser) => {
     newUser.email,
   ]);
 
+ 
+  
   if (checkEmail.rows.length > 0) {
+     console.log("inwds");
     return { data: null, message: "The Email Is Already Exist" };
+    
   } else {
+     console.log("inwwwwwds",newUser);
     const result = await pool.query<newUser>(
       "insert into users (first_name, last_name, email, password) values ($1,$2,$3,$4) returning *",
       [
@@ -30,7 +35,7 @@ export const register = async (newUser: newUser) => {
         await hashPassword(newUser.password),
       ]
     );
-
+console.log("inwwwwwds",result);
     return { message: "registered successfully", data: result.rows };
   }
 };

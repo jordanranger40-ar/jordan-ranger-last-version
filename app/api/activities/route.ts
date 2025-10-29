@@ -1,7 +1,10 @@
+import {
+  addNewActivity,
+  getAllActivities,
+} from "@/app/models/db/lib/services/activities";
+import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
-import Jwt, { Secret } from "jsonwebtoken";
-import { type tokenPayload } from "../consulting/route";
-import { addNewTraining, getAllTraining } from "@/app/models/db/lib/services/training";
+import { tokenPayload } from "@/types/index";
 
 export const POST = async (request: Request) => {
   try {
@@ -9,43 +12,40 @@ export const POST = async (request: Request) => {
     if (!authHeader) {
       return NextResponse.json({ message: "Unauthenticated" }, { status: 501 });
     } else {
-      const payload = Jwt.verify(
+      const payload = jwt.verify(
         authHeader,
-        process.env.NEXTAUTH_SECRET as Secret
+        process.env.NEXTAUTH_SECRET as string
       ) as tokenPayload;
       if (payload.role !== "admin") {
         return NextResponse.json({ message: "Unauthorized" }, { status: 501 });
       } else {
         const body = await request.json();
+        const result = await addNewActivity(body);
 
-        const result = await addNewTraining(body);
         return NextResponse.json(
-          { data: result.data, message: result.message },
-          { status: result.status }
+          { data: result, message: "the Activity has been added successfully" },
+          { status: 201 }
         );
       }
     }
   } catch (error) {
-    console.log("error: ",error);
-    
     return NextResponse.json(
-      { data: error, message: "Error in adding the new training" },
+      { data: error, message: "error in adding the Activity" },
       { status: 500 }
     );
   }
 };
 
-
 export const GET = async () => {
   try {
-    const result = await getAllTraining();
+    const result = await getAllActivities();
     return NextResponse.json(
-      { data: result.data, message: result.message },
-          { status: result.status }
+      { data: result, message: "All Activities" },
+      { status: 200 }
     );
   } catch (error) {
     return NextResponse.json(
-      { data: error, message: "Error in getting the training" },
+      { data: error, message: "Error in getting the Activities" },
       { status: 500 }
     );
   }

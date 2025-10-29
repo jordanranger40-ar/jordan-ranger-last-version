@@ -40,11 +40,8 @@ export const PUT = async (
           );
         } else {
           return NextResponse.json(
-            {
-              data: result,
-              message: "The training has been updated successfully",
-            },
-            { status: 201 }
+            { data: result.data, message: result.message },
+            { status: result.status }
           );
         }
       }
@@ -90,11 +87,8 @@ export const DELETE = async (
           );
         } else {
           return NextResponse.json(
-            {
-              data: result,
-              message: "The training has been deleted successfully",
-            },
-            { status: 201 }
+             { data: result.data, message: result.message },
+          { status: result.status }
           );
         }
       }
