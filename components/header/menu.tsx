@@ -12,7 +12,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import ModeToggle from "./modetoggle";
+
 import type { newCategory, newTraining } from "@/types";
 
 type Props = {
@@ -43,9 +43,7 @@ export default function Menu({ categories, trainingData }: Props) {
         >
           <SheetHeader>
             <SheetTitle>{t("menu")}</SheetTitle>
-            <div className="my-4">
-              <ModeToggle />
-            </div>
+          
 
             <nav className="flex flex-col space-y-4">
               <Link href="/" className="text-lg font-semibold">

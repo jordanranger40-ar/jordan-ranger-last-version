@@ -272,6 +272,8 @@ export type newRoom = {
   room_images: string[];
   is_deleted?: boolean;
   roomFeatures: roomFeatures[];
+  room_type_en:string;
+  room_type_ar:string
 };
 
 export type modifiedRoom = {
@@ -285,6 +287,8 @@ export type modifiedRoom = {
   room_images: string[];
   is_deleted?: boolean;
   roomFeatures: roomFeatures[];
+  room_type_en:string;
+  room_type_ar:string
 };
 
 export type tokenPayload = {
@@ -301,6 +305,7 @@ export type newBooking = {
   is_confirmed: boolean;
   user_id: string;
   room_id: string;
+  price:number;
 };
 
 export type newActivity = {
@@ -313,6 +318,7 @@ export type newActivity = {
   location_type_ar: string;
   image: string;
   capacity:number;
+  price:number;
 };
 
 
@@ -324,7 +330,20 @@ export type newActivityBooking = {
   is_confirmed: boolean;
   user_id: string;
   activity_id: string;
-  quantity:number
+  quantity:number,
+  price:number
+
+};
+
+export type updateActivityBooking = {
+  id?: string;
+  start_time: Date;
+  end_time: Date;
+  created_at: Date;
+  is_confirmed: boolean;
+  activity_id: string;
+  quantity:number,
+
 };
 
 export type newTrainingBooking= {
@@ -334,15 +353,17 @@ export type newTrainingBooking= {
   quantity:number,
   is_confirmed?:boolean,
   is_deleted?:boolean,
-  created_at?:Date
+  created_at?:Date,
+  price:number
 }
 
 export type newCart= {
 id?:string,
-user_id:string,
+user_id?:string,
 total_amount: number,
-created_at:Date,
-checked_out_at:Date
+created_at?:Date,
+checked_out_at?:Date,
+is_paid?:boolean
 }
 
 export type cartWithItems= {
@@ -358,7 +379,8 @@ booking_id:string
 export type newCartItem={
   id?:string,
 cart_id:string,
-created_at:Date,
+created_at?:Date,
 booking_type:string,
-booking_id:string
+booking_id:string,
+price:number
 }

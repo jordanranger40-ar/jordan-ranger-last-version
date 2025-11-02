@@ -11,7 +11,11 @@
     "Ranger Camp Activity": "نشاط معسكر الرينجر",
     "tour operators": "منظمو الرحلات",
     "training room": "غرفة التدريب",
-  
+  "activities": "الأنشطة",
+  "indooractivities": "الأنشطة الداخلية",
+  "outdooractivities": "الأنشطة الخارجية",
+  "test1": "اختبار داخلي 1",
+  "test2": "اختبار داخلي 2",
   
     "menu": "القائمة",
     "menuDescription": "استخدم القائمة للتنقل داخل الموقع",

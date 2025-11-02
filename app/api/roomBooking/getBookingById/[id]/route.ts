@@ -44,6 +44,12 @@ export const DELETE = async (
     } else {
       const id = (await params.params).id;
       const result = await deleteBookingById(id);
+
+   if (!result) return NextResponse.json(
+        { data: null, message: "Booking not found" },
+        { status: 404 }
+      );
+
       return NextResponse.json(
         { data: result.data, message: result.message },
         { status: result.status }
@@ -72,6 +78,13 @@ export const PUT = async (
       const id = (await params.params).id;
       const body = await request.json();
       const result = await editBookingById(body, id);
+  
+       if (!result) return NextResponse.json(
+        { data: null, message: "Booking not found" },
+        { status: 404 }
+      );
+
+
       return NextResponse.json(
         { data: result.result, message: result.message },
         { status: result.status }

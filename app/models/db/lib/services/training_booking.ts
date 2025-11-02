@@ -1,43 +1,92 @@
 import { type newTraining, type newTrainingBooking } from "@/types/index";
 import pool from "../index";
+import { createCart, updateCartTotalAmount } from "./cart";
+import {
+  addNewItem,
+  removeCartItemByBookingId,
+  editCartItemByBookingId,
+} from "./cart_items";
 
 export const bookATraining = async (data: newTrainingBooking) => {
-  console.log("data in bookroom: ", data);
+  const client = await pool.connect();
 
-  const numberOfBooking = await pool.query<{ total_booked: number }>(
-    "SELECT COALESCE(SUM(quantity), 0) AS total_booked FROM training_booking WHERE training_id = $1",
-    [data.training_id]
-  );
+  try {
+    await client.query("BEGIN");
 
-  const capacityOfTheTraining = await pool.query<newTraining>(
-    "select * from training where id=$1",
-    [data.training_id]
-  );
+    console.log("data in bookroom: ", data);
 
-  const totalBooked = numberOfBooking.rows[0].total_booked;
-  const capacity = capacityOfTheTraining.rows[0].capacity;
-  console.log("totalBooked: ",totalBooked);
-  console.log("capacity: ",capacity);
-  console.log("ebfueufueffu",  data.quantity);
-
-  if (Number(totalBooked) + Number(data.quantity) > capacity) {
-    
-    return { result: null, message: "Training is not available", status: 409 };
-  } else {
-    const result = await pool.query<newTrainingBooking>(
-      "insert into training_booking (user_id,training_id,quantity) values ($1,$2,$3) returning * ",
-      [
-        data.user_id,
-        data.training_id,
-        data.quantity,
-      ]
+    const numberOfBooking = await client.query<{ total_booked: number }>(
+      "SELECT COALESCE(SUM(quantity), 0) AS total_booked FROM training_booking WHERE training_id = $1",
+      [data.training_id]
     );
 
-    return {
-      result: result.rows,
-      message: "The Training Has Been Booked Succussfully",
-      status: 201,
-    };
+    const capacityOfTheTraining = await client.query<newTraining>(
+      "select * from training where id=$1",
+      [data.training_id]
+    );
+
+    const totalBooked = numberOfBooking.rows[0].total_booked;
+    const capacity = capacityOfTheTraining.rows[0].capacity;
+    const trainingPrice = capacityOfTheTraining.rows[0].price;
+    const totalBookingPrice = Number(trainingPrice) * Number(data.quantity);
+    console.log("totalBooked: ", totalBooked);
+    console.log("capacity: ", capacity);
+    console.log("ebfueufueffu", data.quantity);
+    console.log(
+      "totalBookingPrice: ",
+      totalBookingPrice,
+      typeof totalBookingPrice
+    );
+
+    if (Number(totalBooked) + Number(data.quantity) > capacity) {
+      await client.query("ROLLBACK");
+      return {
+        result: null,
+        message: "Training is not available",
+        status: 409,
+      };
+    } else {
+      const result = await client.query<newTrainingBooking>(
+        "insert into training_booking (user_id,training_id,quantity,price) values ($1,$2,$3,$4) returning * ",
+        [data.user_id, data.training_id, data.quantity, totalBookingPrice]
+      );
+
+      const cart = await createCart(data.user_id, client);
+      await addNewItem(
+        {
+          cart_id: cart.id ?? "",
+          booking_type: "training",
+          booking_id: result.rows[0].id ?? "",
+          price: totalBookingPrice,
+        },
+        client
+      );
+      console.log(
+        "cart total amount: ",
+        cart.total_amount,
+        typeof cart.total_amount
+      );
+
+      await updateCartTotalAmount(
+        {
+          id: cart.id,
+          total_amount: Number(cart.total_amount) + totalBookingPrice,
+        },
+        client
+      );
+
+      client.query("COMMIT");
+      return {
+        result: result.rows,
+        message: "The Training Has Been Booked Succussfully",
+        status: 201,
+      };
+    }
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.log("Error In Booking The Activity");
+  } finally {
+    client.release();
   }
 };
 
@@ -87,16 +136,37 @@ export const getTrainingBookingById = async (id: string) => {
 };
 
 export const deleteTrainingBookingById = async (id: string) => {
-  const result = await pool.query<newTrainingBooking>(
-    "delete  from training_booking where id=$1 ",
-    [id]
-  );
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const result = await client.query<newTrainingBooking>(
+      "delete  from training_booking where id=$1 returning * ",
+      [id]
+    );
+    console.log("result.rows[0]: ", result.rows[0]);
 
-  return {
-    data: result.rows,
-    message: "The Booking has been deleted successfully",
-    status: 200,
-  };
+    const cartDetails = await createCart(result.rows[0].user_id, client); // get the cart id, note that there is already a cart for this costumer, so we will not create new one
+    await removeCartItemByBookingId(result.rows[0].id ?? "", client);
+    await updateCartTotalAmount(
+      {
+        id: cartDetails.id,
+        total_amount:
+          Number(cartDetails.total_amount) - Number(result.rows[0].price),
+      },
+      client
+    );
+    client.query("COMMIT");
+    return {
+      data: result.rows,
+      message: "The Booking has been deleted successfully",
+      status: 200,
+    };
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.log("Error In Deleting The Booking");
+  } finally {
+    client.release();
+  }
 };
 
 export const deleteAllBookingByTrainingId = async (id: string) => {
@@ -116,59 +186,93 @@ export const editTrainingBookingById = async (
   data: newTrainingBooking,
   bookingId: string
 ) => {
-  console.log("Editing booking:", bookingId);
-
-  const bookedQuantityForBooking= await pool.query<{ quantity: number }>("select quantity from training_booking where id=$1"  
-    ,[bookingId]
-  )
-// get the quantity of the booking that you want to edit, totalBooked - this value => the new total booked value, if the total booked and the new quantity is less than the value, then edit the booking, else throw an error
-  const numberOfBooking = await pool.query<{ total_booked: number }>(
-    `SELECT COALESCE(SUM(quantity), 0) AS total_booked
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const bookedQuantityForBooking = await client.query<{ quantity: number }>(
+      "select quantity from training_booking where id=$1",
+      [bookingId]
+    );
+    // get the quantity of the booking that you want to edit, totalBooked - this value => the new total booked value, if the total booked and the new quantity is less than the value, then edit the booking, else throw an error
+    const numberOfBooking = await client.query<{ total_booked: number }>(
+      `SELECT COALESCE(SUM(quantity), 0) AS total_booked
      FROM training_booking
      WHERE training_id = $1 `,
-    [data.training_id]
-  );
+      [data.training_id]
+    );
 
-  const capacityOfTheTraining = await pool.query<newTraining>(
-    "SELECT * FROM training WHERE id = $1",
-    [data.training_id]
-  );
+    const capacityOfTheTraining = await client.query<newTraining>(
+      "SELECT * FROM training WHERE id = $1",
+      [data.training_id]
+    );
 
-  const totalBooked = Number(numberOfBooking.rows[0].total_booked) -Number(bookedQuantityForBooking.rows[0].quantity);
-  const capacity = capacityOfTheTraining.rows[0].capacity;
-  console.log("totalBooked excluding this booking:", totalBooked);
-  console.log("training capacity:", capacity);
-  console.log("requested quantity:", data.quantity);
+    const totalBooked =
+      Number(numberOfBooking.rows[0].total_booked) -
+      Number(bookedQuantityForBooking.rows[0].quantity); // total number of booking
+    const capacity = capacityOfTheTraining.rows[0].capacity; // capacity of training
+    const totalBookingPriceBeforeEditing =
+      Number(capacityOfTheTraining.rows[0].price) *
+      Number(bookedQuantityForBooking.rows[0].quantity); // total booking price before editing the booking
+    const totalBookingPriceAfterEditing =
+      Number(capacityOfTheTraining.rows[0].price) * Number(data.quantity); // total booking price after editing the booking
 
-  if (Number(totalBooked) + Number(data.quantity) > capacity) {
-    return {
-      result: null,
-      message: "training is not available (the limit was exceeded)",
-      status: 409,
-    };
-  }
+    if (Number(totalBooked) + Number(data.quantity) > capacity) {
+      client.query("ROLLBACK");
+      return {
+        result: null,
+        message: "training is not available (the limit was exceeded)",
+        status: 409,
+      };
+    }
 
-  const result = await pool.query<newTrainingBooking>(
-    `UPDATE training_booking
+    const result = await client.query<newTrainingBooking>(
+      `UPDATE training_booking
      SET 
          training_id = COALESCE($1, training_id),
          quantity = COALESCE($2, quantity),
-         is_confirmed = COALESCE($3, is_confirmed)
-     WHERE id = $4
+         is_confirmed = COALESCE($3, is_confirmed),
+         price = COALESCE($4, price)
+     WHERE id = $5
      RETURNING *;`,
-    [
-      
-      data.training_id,
-      data.quantity,
-      data.is_confirmed,
-      bookingId,
-    ]
-  );
+      [
+        data.training_id,
+        data.quantity,
+        data.is_confirmed,
+        totalBookingPriceAfterEditing,
+        bookingId,
+      ]
+    );
 
-  return {
-    result: result.rows,
-    message: "Your Booking Has Been Updated Successfully",
-    status: 201,
-  };
+    const cart = await createCart(result.rows[0].user_id, client);
+    await editCartItemByBookingId(
+      {
+        booking_id: result.rows[0].id ?? "",
+        newPrice: totalBookingPriceAfterEditing,
+      },
+      client
+    );
+
+    await updateCartTotalAmount(
+      {
+        id: cart.id,
+        total_amount:
+          Number(cart.total_amount) -
+          totalBookingPriceBeforeEditing +
+          totalBookingPriceAfterEditing,
+      },
+      client
+    );
+
+    await client.query("COMMIT");
+    return {
+      result: result.rows,
+      message: "Your Booking Has Been Updated Successfully",
+      status: 201,
+    };
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.log("Error In Updating The Training Booking");
+  } finally {
+    client.release();
+  }
 };
-

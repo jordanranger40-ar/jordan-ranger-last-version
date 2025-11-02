@@ -44,12 +44,19 @@ export const DELETE = async (
     } else {
       const id = (await params.params).id;
       const result = await deleteTrainingBookingById(id);
-      return NextResponse.json(
+
+      if (result) return NextResponse.json(
         { data: result.data, message: result.message },
         { status: result.status }
       );
+       return NextResponse.json(
+        { data: null, message: "Error in deleting the booking by id" },
+        { status: 500 }
+      );
     }
   } catch (error) {
+    console.log("removing error: ",error);
+    
     return NextResponse.json(
       { data: error, message: "Error in deleting the booking by id" },
       { status: 500 }
@@ -72,7 +79,7 @@ export const PUT = async (
       const id = (await params.params).id;
       const body = await request.json();
       const result = await editTrainingBookingById(body, id);
-      return NextResponse.json(
+     if(result) return NextResponse.json(
         { data: result.result, message: result.message },
         { status: result.status }
       );

@@ -8,7 +8,6 @@ import { setRequestLocale } from "next-intl/server";
 import { getAllcategories } from "@/app/models/db/lib/services/Accommodation";
 import { getAllTraining } from "@/app/models/db/lib/services/training";
 
-import { ThemeProvider } from "next-themes";
 import FontSwitcher from "@/components/fontswitcher/FontSwitcher";
 
 type Props = {
@@ -38,12 +37,7 @@ export default async function RootLayout({ children, params }: Props) {
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="light"
-        enableSystem
-        disableTransitionOnChange
-      >
+   
         <FontSwitcher locale={locale}>
           <div className="flex flex-col min-h-screen bg-[#f1f1f1]">
             <section
@@ -58,7 +52,6 @@ export default async function RootLayout({ children, params }: Props) {
             <Footer />
           </div>
         </FontSwitcher>
-      </ThemeProvider>
     </NextIntlClientProvider>
   );
 }

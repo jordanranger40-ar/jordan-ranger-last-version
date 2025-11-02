@@ -1,6 +1,6 @@
 import React from "react";
+import { FaShoppingCart } from 'react-icons/fa';
 
-import ModeToggle from "./modetoggle";
 import Menu from "./menu";
 import LanguageSwitcher from "./languageSwitcher";
 import Navbar from "./navbar";
@@ -19,12 +19,12 @@ export default async function Header() {
       </div>
 
       <div className="hidden md:block">
-        <Navbar categories={categories} trainingData={trainingData} />
+        <Navbar categories={categories} trainingData={trainingData.data} />
       </div>
       <div className="hidden md:flex">
-        <ModeToggle />
+      <FaShoppingCart className="text-white" />
       </div>
-      <Menu categories={categories} trainingData={trainingData} />
+      <Menu categories={categories} trainingData={trainingData.data} />
     </header>
   );
 }

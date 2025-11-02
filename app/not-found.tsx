@@ -8,14 +8,10 @@ export default function NotFound() {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="mx-auto max-w-md p-8 text-center">
-        {/* Large 404 */}
-        <div className="from-primary to-primary/50 mb-4 bg-gradient-to-r bg-clip-text text-9xl font-black text-transparent">
+
+        <div className="from-primary to-primary/50 mb-4 bg-linear-to-r bg-clip-text text-9xl font-black text-transparent">
           404
         </div>
-
-
-
-        {/* Text */}
         <h1 className="mb-4 text-2xl font-bold text-gray-800">
           Page Not Found
         </h1>
@@ -23,7 +19,7 @@ export default function NotFound() {
           not found.
         </p>
 
-        {/* Buttons */}
+
         <div className="space-y-4">
           
 

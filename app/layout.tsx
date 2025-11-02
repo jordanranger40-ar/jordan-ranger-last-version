@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AppName, AppDescription, AppURL } from "@/lib/constants";
-import { ThemeProvider } from "next-themes";
+
 import { NextIntlClientProvider } from "next-intl";
 import NextAuthProviders from "../providers/NextAuthProviders";
 
@@ -23,14 +23,9 @@ export default function RootLayout({
       <body className="antialiased">
         <NextAuthProviders>
           <NextIntlClientProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="light"
-              enableSystem
-              disableTransitionOnChange
-            >
+         
               <FontSwitcher locale={"en"}>{children}</FontSwitcher>
-            </ThemeProvider>
+          
           </NextIntlClientProvider>
         </NextAuthProviders>
       </body>

@@ -20,6 +20,8 @@ type Props = {
   trainingData: newTraining[];
 };
 
+
+
 export default function Navbar({ categories, trainingData }: Props) {
   const t = useTranslations("Navbar");
   const locale = useLocale();
@@ -37,6 +39,17 @@ export default function Navbar({ categories, trainingData }: Props) {
     {
       href: "/contact-us",
       label: t("contactus"),
+    },
+  ];
+
+  const activityItems = [
+    {
+      href: "/indoor-activities",
+      label: t("indooractivities"),
+    },
+    {
+      href: "/outdoor-activities",
+      label: t("outdooractivities"),
     },
   ];
 
@@ -78,6 +91,17 @@ export default function Navbar({ categories, trainingData }: Props) {
           <Link href={`/R.A/${item.id}`}>
             {isArabic ? item.name_ar : item.name_en}
           </Link>
+        </NavigationMenuLink>
+      )),
+    },
+    {
+      type: "dropdown",
+      label: t("activities"),
+      key: "activities",
+
+      content: activityItems.map((item, index) => (
+        <NavigationMenuLink asChild key={index}>
+          <Link href={item.href}>{item.label}</Link>
         </NavigationMenuLink>
       )),
     },

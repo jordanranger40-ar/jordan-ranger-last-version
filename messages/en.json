@@ -15,7 +15,12 @@
     "expedition activities": "Expedition Activities",
     "Ranger Camp Activity": "Ranger Camp Activity",
     "tour operators": "Tour Operators",
-    "training room": "Training Room"
+    "training room": "Training Room",
+    "activities": "Activities",
+    "indooractivities": "Indoor Activities", 
+    "outdooractivities": "Outdoor Activities",
+    "test1": "Test Indoor 1",
+    "test2": "Test Indoor 2"
   },
   "stats": {
     "projects": "Projects Completed",
