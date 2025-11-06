@@ -2,7 +2,7 @@ import { pool } from "../index";
 import bcrypt from "bcrypt";
 import jwt, { Secret } from "jsonwebtoken";
 
-import { newUser, modifiedUser, DBUser, userInfo } from "@/types/index";
+import { newUser, modifiedUser, DBUser, userInfo, userDetails } from "@/types/index";
 const hashPassword = async (password: string) => {
   const hashedPassword = await bcrypt.hash(password, 10);
   return hashedPassword;
@@ -26,7 +26,7 @@ export const register = async (newUser: newUser) => {
     
   } else {
      console.log("inwwwwwds",newUser);
-    const result = await pool.query<newUser>(
+    const result = await pool.query<userDetails>(
       "insert into users (first_name, last_name, email, password) values ($1,$2,$3,$4) returning *",
       [
         newUser.first_name,

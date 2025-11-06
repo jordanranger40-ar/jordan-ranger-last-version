@@ -41,6 +41,28 @@ export default function Navbar({ categories, trainingData }: Props) {
       label: t("contactus"),
     },
   ];
+  const rangerAcademyItams = [
+    {
+      href: "/school-training",
+      label: t("schooltraining"),
+    },
+    {
+      href: "/corporate-team-building",
+      label: t("corporateteambuilding"),
+    },
+ 
+  ];
+  const accommodationItems = [
+    {
+      href: "/Accommodation/Cabins",
+      label: t("cabins"),
+    },
+    {
+      href: "/Accommodation/Tents",
+      label: t("tents"),
+    },
+   
+  ];
 
   const activityItems = [
     {
@@ -70,36 +92,36 @@ export default function Navbar({ categories, trainingData }: Props) {
         </NavigationMenuLink>
       )),
     },
-    {
-      type: "dropdown",
-      label: t("accommodation"),
-      key: "accommodation",
-      content: categories.map((item, index) => (
-        <NavigationMenuLink asChild key={item.slug ?? `fallback-key-${index}`}>
-          <Link href={`/Accommodation/${item.slug ?? ""}`}>
-            {isArabic ? item.category_name_ar : item.category_name_en}
-          </Link>
-        </NavigationMenuLink>
-      )),
-    },
-    {
-      type: "dropdown",
-      label: "Ranger Academy",
-      key: "R.A",
-      content: trainingData.map((item) => (
-        <NavigationMenuLink asChild key={item.id}>
-          <Link href={`/R.A/${item.id}`}>
-            {isArabic ? item.name_ar : item.name_en}
-          </Link>
-        </NavigationMenuLink>
-      )),
-    },
+
+   
     {
       type: "dropdown",
       label: t("activities"),
       key: "activities",
 
       content: activityItems.map((item, index) => (
+        <NavigationMenuLink asChild key={index}>
+          <Link href={item.href}>{item.label}</Link>
+        </NavigationMenuLink>
+      )),
+    },
+    {
+      type: "dropdown",
+      label: t("accommodation"),
+      key: "accommodation",
+
+      content: accommodationItems.map((item, index) => (
+        <NavigationMenuLink asChild key={index}>
+          <Link href={item.href}>{item.label}</Link>
+        </NavigationMenuLink>
+      )),
+    },
+    {
+      type: "dropdown",
+      label: t("rangeracademy"),
+      key: "rangeracademy",
+
+      content: rangerAcademyItams.map((item, index) => (
         <NavigationMenuLink asChild key={index}>
           <Link href={item.href}>{item.label}</Link>
         </NavigationMenuLink>

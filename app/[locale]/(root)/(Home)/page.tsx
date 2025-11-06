@@ -3,9 +3,8 @@ import BannerSection from "@/components/banner/BannerSection";
 
 import { getAllcategories } from "@/app/models/db/lib/services/Accommodation";
 import { getAllTraining } from "@/app/models/db/lib/services/training";
-import ClientsSection from "@/components/about/ClientsSection";
 import { getAllClients } from "@/app/models/db/lib/services/clients";
-
+import RoomsAndTents from "@/components/roomsAndTents/roomsAndTents"
 
 import Poster from "@/components/poster/poster";
 import { getBannerData } from "@/app/models/db/lib/services/banners";
@@ -51,7 +50,10 @@ export default async function Home({ params }: PageProps) {
       <section className="relative z-10 w-full mt-40 ">
         <Poster />
       </section>
-       <ClientsSection clients={clients} isArabic={isArabic} />
+      <section className="relative z-10 w-full  ">
+        <RoomsAndTents />
+      </section>
+    
 
    
     </main>

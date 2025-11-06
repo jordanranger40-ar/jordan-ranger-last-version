@@ -59,12 +59,12 @@ export default function UpdateRoleForm({ userId, userRole, action }: Props) {
         only.{" "}
       </div>
       <div className="flex flex-row gap-3 justify-end mt-8">
-        <Button variant="outline" type="button">
+        <Button variant="outline" type="button" className="cursor-pointer">
           Cancel
         </Button>
         <Button
           type="submit"
-          className="bg-[#125892] text-white cursor-pointer"
+          className="bg-[#676e32] text-white cursor-pointer hover:bg-[#87970f]" 
           disabled={isPending}
         >
           {isPending ? "Updating..." : "Update Role"}

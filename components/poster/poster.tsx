@@ -16,7 +16,7 @@ export default function PosterSection() {
   return (
     <section
       dir={isArabic ? "rtl" : "ltr"}
-      className="w-full flex justify-center px-4 py-16 bg-[#f8f8f8]"
+      className="w-full flex justify-center px-4 py-16 bg-[#f1f1f1]"
     >
       <div className="relative w-full max-w-7xl bg-[#484d23] text-white rounded-3xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.4)] overflow-hidden min-h-[400px] md:min-h-[460px] flex">
         

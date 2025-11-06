@@ -1,0 +1,219 @@
+"use client";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+  VisibilityState,
+  SortingState,
+} from "@tanstack/react-table";
+import DeleteButton from "@/components/deleteButton";
+import { useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import {
+  ChevronDown,
+  ChevronRight,
+  ChevronLeft,
+  SquarePen,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+
+interface DataTableProps<TData> {
+  columns: ColumnDef<TData>[];
+  data: TData[];
+  routeName: string;
+  deleteAction: (id: string) => Promise<void>;
+}
+
+export function DataTable<TData>({
+  columns,
+  data,
+  routeName,
+  deleteAction,
+}: DataTableProps<TData>) {
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const router = useRouter();
+  // Add generic Actions column at the end
+  const columnsWithActions: ColumnDef<TData>[] = [
+    ...columns,
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => {
+        const rowData = row.original as TData & { id: string };
+        return (
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => router.push(`${routeName}/${rowData.id}`)}
+              className="cursor-pointer"
+            >
+              <SquarePen />
+            </Button>
+            <DeleteButton id={rowData.id ?? ""} deleteAction={deleteAction} />
+          </div>
+        );
+      },
+      enableSorting: false,
+      enableHiding: false,
+    },
+  ];
+
+  const table = useReactTable({
+    data,
+    columns: columnsWithActions,
+    state: { columnVisibility, sorting },
+    onColumnVisibilityChange: setColumnVisibility,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onSortingChange: setSorting,
+  });
+
+  return (
+    <div className="space-y-4 mb-20 ml-4 mr-4 w-full">
+      {/* === Column Visibility Menu === */}
+      <div className="flex items-center justify-between">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="ml-auto">
+              View <ChevronDown className="ml-2 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {table
+              .getAllLeafColumns()
+              .filter((col) => col.getCanHide())
+              .map((column) => (
+                <DropdownMenuCheckboxItem
+                  key={column.id}
+                  checked={column.getIsVisible()}
+                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                >
+                  {column.id}
+                </DropdownMenuCheckboxItem>
+              ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      {/* === Table === */}
+      <div className="rounded-md border border-gray-300">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow
+                key={headerGroup.id}
+                className="border-b border-gray-300 hover:bg-gray-50"
+              >
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+
+          <TableBody>
+            {table.getRowModel().rows.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  className="border-b border-gray-300 hover:bg-gray-50"
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow className="border-b border-gray-300 hover:bg-gray-50">
+                <TableCell
+                  colSpan={columnsWithActions.length}
+                  className="h-24 text-center"
+                >
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      {/* === Pagination === */}
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="flex items-center space-x-2">
+          <span className="text-sm text-muted-foreground">Rows per page:</span>
+          <select
+            className="border rounded-md p-1 text-sm"
+            value={table.getState().pagination.pageSize}
+            onChange={(e) => table.setPageSize(Number(e.target.value))}
+          >
+            {[5, 10, 20, 50, 100].map((pageSize) => (
+              <option key={pageSize} value={pageSize}>
+                {pageSize}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+          className="cursor-pointer"
+        >
+          <ChevronLeft />
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+          className="cursor-pointer"
+        >
+          <ChevronRight />
+        </Button>
+      </div>
+
+      <div className="text-sm text-muted-foreground flex justify-end mr-4">
+        Page {table.getState().pagination.pageIndex + 1} of{" "}
+        {table.getPageCount()}
+      </div>
+    </div>
+  );
+}

@@ -81,19 +81,46 @@ export const bookARoom = async (data: newBooking) => {
   } catch (error) {
     await client.query("ROLLBACK");
     console.log(error);
-    
+
     console.log("Error In Booking The Room ");
   } finally {
     client.release();
   }
 };
 
-export const getAllRoomsbookings = async () => {
-  const result = await pool.query<newBooking>("select * from room_booking");
+export const getAllRoomsBookings = async () => {
+  const result = await pool.query(`
+    SELECT 
+      rb.id AS id,
+      rb.start_time,
+      rb.end_time,
+      rb.created_at,
+      rb.is_confirmed,
+      rb.is_deleted,
+      u.id AS user_id,
+      u.first_name,
+      u.last_name,
+      u.email,
+      r.id AS room_id,
+      r.name_en,
+      r.description_en,
+      r.name_ar,
+      r.description_ar,
+      r.cover_image,
+      r.price,
+      r.room_images,
+      r.room_type_en,
+      r.room_type_ar,
+      r.slug
+    FROM room_booking rb
+    JOIN users u ON rb.user_id = u.id
+    JOIN rooms r ON rb.room_id = r.id
+    WHERE rb.is_deleted = false
+  `);
 
   return {
     data: result.rows,
-    message: "All Bookings for all rooms",
+    message: "All Bookings with user and room details",
     status: 200,
   };
 };
@@ -112,24 +139,42 @@ export const getAllbookingsByRoomId = async (id: string) => {
 
 export const getBookingById = async (id: string) => {
   const result = await pool.query<newBooking>(
-    "select * from room_booking where id=$1 ",
+    `SELECT 
+      rb.id AS id,
+      rb.start_time,
+      rb.end_time,
+      rb.created_at,
+      rb.is_confirmed,
+      rb.is_deleted,
+      u.id AS user_id,
+      u.first_name,
+      u.last_name,
+      u.email,
+      r.id AS room_id,
+      r.name_en,
+      r.description_en,
+      r.name_ar,
+      r.description_ar,
+      r.cover_image,
+      r.price,
+      r.room_images,
+      r.room_type_en,
+      r.room_type_ar,
+      r.slug
+    FROM room_booking rb
+    JOIN users u ON rb.user_id = u.id
+    JOIN rooms r ON rb.room_id = r.id
+    WHERE rb.is_deleted = false AND rb.id = $1`,
     [id]
   );
 
-  if (result.rows.length === 0) {
-    return {
-      data: result.rows,
-      message: "No Booking with this id",
-      status: 409,
-    };
-  } else {
-    return {
-      data: result.rows,
-      message: "The Booking for this id",
-      status: 200,
-    };
-  }
+  return {
+    data: result.rows[0],
+    message: "Booking retrieved successfully",
+    status: 200,
+  };
 };
+
 
 export const deleteBookingById = async (id: string) => {
   const client = await pool.connect();
@@ -248,7 +293,7 @@ export const editBookingById = async (data: newBooking, bookingId: string) => {
         newPrice: Number(totalPrice),
       },
       client
-    );    
+    );
     // update total cart total amount
     await updateCartTotalAmount(
       {
@@ -265,7 +310,7 @@ export const editBookingById = async (data: newBooking, bookingId: string) => {
       status: 201,
     };
   } catch (error) {
-    await client.query("ROLLBACK");    
+    await client.query("ROLLBACK");
     console.log("Error In Updating The Booking");
   } finally {
     client.release();

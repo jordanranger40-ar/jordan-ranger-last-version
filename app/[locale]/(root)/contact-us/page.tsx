@@ -9,7 +9,7 @@ interface PageProps {
     };
   }
 export default async function ContactUsPage({ params }: PageProps) {
-  const { locale } = params;
+  const { locale } = await params;
   const isArabic = locale === "ar";
 
 

@@ -1,7 +1,7 @@
 export type newClient = {
   id?: string;
   name: string;
-  logo: string ;
+  logo: string;
 };
 
 export type newCategory = {
@@ -27,7 +27,7 @@ export type newCourse = {
   duration_en: string;
   duration_ar: string;
   training_id: string;
-  image:string
+  image: string;
 };
 
 export type user = {
@@ -47,10 +47,9 @@ export type newMember = {
   position_en: string;
   position_ar: string;
   image: string;
-  display_order?:number;
-  main:boolean
+  display_order?: number;
+  main: boolean;
 };
-
 
 export type newMemberDragAndDrop = {
   id: string;
@@ -61,11 +60,9 @@ export type newMemberDragAndDrop = {
   position_en: string;
   position_ar: string;
   image: string;
-  display_order?:number,
-  main:boolean
-
+  display_order?: number;
+  main: boolean;
 };
-
 
 export type resetToken = {
   id?: string;
@@ -89,7 +86,7 @@ export type newService = {
   description_en: string;
   description_ar: string;
   category_id: string;
-  image:string
+  image: string;
 };
 export type newTraining = {
   id?: string;
@@ -97,14 +94,15 @@ export type newTraining = {
   name_ar: string;
   description_en: string;
   description_ar: string;
-  category_en:string;
-  category_ar:string;
-  start_date:Date;
-  end_date:Date;
-  price:number;
-  capacity:number;
-  image:string;
-  is_deleted:boolean
+  category_en: string;
+  category_ar: string;
+  start_date: Date;
+  end_date: Date;
+  price: number;
+  capacity: number;
+  image: string;
+  is_deleted: boolean;
+  slug: string;
 };
 export type newUser = {
   id?: string;
@@ -167,7 +165,6 @@ export type getService = {
   slug: string;
 };
 
-
 export interface editService {
   id?: string;
   name_en: string;
@@ -176,11 +173,11 @@ export interface editService {
   category_id: string;
   description_en: string;
   description_ar: string;
-  image:string
+  image: string;
 }
 
 export interface editCourse {
-   id?: string;
+  id?: string;
   title_en: string;
   title_ar: string;
   description_en: string;
@@ -192,13 +189,12 @@ export interface editCourse {
   duration_en: string;
   duration_ar: string;
   training_id: string;
-  training_name_en:string,
-  image:string
+  training_name_en: string;
+  image: string;
 }
 
-
-export interface getCourses{
-   id?: string;
+export interface getCourses {
+  id?: string;
   title_en: string;
   title_ar: string;
   description_en: string;
@@ -210,47 +206,43 @@ export interface getCourses{
   duration_en: string;
   duration_ar: string;
   training_id: string;
-   training_name_en: string;
+  training_name_en: string;
   training_name_ar: string;
   training_description_en: string;
   training_description_ar: string;
-  image:string
+  image: string;
 }
 
-
-export type getClients={
- id?: string;
+export type getClients = {
+  id?: string;
   name: string;
   logo: string;
-  created_at:Date
-}
-
+  created_at: Date;
+};
 
 export type memeberOrder = {
   id: string;
   display_order: number;
 };
 
-export type newSetting={
-  id?:string,
-  key_name_en?:string,
-  key_name_ar?:string,
-  value_en?:string,
-  value_ar?:string,
-  created_at?:Date
-}
-export type newCareer= {
-  id?:string,
-  first_name:string,
-  last_name:string,
-  email:string,
-  city:string,
-  phone_number:string | null,
-  cv:string,
-  created_at?:Date
-}
-
-
+export type newSetting = {
+  id?: string;
+  key_name_en?: string;
+  key_name_ar?: string;
+  value_en?: string;
+  value_ar?: string;
+  created_at?: Date;
+};
+export type newCareer = {
+  id?: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  city: string;
+  phone_number: string | null;
+  cv: string;
+  created_at?: Date;
+};
 
 export type roomFeatures = {
   id?: string;
@@ -271,9 +263,10 @@ export type newRoom = {
   price: number;
   room_images: string[];
   is_deleted?: boolean;
-  roomFeatures: roomFeatures[];
-  room_type_en:string;
-  room_type_ar:string
+  features: roomFeatures[];
+  room_type_en: string;
+  room_type_ar: string;
+  slug: string;
 };
 
 export type modifiedRoom = {
@@ -287,8 +280,9 @@ export type modifiedRoom = {
   room_images: string[];
   is_deleted?: boolean;
   roomFeatures: roomFeatures[];
-  room_type_en:string;
-  room_type_ar:string
+  room_type_en: string;
+  room_type_ar: string;
+  slug: string;
 };
 
 export type tokenPayload = {
@@ -305,7 +299,7 @@ export type newBooking = {
   is_confirmed: boolean;
   user_id: string;
   room_id: string;
-  price:number;
+  price: number;
 };
 
 export type newActivity = {
@@ -316,11 +310,13 @@ export type newActivity = {
   description_ar: string;
   location_type_en: string;
   location_type_ar: string;
-  image: string;
-  capacity:number;
-  price:number;
+  card_image: string;
+  poster_image: string;
+  header_image: string;
+  capacity: number;
+  price: number;
+  slug: string;
 };
-
 
 export type newActivityBooking = {
   id?: string;
@@ -330,9 +326,8 @@ export type newActivityBooking = {
   is_confirmed: boolean;
   user_id: string;
   activity_id: string;
-  quantity:number,
-  price:number
-
+  quantity: number;
+  price: number;
 };
 
 export type updateActivityBooking = {
@@ -342,45 +337,44 @@ export type updateActivityBooking = {
   created_at: Date;
   is_confirmed: boolean;
   activity_id: string;
-  quantity:number,
-
+  quantity: number;
 };
 
-export type newTrainingBooking= {
-  id?:string,
-  user_id:string,
-  training_id:string,
-  quantity:number,
-  is_confirmed?:boolean,
-  is_deleted?:boolean,
-  created_at?:Date,
-  price:number
-}
+export type newTrainingBooking = {
+  id?: string;
+  user_id: string;
+  training_id: string;
+  quantity: number;
+  is_confirmed?: boolean;
+  is_deleted?: boolean;
+  created_at?: Date;
+  price: number;
+};
 
-export type newCart= {
-id?:string,
-user_id?:string,
-total_amount: number,
-created_at?:Date,
-checked_out_at?:Date,
-is_paid?:boolean
-}
+export type newCart = {
+  id?: string;
+  user_id?: string;
+  total_amount: number;
+  created_at?: Date;
+  checked_out_at?: Date;
+  is_paid?: boolean;
+};
 
-export type cartWithItems= {
-  id?:string,
-user_id:string,
-total_amount: number,
-created_at:Date,
-checked_out_at:Date
-booking_type:string,
-booking_id:string
-}
+export type cartWithItems = {
+  id?: string;
+  user_id: string;
+  total_amount: number;
+  created_at: Date;
+  checked_out_at: Date;
+  booking_type: string;
+  booking_id: string;
+};
 
-export type newCartItem={
-  id?:string,
-cart_id:string,
-created_at?:Date,
-booking_type:string,
-booking_id:string,
-price:number
-}
+export type newCartItem = {
+  id?: string;
+  cart_id: string;
+  created_at?: Date;
+  booking_type: string;
+  booking_id: string;
+  price: number;
+};

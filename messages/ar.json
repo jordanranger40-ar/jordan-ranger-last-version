@@ -21,7 +21,13 @@
     "menuDescription": "استخدم القائمة للتنقل داخل الموقع",
     "aboutus": "عن جوردان رينجر",
     "ourclients": "عملائنا",  
-    "contactus": "اتصل بنا"
+    "contactus": "اتصل بنا",
+    "cabins":"الغرف",
+    "tents":"الخيام",
+    "corporateteambuilding":"بناء فريق الشركة",
+     "schooltraining":"تدريب المدرسة",
+     "rangeracademy":"رينجر اكاديمي"
+
   },
   "stats": {
     "projects": "المشاريع المكتملة",

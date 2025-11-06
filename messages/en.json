@@ -17,10 +17,16 @@
     "tour operators": "Tour Operators",
     "training room": "Training Room",
     "activities": "Activities",
-    "indooractivities": "Indoor Activities", 
+    "indooractivities": "Indoor Activities",
     "outdooractivities": "Outdoor Activities",
     "test1": "Test Indoor 1",
-    "test2": "Test Indoor 2"
+    "test2": "Test Indoor 2",
+    "cabins": "Cabins",
+    "tents": "Tents",
+    "corporateteambuilding":"Corporate Team Building",
+    "schooltraining":"School Training",
+    "rangeracademy":"Ranger Academy"
+    
   },
   "stats": {
     "projects": "Projects Completed",

@@ -35,7 +35,7 @@ async function page(props: { params: Promise<{ id: string }> }) {
             </CardTitle>
             <CardDescription className="flex flex-row items-center gap-3 mb-7">
               <Avatar className="h-20 w-20 text-4xl">
-                <AvatarFallback className="bg-[#125892] text-white font-semibold ">
+                <AvatarFallback className="bg-[#676e32] text-white font-semibold ">
                   {user[0].email.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>

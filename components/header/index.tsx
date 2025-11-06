@@ -1,5 +1,6 @@
 import React from "react";
 import { FaShoppingCart } from 'react-icons/fa';
+import Link from "next/link";
 
 import Menu from "./menu";
 import LanguageSwitcher from "./languageSwitcher";
@@ -21,9 +22,11 @@ export default async function Header() {
       <div className="hidden md:block">
         <Navbar categories={categories} trainingData={trainingData.data} />
       </div>
+             <Link href="/my-cart">
       <div className="hidden md:flex">
-      <FaShoppingCart className="text-white" />
+      <FaShoppingCart className="text-white hover:text-[#676e32] " />
       </div>
+      </Link>
       <Menu categories={categories} trainingData={trainingData.data} />
     </header>
   );

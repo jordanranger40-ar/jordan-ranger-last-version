@@ -8,7 +8,7 @@ import Manakesh from "@/public/images/manakesh.webp";
 import restaurant from "@/public/images/restaurant.jpg";
 import restaurantlogo from "@/public/images/restaurantlogo.png";
 import Image from "next/image";
-import { Book } from "lucide-react";
+
 export default function Paralexsection() {
   return (
     <div className="relative">

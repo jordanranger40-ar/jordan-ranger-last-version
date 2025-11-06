@@ -50,7 +50,7 @@ export function Banner({ banners, locale,categories,trainingData }: Props) {
 
             return (
               <CarouselItem key={banner.id}>
-                <article className="relative aspect-[20/9] overflow-hidden rounded-b-[100px]">
+                <article className="relative aspect-[20/9] overflow-hidden rounded-b-[100px] ">
                   <Image
                     src={banner.image ?? "/default-image.png"}
                     alt={title}
@@ -59,7 +59,7 @@ export function Banner({ banners, locale,categories,trainingData }: Props) {
                     priority
                   />
                   <div className="absolute inset-0 bg-black/50 z-10" />
-                  <div className="absolute inset-0 z-20 flex items-center justify-center text-center text-white px-6">
+                  <div className="absolute inset-0 z-20 flex items-center justify-center text-center text-white px-6 ">
                     <div>
                       <h2 className="text-5xl font-bold">{title}</h2>
                       <p className="text-xl mt-6 max-w-3xl mx-auto">{description}</p>

@@ -5,7 +5,7 @@ import { newTraining } from "@/types/index";
 export const addNewTraining = async (newTraining: newTraining) => {
   console.log("ebfebjn");
   const result = await pool.query<newTraining>(
-    "insert into training (name_en, name_ar,description_en,description_ar, category_en ,category_ar, price, capacity,start_date,end_date,image ) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) returning *",
+    "insert into training (name_en, name_ar,description_en,description_ar, category_en ,category_ar, price, capacity,start_date,end_date,image,slug ) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) returning *",
     [
       newTraining.name_en,
       newTraining.name_ar,
@@ -17,7 +17,8 @@ export const addNewTraining = async (newTraining: newTraining) => {
       newTraining.capacity,
       newTraining.start_date,
       newTraining.end_date,
-      newTraining.image
+      newTraining.image,
+      newTraining.slug
     ]
   );
 
@@ -45,7 +46,7 @@ export const editTraining = async (
     return { data: null, message: "No Training With This ID", status: 409 };
   } else {
     const result = await pool.query<newTraining>(
-      " update training set name_en= coalesce ($2,name_en ), name_ar = coalesce ($3,name_ar ) ,description_en = coalesce ($4,description_en) ,description_ar = coalesce($5,description_ar), category_en = coalesce($6,category_en), category_ar = coalesce($7,category_ar), price = coalesce($8,price), capacity = coalesce($9,capacity), start_date = coalesce($10,start_date),end_date = coalesce($11,end_date),image = coalesce($12,image) where id= $1 returning * ",
+      " update training set name_en= coalesce ($2,name_en ), name_ar = coalesce ($3,name_ar ) ,description_en = coalesce ($4,description_en) ,description_ar = coalesce($5,description_ar), category_en = coalesce($6,category_en), category_ar = coalesce($7,category_ar), price = coalesce($8,price), capacity = coalesce($9,capacity), start_date = coalesce($10,start_date),end_date = coalesce($11,end_date),image = coalesce($12,image),slug = coalesce($13,slug) where id= $1 returning * ",
       [
         id,
         modifiedTraining.name_en,
@@ -58,7 +59,8 @@ export const editTraining = async (
         modifiedTraining.capacity,
         modifiedTraining.start_date,
         modifiedTraining.end_date,
-        modifiedTraining.image
+        modifiedTraining.image,
+        modifiedTraining.slug
       ]
     );
     return {
@@ -92,3 +94,12 @@ export const getTrainingById = async (id: string) => {
   );
   return { data: result.rows, message: "Training With This ID:", status: 201 };
 };
+
+export const getTrainingBySlug = async (slug: string) => {
+  const result = await pool.query<newTraining>(
+    "SELECT * FROM training WHERE slug=$1",
+    [slug]
+  );
+  return { data: result.rows, message: "Training With This slug:", status: 201 };
+};
+
