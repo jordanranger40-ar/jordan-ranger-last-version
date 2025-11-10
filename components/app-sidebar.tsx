@@ -27,7 +27,7 @@ import {
   Settings,
 } from "lucide-react";
 
-import logoDash from "@/public/images/logosidebar.png";
+import logoDash from "@/public/images/reversed logo.png";
 
 const items = [
   { title: "Home", url: "/", icon: House },
@@ -40,11 +40,22 @@ const items = [
     icon: Settings,
   },
   { title: "Rooms ", url: "/admin/dashboard/rooms", icon: Settings },
-    { title: "Room Booking ", url: "/admin/dashboard/roomsBooking", icon: Settings },
-
+  {
+    title: "Room Booking ",
+    url: "/admin/dashboard/roomsBooking",
+    icon: Settings,
+  },
   { title: "Consulting", url: "/admin/dashboard/consulting", icon: Tag },
   { title: "Services", url: "/admin/dashboard/services", icon: Handshake },
   { title: "Training", url: "/admin/dashboard/training", icon: PenLine },
+  {
+    title: "TrainingBooking",
+    url: "/admin/dashboard/trainingsBooking",
+    icon: PenLine,
+  },
+  { title: "Activities", url: "/admin/dashboard/activities", icon: BookOpen },
+ { title: "ActivitiesBooking", url: "/admin/dashboard/activitiesBooking", icon: BookOpen },
+
   { title: "Courses", url: "/admin/dashboard/courses", icon: BookOpen },
   { title: "My Team", url: "/admin/dashboard/ourTeam", icon: Users },
   { title: "Clients", url: "/admin/dashboard/clients", icon: Crown },
@@ -64,9 +75,8 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="flex items-center gap-2 text-[#125892] text-lg mb-3   p-2 rounded ">
-            <Image src={logoDash} alt="logo" className="w-8 h-8" />
-            <span>Think Impact</span>
+          <SidebarGroupLabel className="flex items-center  text-[#676e32]  rounded ">
+            <Image src={logoDash} alt="logo" className="w-24 h-10" />
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>

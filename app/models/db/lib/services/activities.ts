@@ -84,6 +84,12 @@ export const getActivityBySlug = async (slug: string) => {
   const result = await pool.query(" select * from activities where slug=$1 ", [
     slug,
   ]);
+  return result.rows;
+}
+  export const getActivityByType = async (location_type_en: string) => {
+    const result = await pool.query<newActivity>(" select * from activities where location_type_en=$1 ", [
+      location_type_en,
+    ]);
 
   return result.rows;
 };

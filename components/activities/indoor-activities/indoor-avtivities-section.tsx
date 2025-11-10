@@ -1,30 +1,16 @@
 import React from "react";
 import ActivitiesCard from "@/components/activities-card"
 import Link from "next/link";
+import {getActivityByType} from "@/app/models/db/lib/services/activities"
 
 interface Props {
   isArabic: boolean;
 }
 
-interface Activity {
-  nameEn: string;
-  nameAr: string;
-  iconUrl: string;
-}
 
-const activities: Activity[] = [
-  { nameEn: "Zipline", nameAr: "الانزلاق بالحبل", iconUrl: "https://cdn-icons-png.flaticon.com/512/3163/3163786.png" },
-  { nameEn: "Climbing Tour", nameAr: "جولة التسلق", iconUrl: "https://cdn-icons-png.flaticon.com/512/18693/18693191.png" },
-  { nameEn: "Trail (Hiking)", nameAr: "المسار (الهايكينغ)", iconUrl: "https://cdn-icons-png.flaticon.com/512/2826/2826742.png" },
-  { nameEn: "Big Swing", nameAr: "الأرجوحة الكبيرة", iconUrl: "https://cdn-icons-png.flaticon.com/512/7433/7433100.png" },
-  { nameEn: "Camping", nameAr: "التخييم", iconUrl: "https://cdn-icons-png.flaticon.com/512/1020/1020535.png" },
-  { nameEn: "Telescope", nameAr: "التلسكوب", iconUrl: "https://cdn-icons-png.flaticon.com/512/4270/4270639.png" },
-  { nameEn: "Countryside Experience", nameAr: "تجربة الريف", iconUrl: "https://cdn-icons-png.flaticon.com/512/8046/8046891.png" },
-  { nameEn: "Treasure Hunt", nameAr: "البحث عن الكنز", iconUrl: "https://cdn-icons-png.flaticon.com/512/19022/19022179.png" },
-  { nameEn: "High Rope & Low Courses", nameAr: "مسارات الحبال العالية والمنخفضة", iconUrl: "https://cdn-icons-png.flaticon.com/512/10062/10062618.png" },
-];
+export default async function IndoorAvtivitiesSection({ isArabic }:Props){
 
-const IndoorAvtivitiesSection: React.FC<Props> = ({ isArabic }) => {
+  const data=await getActivityByType("outdoor")
   return (
     <section
       dir={isArabic ? "rtl" : "ltr"}
@@ -40,9 +26,9 @@ const IndoorAvtivitiesSection: React.FC<Props> = ({ isArabic }) => {
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 px-6 w-full max-w-7xl">
-        {activities.map((act, idx) => (
-               <Link  key={idx} href={`/indoor-activities/${act.nameEn ?? ""}`}>
-     <ActivitiesCard      isArabic={isArabic} act={act} />
+        {data.map((data, idx) => (
+               <Link  key={idx} href={`/indoor-activities/${data.name_en ?? ""}`}>
+     <ActivitiesCard      isArabic={isArabic} data={data} />
      </Link>
         ))}
       </div>
@@ -52,4 +38,4 @@ const IndoorAvtivitiesSection: React.FC<Props> = ({ isArabic }) => {
   );
 };
 
-export default IndoorAvtivitiesSection;
+

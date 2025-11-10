@@ -1,9 +1,16 @@
 
 import BannerSection from "@/components/banner/BannerSection";
+import Mapbox3D from "@/components/map/map"
+import VideoSection from "@/components/vvideo-section/video-section"
+import SectionDivider from "@/components/ui/devider"
+
+
+
+
+
 
 import { getAllcategories } from "@/app/models/db/lib/services/Accommodation";
 import { getAllTraining } from "@/app/models/db/lib/services/training";
-import { getAllClients } from "@/app/models/db/lib/services/clients";
 import RoomsAndTents from "@/components/roomsAndTents/roomsAndTents"
 
 import Poster from "@/components/poster/poster";
@@ -17,20 +24,15 @@ interface PageProps {
 }
 
 export default async function Home({ params }: PageProps) {
-  const { locale } = params;
+  const { locale } = await params;
+  const isArabic = locale === "ar";
 
   const banners: newBanner[] = await getBannerData();
   const categories: newCategory[] = await getAllcategories();
   const trainingData: newTraining[] = await getAllTraining();
 
-  type Client = {
-    id?: string;
-    name: string;
-    logo: string;
-    created_at?: Date;
-  };
-    const clients: Client[] = await getAllClients();
-  const isArabic = locale === "ar";
+
+
 
   return (
     <main className="relative">
@@ -51,11 +53,22 @@ export default async function Home({ params }: PageProps) {
         <Poster />
       </section>
       <section className="relative z-10 w-full  ">
-        <RoomsAndTents />
+        <RoomsAndTents isArabic={isArabic} />
       </section>
+      <SectionDivider color="bg-[#484d23]" height="h-16" />
+      <section className="relative z-10 w-full   mt-40 ">
+        <VideoSection />
+      </section>
+    
+    
+
+    
     
 
    
     </main>
   );
 }
+
+
+

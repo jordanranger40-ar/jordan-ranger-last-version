@@ -102,4 +102,12 @@ export const getTrainingBySlug = async (slug: string) => {
   );
   return { data: result.rows, message: "Training With This slug:", status: 201 };
 };
+export const getTrainingByType= async (category_en: string) => {
+  const result = await pool.query<newTraining>(
+    "SELECT * FROM training WHERE category_en=$1",
+    [category_en]
+  );
+  return { data: result.rows, message: "Training With This ID:", status: 201 };
+};
+
 

@@ -1,44 +1,43 @@
-import React from 'react'
-import SchoolsTraining from "@/public/images/Schools-Training.jpg";
-import Image from 'next/image';
-import { Button } from "@/components/ui/button";
+import React from "react";
+import TrainingsCard from "@/components/trainings-card"
+import Link from "next/link";
+import {getTrainingByType} from "@/app/models/db/lib/services/training"
+
 
 interface Props {
   isArabic: boolean;
 }
 
-export default function SchoolTrainingSection({ isArabic }: Props) {
+
+export default async function IndoorAvtivitiesSection ({ isArabic  }: Props) {
+  const data=await getTrainingByType("Schools Training") 
+  
+console.log(data.data)
   return (
-    <div
-      className={`flex flex-col md:flex-row items-center justify-center w-[90%]  px-6 py-24  justify-self-center gap-14
-        ${isArabic ? 'md:flex-row-reverse text-right' : 'text-left'}`}
+    <section
+      dir={isArabic ? "rtl" : "ltr"}
+      className="w-full min-h-screen py-24 bg-[#f4f6f8] flex flex-col items-center"
     >
-      {/* الصورة */}
-      <div className="relative w-full md:w-3/5 h-64 md:h-96 rounded-2xl overflow-hidden shadow-lg group">
-        <Image
-          src={SchoolsTraining}
-          alt={isArabic ? "صورة تدريب مدرسي" : "School Training Image"}
-          fill
-          className="object-cover transition-transform duration-500 group-hover:scale-110"
-        />
+      <h2 className="text-5xl font-bold mb-6 text-[#2c3e50]">
+        {isArabic ? "التدريب المدرسي" : "School Training"}
+      </h2>
+      <p className="text-center text-gray-600 mb-16 max-w-3xl">
+        {isArabic
+          ? "استمتع بمجموعة متنوعة من التدريبات المدرسية."
+          : "Enjoy a variety of School Activities."}
+      </p>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 px-6 w-full max-w-7xl">
+        {data.data.map((data, idx) => (
+               <Link  key={idx} href={`/training/${data.slug ?? ""}`}>
+     <TrainingsCard      isArabic={isArabic} data={data} />
+     </Link>
+        ))}
       </div>
 
-      {/* النص */}
-      <div className={`w-full md:w-1/3 flex flex-col ${isArabic ? 'items-end' : 'items-start'}`}>
-        <h2 className="text-5xl font-bold mb-4 text-[#676e32]">
-          {isArabic ? " التدريب المدرسي" : "Schools Training"}
-        </h2>
-        <p className={`mb-6 text-gray-700 ${isArabic ? 'text-right' : 'text-left'} break-words`}>
-          {isArabic
-            ? "التدريب المدرسي الذي تقدمه جوردان رينجر هو برنامج تفاعلي مصمم لتعزيز الأهداف التعليمية للمدرسة، مثل العمل الجماعي والقيادة ومهارات حل المشكلات والطهي في الهواء الطلق، لدى الطلاب. تتضمن دورتنا مجموعة متنوعة من العقبات وتحديات الجيش المصممة بعناية لتعزيز التعاون والمرونة. صُمم تدريبنا لتعزيز اللياقة البدنية والمرونة الذهنية والتفكير الاستراتيجي، مما يُهيئ الأفراد لمختلف المواقف الواقعية. انضموا إلينا لننطلق معًا في رحلة شيقة من النمو والتعلم والمغامرة!"
-            : "The school training offered by Jordan Ranger is an engaging program designed to enhance the educational objectives of the school, like teamwork, leadership, problem-solving skills, and outdoor cooking, among students. Our course features a variety of obstacles and Army challenges carefully crafted to promote cooperation and resilience.Our training is tailored to enhance physical fitness, mental agility, and strategic thinking, preparing individuals for various real-world situations. Join us as we embark on an exciting journey of growth, learning, and adventure together"}
-        </p>
-        <Button
-  className="bg-[#676e32] hover:bg-[#5a5f27] text-white px-6 py-3 rounded transition"
->
-  {isArabic ? "احجز الآن" : "Book Now"}
-</Button>
-      </div>
-    </div>
-  );
-}
+    
+    </section>
+  )
+};
+
+

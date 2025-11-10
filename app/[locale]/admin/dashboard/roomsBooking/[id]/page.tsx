@@ -1,8 +1,7 @@
-// app/[locale]/admin/dashboard/roomsBooking/[id]/page.tsx
 import React from "react";
 import Link from "next/link";
-import { getBookingById } from "@/app/models/db/lib/services/room_booking"; // adjust the path to where your function lives
-import { RoomBookingWithDetails } from "@/types"; // adjust if your types path is different
+import { getBookingById } from "@/app/models/db/lib/services/room_booking";
+import { RoomBookingWithDetails } from "@/types";
 
 type Props = {
   params: {
@@ -13,11 +12,9 @@ type Props = {
 
 export default async function Page({ params }: Props) {
   const bookingId = params.id;
-
-  // call the server-side helper - this is an async server component
   const res = await getBookingById(bookingId);
+  console.log("ressdd: ", res);
 
-  // assuming getBookingById returns { data, message, status }
   const booking = res?.data as RoomBookingWithDetails | undefined;
 
   if (!booking) {
@@ -44,83 +41,106 @@ export default async function Page({ params }: Props) {
     });
   };
 
-  const formatDate = (value?: string | Date) => {
-    if (!value) return "—";
-    const d = typeof value === "string" ? new Date(value) : value;
-    if (Number.isNaN(d.getTime())) return "—";
-    return d.toLocaleDateString("en-GB", { dateStyle: "medium" });
-  };
-
   return (
-    <main className="p-6 max-w-4xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
+    <main className="p-6 space-y-8">
+      {/* Header */}
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Booking Details</h1>
-          <p className="text-sm text-gray-500">ID: {booking.booking_id ?? "—"}</p>
+          <h1 className="text-3xl font-bold text-[#676e32]">Booking Details</h1>
+          <p className="text-sm text-gray-500">
+            Booking ID: {booking.id ?? "—"}
+          </p>
         </div>
-        <div className="space-x-2">
-          <Link
-            href={`/${params.locale ?? ""}/admin/dashboard/roomsBooking`}
-            className="text-sm underline"
-          >
-            ← Back to bookings
-          </Link>
-        </div>
+        <Link
+          href={`/${params.locale ?? ""}/admin/dashboard/roomsBooking`}
+          className="text-sm font-medium text-[#676e32] hover:text-[#7d8d07] underline"
+        >
+          ← Back to bookings
+        </Link>
       </div>
 
-      {/* Booking meta */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div className="p-4 border rounded-lg">
-          <h3 className="text-sm font-semibold mb-2">Booking</h3>
-          <dl className="text-sm">
-            <div className="flex justify-between py-1">
-              <dt className="text-gray-600">Created At</dt>
+      {/* Cards grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Booking Details Card */}
+        <div className="border rounded-2xl shadow-sm p-5 bg-white">
+          <h2 className="text-lg font-semibold mb-4 text-[#676e32]">
+            Booking Information
+          </h2>
+          <dl className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <dt className="text-gray-600">Created At:</dt>
               <dd>{formatDateTime(booking.created_at)}</dd>
             </div>
-            <div className="flex justify-between py-1">
-              <dt className="text-gray-600">Start</dt>
+            <div className="flex justify-between">
+              <dt className="text-gray-600">Start Time:</dt>
               <dd>{formatDateTime(booking.start_time)}</dd>
             </div>
-            <div className="flex justify-between py-1">
-              <dt className="text-gray-600">End</dt>
+            <div className="flex justify-between">
+              <dt className="text-gray-600">End Time:</dt>
               <dd>{formatDateTime(booking.end_time)}</dd>
             </div>
-            <div className="flex justify-between py-1">
-              <dt className="text-gray-600">Confirmed</dt>
+            <div className="flex justify-between">
+              <dt className="text-gray-600">Duration:</dt>
+              <dd>
+                {Math.ceil(
+                  (new Date(booking.end_time).getTime() -
+                    new Date(booking.start_time).getTime()) /
+                    (1000 * 60 * 60 * 24)
+                )}{" "}
+                {Math.ceil(
+                  (new Date(booking.end_time).getTime() -
+                    new Date(booking.start_time).getTime()) /
+                    (1000 * 60 * 60 * 24)
+                ) === 1
+                  ? "day"
+                  : "days"}
+              </dd>
+            </div>
+
+            <div className="flex justify-between">
+              <dt className="text-gray-600">Total Price:</dt>
+              <dd>{booking.booking_price} JOD</dd>
+            </div>
+            <div className="flex justify-between">
+              <dt className="text-gray-600">Confirmed:</dt>
               <dd>
                 <span
                   className={`px-2 py-0.5 rounded text-xs font-medium ${
-                    booking.is_confirmed ? "text-green-700 bg-green-100" : "text-red-700 bg-red-100"
+                    booking.is_confirmed
+                      ? "bg-green-100 text-green-700"
+                      : "bg-red-100 text-red-700"
                   }`}
                 >
                   {booking.is_confirmed ? "Yes" : "No"}
                 </span>
               </dd>
             </div>
-            <div className="flex justify-between py-1">
-              <dt className="text-gray-600">Deleted</dt>
+            <div className="flex justify-between">
+              <dt className="text-gray-600">Deleted:</dt>
               <dd>{booking.is_deleted ? "Yes" : "No"}</dd>
             </div>
           </dl>
         </div>
 
-        {/* User */}
-        <div className="p-4 border rounded-lg">
-          <h3 className="text-sm font-semibold mb-2">User</h3>
-          <dl className="text-sm">
-            <div className="flex justify-between py-1">
-              <dt className="text-gray-600">Name</dt>
-              <dd>
+        {/* User Details Card */}
+        <div className="border rounded-2xl shadow-sm p-5 bg-white">
+          <h2 className="text-lg font-semibold mb-4 text-[#676e32]">
+            User Information
+          </h2>
+          <dl className="space-y-2 text-sm">
+            <div className="flex items-center justify-between">
+              <dt className="text-gray-600">Name:</dt>
+              <dd className="ml-2">
                 {booking.first_name ?? "—"} {booking.last_name ?? ""}
               </dd>
             </div>
-            <div className="flex justify-between py-1">
-              <dt className="text-gray-600">Email</dt>
-              <dd>
+            <div className="flex items-center justify-between">
+              <dt className="text-gray-600">Email:</dt>
+              <dd className="ml-2">
                 {booking.email ? (
                   <a
                     href={`mailto:${booking.email}`}
-                    className="underline text-[#676e32] hover:text-[#a2b41d]"
+                    className="underline text-[#676e32] hover:text-[#7d8d07]"
                   >
                     {booking.email}
                   </a>
@@ -129,19 +149,48 @@ export default async function Page({ params }: Props) {
                 )}
               </dd>
             </div>
-            <div className="flex justify-between py-1">
-              <dt className="text-gray-600">User ID</dt>
-              <dd>{booking.booking_id ?? "—"}</dd>
+            <div className="flex items-center justify-between">
+              <dt className="text-gray-600">User ID:</dt>
+              <dd className="ml-2">{booking.user_id ?? "—"}</dd>
             </div>
           </dl>
         </div>
-      </section>
+      </div>
 
-      {/* Room */}
-      <section className="p-4 border rounded-lg mb-6">
-        <div className="flex items-start gap-4">
-          <div className="w-36 h-24 bg-gray-100 rounded overflow-hidden ">
-            {/* show cover image or first room image */}
+      {/* Room Details Card (full width) */}
+      <div className="border rounded-2xl shadow-sm p-6 bg-white">
+        <h2 className="text-lg font-semibold mb-4 text-[#676e32]">
+          Room Details
+        </h2>
+
+        <div className="flex flex-col md:flex-row items-start gap-4">
+          <div className="flex-1 space-y-2 text-sm">
+            <div>
+              <span className="text-gray-600 font-medium">Room Name:</span>{" "}
+              {booking.name_en ?? "—"}
+            </div>
+            <div>
+              <span className="text-gray-600 font-medium">Description:</span>{" "}
+              {booking.description_en ?? "No description"}
+            </div>
+            <div>
+              <span className="text-gray-600 font-medium">Room Type:</span>{" "}
+              {booking.room_type_en ?? "—"}
+            </div>
+            <div>
+              <span className="text-gray-600 font-medium">Price:</span>{" "}
+              {typeof booking.price === "number"
+                ? `${booking.price} JOD/Day`
+                : "—"}
+            </div>
+            <div>
+              <span className="text-gray-600 font-medium">Slug:</span>{" "}
+              {booking.slug ?? "—"}
+            </div>
+          </div>
+
+          {/* Image */}
+          <div className="w-full md:w-56 h-40 rounded-lg overflow-hidden bg-gray-100 shadow-sm">
             <img
               src={
                 booking.cover_image ??
@@ -152,64 +201,22 @@ export default async function Page({ params }: Props) {
               className="w-full h-full object-cover"
             />
           </div>
-
-          <div className="flex-1">
-            <h2 className="text-lg font-semibold">
-              {booking.name_en ?? "—"}
-            </h2>
-            <p className="text-sm text-gray-600 mb-2">
-              {booking.description_en ?? "No description"}
-            </p>
-
-            <div className="flex flex-wrap gap-4 text-sm">
-              <div>
-                <span className="text-gray-600">Room ID</span>
-                <div>{booking.booking_id ?? "—"}</div>
-              </div>
-
-              <div>
-                <span className="text-gray-600">Type</span>
-                <div>{booking.room_type_en ?? "—"}</div>
-              </div>
-
-              <div>
-                <span className="text-gray-600">Price</span>
-                <div>
-                  {typeof booking.price === "number"
-                    ? `${booking.price}`
-                    : "—"}
-                </div>
-              </div>
-
-              <div>
-                <span className="text-gray-600">Slug</span>
-                <div>{booking.slug ?? "—"}</div>
-              </div>
-            </div>
-          </div>
         </div>
 
-        {/* Optional: gallery of room images */}
+        {/* Gallery */}
         {booking.room_images && booking.room_images.length > 0 && (
-          <div className="mt-4 grid grid-cols-3 gap-2">
+          <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
             {booking.room_images.map((img, idx) => (
               <img
                 key={idx}
                 src={img}
-                alt={`${booking.name_en ?? "room"} - ${idx + 1}`}
-                className="w-full h-28 object-cover rounded"
+                alt={`${booking.name_en ?? "Room"} ${idx + 1}`}
+                className="w-full h-28 object-cover rounded-lg shadow-sm"
               />
             ))}
           </div>
         )}
-      </section>
-
-      <section className="text-sm text-gray-600">
-        <h3 className="font-semibold mb-2">Raw / advanced info</h3>
-        <pre className="bg-gray-50 p-3 rounded text-xs overflow-auto">
-          {JSON.stringify(booking, null, 2)}
-        </pre>
-      </section>
+      </div>
     </main>
   );
 }

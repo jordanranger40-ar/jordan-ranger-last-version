@@ -244,13 +244,102 @@ export type newCareer = {
   created_at?: Date;
 };
 
+export type RoomBookingWithDetails = {
+  id?: string;
+  start_time: Date;
+  end_time: Date;
+  created_at: Date;
+  is_confirmed: boolean;
+  is_deleted: boolean;
+  user_id: string;
+  first_name: string;
+  last_name?: string;
+  email: string;
+  room_id: string;
+  name_en: string;
+  description_en: string;
+  name_ar: string;
+  description_ar: string;
+  cover_image: string;
+  price: number;
+  room_images: string[];
+  room_type_en: string;
+  room_type_ar: string;
+  booking_price:number;
+  slug: string;
+};
+
+export type ActivityBookingWithDetails= {
+
+  id: string; // training_booking id
+  is_confirmed: boolean;
+  is_deleted: boolean;
+  created_at: Date;
+  quantity: number;
+  
+  start_time: Date;
+  end_time: Date;
+booking_price:Number;
+  activity_id?: string;
+  name_en: string;
+  name_ar: string;
+  description_en: string;
+  description_ar: string;
+  location_type_en: string;
+  location_type_ar: string;
+  card_image: string;
+  poster_image: string;
+  header_image: string;
+  capacity: number;
+  activity_price: number;
+  slug: string;
+
+  //user Deatils
+  
+  user_id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+
+
+}
+
+export type TrainingBookingWithDetails = {
+  id: string; // training_booking id
+  training_id: string;
+  is_confirmed: boolean;
+  is_deleted: boolean;
+  created_at: Date;
+  quantity: number;
+  price: number;
+
+  user_id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+
+  // Training details
+  name_en: string;
+  description_en: string;
+  name_ar: string;
+  description_ar: string;
+  image: string;
+  category_en: string;
+  category_ar: string;
+  capacity: number;
+  training_price: number;
+  start_date: Date;
+  end_date: Date;
+  slug: string;
+};
+
 export type roomFeatures = {
   id?: string;
   feature_title_en: string;
   feature_description_en: string;
   feature_title_ar: string;
   feature_description_ar: string;
-  room_id: string;
+  room_id?: string;
 };
 
 export type newRoom = {
@@ -263,7 +352,7 @@ export type newRoom = {
   price: number;
   room_images: string[];
   is_deleted?: boolean;
-  features: roomFeatures[];
+  roomFeatures: roomFeatures[];
   room_type_en: string;
   room_type_ar: string;
   slug: string;
@@ -300,6 +389,13 @@ export type newBooking = {
   user_id: string;
   room_id: string;
   price: number;
+};
+
+export type userDetails = {
+  id?: string;
+  email: string;
+  role: string;
+  first_name: string;
 };
 
 export type newActivity = {

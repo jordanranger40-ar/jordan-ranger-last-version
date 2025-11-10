@@ -72,13 +72,12 @@ export default function CreateRoomForm({ action }: Props) {
       });
       setErrors(fieldErrors);
       setToast({
-        message: "Please fix the highlighted fields.",
+        message: "Please fill the highlighted fields.",
         type: "error",
       });
       setTimeout(() => setToast(null), 3000);
       return;
     }
-    console.log("form.roomFeatures: ", form.roomFeatures);
 
     setErrors({});
     startTransition(async () => {
@@ -88,7 +87,7 @@ export default function CreateRoomForm({ action }: Props) {
         setTimeout(() => {
           setToast(null);
           router.push("/admin/dashboard/rooms");
-        }, 1500);
+        }, 200);
       } catch (error) {
         console.error(error);
         setToast({ message: "Failed to update Room.", type: "error" });
@@ -353,7 +352,7 @@ export default function CreateRoomForm({ action }: Props) {
                   className="px-5 py-2 rounded-md bg-[#676e32] text-white cursor-pointer hover:bg-[#7b8444] transition"
                   disabled={isPending}
                 >
-                  {isPending ? "Updating..." : "Save Changes"}
+                  {isPending ? "Adding..." : "Add Room"}
                 </button>
               </div>
             </div>

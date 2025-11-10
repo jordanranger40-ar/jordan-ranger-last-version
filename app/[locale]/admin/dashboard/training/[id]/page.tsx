@@ -4,8 +4,8 @@ import EditTrainingForm from "@/components/training/editTrainingForm";
 import { getTrainingById } from "@/app/models/db/lib/services/training";
 async function page(prop: { params: Promise<{ id: string }> }) {
   const params = await prop.params;
-  const training = await getTrainingById(params.id);
-  console.log("category: ",training);
+  const training = (await getTrainingById(params.id)).data;
+  console.log("training: ",training);
   
 
   return (

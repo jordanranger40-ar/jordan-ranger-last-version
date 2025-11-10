@@ -1,6 +1,6 @@
 "use server"
 import { authOptions } from "@/app/models/db/authOptions";
-import { newRoom, roomFeatures } from "@/types";
+import { newRoom } from "@/types";
 import { getServerSession } from "next-auth";
 import { revalidatePath } from "next/cache";
 

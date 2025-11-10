@@ -1,4 +1,4 @@
-import { type newBooking, type newRoom } from "@/types/index";
+import { RoomBookingWithDetails, type newBooking, type newRoom } from "@/types/index";
 import pool from "../index";
 import { createCart, updateCartTotalAmount } from "./cart";
 import {
@@ -138,7 +138,7 @@ export const getAllbookingsByRoomId = async (id: string) => {
 };
 
 export const getBookingById = async (id: string) => {
-  const result = await pool.query<newBooking>(
+  const result = await pool.query<RoomBookingWithDetails>(
     `SELECT 
       rb.id AS id,
       rb.start_time,
@@ -160,7 +160,8 @@ export const getBookingById = async (id: string) => {
       r.room_images,
       r.room_type_en,
       r.room_type_ar,
-      r.slug
+      r.slug,
+      rb.price as booking_price
     FROM room_booking rb
     JOIN users u ON rb.user_id = u.id
     JOIN rooms r ON rb.room_id = r.id

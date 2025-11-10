@@ -2,43 +2,54 @@
 
 import React from "react";
 import Image from "next/image";
-import type {newRoom} from "@/types/index";
+import type { newRoom } from "@/types/index";
 import Link from "next/link";
 
 interface CardProps {
-  data:newRoom ;
-
+  data: newRoom;
+  isArabic: boolean;
 }
 
-const FlippingCard: React.FC<CardProps> = ({ data }) => {
+const FlippingCard: React.FC<CardProps> = ({ data, isArabic }: CardProps) => {
   return (
-    <div className="relative mx-auto w-full max-w-sm rounded-3xl border border-zinc-200 bg-white p-4 ring-4 ring-zinc-300/25 sm:p-6">
+    <div
+      dir={isArabic ? "rtl" : "ltr"}
+      className="relative mx-auto w-full max-w-sm rounded-3xl border border-zinc-200 bg-white p-4 ring-4 ring-zinc-300/25 sm:p-6"
+    >
       <div className="flex flex-col gap-4">
-        {/* Property Image */}
+        {/* صورة الغرفة */}
         <div className="relative overflow-hidden rounded-2xl">
           <img
             src={data.room_images[0]}
-            alt="Modern apartment with city view"
+            alt={isArabic ? data.name_ar : data.name_en}
             width={500}
             height={375}
             className="aspect-[4/3] w-full bg-zinc-600 object-cover"
           />
 
-     
-
-          {/* Property Badge */}
-          <div className="absolute bottom-4 left-4">
+          {/* شارة المميز */}
+          <div
+            className={`absolute bottom-4 ${
+              isArabic ? "right-4" : "left-4"
+            }`}
+          >
             <span className="inline-flex items-center rounded-full bg-[#676e32] px-3 py-1 text-xs font-medium text-white">
-              Superhost
+              {isArabic ? "المميز" : "Superhost"}
             </span>
           </div>
         </div>
 
-        {/* Property Details */}
+        {/* تفاصيل الغرفة */}
         <div>
-          {/* Location & Rating */}
-          <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-zinc-900">{data.name_en}</h3>
+          {/* الاسم والتقييم */}
+          <div
+            className={`flex items-center justify-between ${
+              isArabic ? "flex-row-reverse" : "flex-row"
+            }`}
+          >
+            <h3 className="font-semibold text-zinc-900">
+              {isArabic ? data.name_ar : data.name_en}
+            </h3>
             <div className="flex items-center gap-1">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -56,17 +67,33 @@ const FlippingCard: React.FC<CardProps> = ({ data }) => {
             </div>
           </div>
 
-      
-          <p className="text-sm font-medium text-zinc-600">{data.description_en}</p>
+          {/* الوصف */}
+          <p className="text-sm font-medium text-zinc-600">
+            {isArabic ? data.description_ar : data.description_en}
+          </p>
 
-          <div className="mt-5 flex items-center justify-between gap-4">
-   
-            <div className="flex items-baseline space-x-1">
-              <span className="text-lg font-semibold text-zinc-900">{data.price } jd</span>
-              <span className="text-sm text-zinc-600">/night</span>
+          {/* السعر والتواريخ */}
+          <div
+            className={`mt-5 flex items-center justify-between gap-4 ${
+              isArabic ? "flex-row-reverse" : "flex-row"
+            }`}
+          >
+            <div
+              className={`flex items-baseline ${
+                isArabic ? "space-x-reverse space-x-1" : "space-x-1"
+              }`}
+            >
+              <span className="text-lg font-semibold text-zinc-900">
+                {data.price} {isArabic ? "د.ا" : "JD"}
+              </span>
+              <span className="text-sm text-zinc-600">
+                / {isArabic ? "الليلة" : "night"}
+              </span>
             </div>
 
-            <p className="text-sm text-zinc-600">Dec 15 – 20</p>
+            <p className="text-sm text-zinc-600">
+              {isArabic ? "15 – 20 ديسمبر" : "Dec 15 – 20"}
+            </p>
           </div>
         </div>
       </div>

@@ -8,6 +8,7 @@ import {
   useReactTable,
   VisibilityState,
   SortingState,
+  RowData,
 } from "@tanstack/react-table";
 import DeleteButton from "@/components/deleteButton";
 import { useState } from "react";
@@ -36,6 +37,12 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+declare module "@tanstack/react-table" {
+  interface ColumnMeta<TData extends RowData, TValue> {
+    hiddenByDefault?: boolean;
+  }
+}
+
 interface DataTableProps<TData> {
   columns: ColumnDef<TData>[];
   data: TData[];
@@ -49,10 +56,22 @@ export function DataTable<TData>({
   routeName,
   deleteAction,
 }: DataTableProps<TData>) {
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const initialVisibility: VisibilityState = Object.fromEntries(
+    columns.map((col) => {
+      const key =
+        col.id ??
+        (col as { accessorKey?: string }).accessorKey ??
+        undefined;
+      if (!key) return [];
+      return [key, col.meta?.hiddenByDefault ? false : true];
+    }).filter((entry): entry is [string, boolean] => entry.length === 2)
+  );
+
+  const [columnVisibility, setColumnVisibility] =
+    useState<VisibilityState>(initialVisibility);
   const [sorting, setSorting] = useState<SortingState>([]);
   const router = useRouter();
-  // Add generic Actions column at the end
+
   const columnsWithActions: ColumnDef<TData>[] = [
     ...columns,
     {
@@ -82,12 +101,15 @@ export function DataTable<TData>({
   const table = useReactTable({
     data,
     columns: columnsWithActions,
-    state: { columnVisibility, sorting },
+    state: {
+      columnVisibility,
+      sorting,
+    },
     onColumnVisibilityChange: setColumnVisibility,
+    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: setSorting,
   });
 
   return (
@@ -112,7 +134,7 @@ export function DataTable<TData>({
                   checked={column.getIsVisible()}
                   onCheckedChange={(value) => column.toggleVisibility(!!value)}
                 >
-                  {column.id}
+                  { column.id}
                 </DropdownMenuCheckboxItem>
               ))}
           </DropdownMenuContent>
@@ -173,6 +195,7 @@ export function DataTable<TData>({
           </TableBody>
         </Table>
       </div>
+
       {/* === Pagination === */}
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex items-center space-x-2">

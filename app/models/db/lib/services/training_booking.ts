@@ -1,4 +1,4 @@
-import { type newTraining, type newTrainingBooking } from "@/types/index";
+import { TrainingBookingWithDetails, type newTraining, type newTrainingBooking } from "@/types/index";
 import pool from "../index";
 import { createCart, updateCartTotalAmount } from "./cart";
 import {
@@ -91,8 +91,35 @@ export const bookATraining = async (data: newTrainingBooking) => {
 };
 
 export const getAllTrainingsbookings = async () => {
-  const result = await pool.query<newTrainingBooking>(
-    "select * from training_booking"
+  const result = await pool.query<TrainingBookingWithDetails>(
+    `SELECT 
+      tb.id AS id,
+      tb.training_id,
+      tb.is_confirmed,
+      tb.is_deleted,
+      tb.created_at,
+      tb.quantity,
+      tb.price,
+      u.id AS user_id,
+      u.first_name,
+      u.last_name,
+      u.email,
+      t.id AS training_id,
+      t.name_en,
+      t.description_en,
+      t.name_ar,
+      t.description_ar,
+      t.image,
+      t.category_en,
+      t.category_ar,
+      t.capacity,
+      t.price AS training_price,
+      t.start_date,
+      t.end_date,
+      t.slug
+    FROM training_booking tb
+    JOIN users u ON tb.user_id = u.id
+    JOIN training t ON tb.training_id = t.id`,
   );
 
   return {
@@ -116,24 +143,45 @@ export const getAllbookingsByTrainingId = async (id: string) => {
 
 export const getTrainingBookingById = async (id: string) => {
   const result = await pool.query<newTrainingBooking>(
-    "select * from training_booking where id=$1 ",
+    `SELECT 
+      tb.id AS id,
+      tb.training_id,
+      tb.is_confirmed,
+      tb.is_deleted,
+      tb.created_at,
+      tb.quantity,
+      tb.price,
+      u.id AS user_id,
+      u.first_name,
+      u.last_name,
+      u.email,
+      t.id AS training_id,
+      t.name_en,
+      t.description_en,
+      t.name_ar,
+      t.description_ar,
+      t.image,
+      t.category_en,
+      t.category_ar,
+      t.capacity,
+      t.price AS training_price,
+      t.start_date,
+      t.end_date,
+      t.slug
+    FROM training_booking tb
+    JOIN users u ON tb.user_id = u.id
+    JOIN training t ON tb.training_id = t.id
+    WHERE tb.is_deleted = false AND tb.id = $1`,
     [id]
   );
 
-  if (result.rows.length === 0) {
-    return {
-      data: result.rows,
-      message: "No Booking with this id",
-      status: 409,
-    };
-  } else {
-    return {
-      data: result.rows,
-      message: "The Booking for this id",
-      status: 200,
-    };
-  }
+  return {
+    data: result.rows[0],
+    message: "Training booking retrieved successfully",
+    status: 200,
+  };
 };
+
 
 export const deleteTrainingBookingById = async (id: string) => {
   const client = await pool.connect();
@@ -276,3 +324,6 @@ export const editTrainingBookingById = async (
     client.release();
   }
 };
+
+
+

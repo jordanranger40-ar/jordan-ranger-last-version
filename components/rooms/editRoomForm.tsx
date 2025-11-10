@@ -13,9 +13,6 @@ import {
 } from "@/components/ui/card";
 import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { features } from "process";
-import { log } from "console";
-
 interface Props {
   room: newRoom;
   action: (data: newRoom) => Promise<void>;

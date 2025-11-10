@@ -1,8 +1,9 @@
-import {NextConfig} from 'next';
-import createNextIntlPlugin from 'next-intl/plugin';
- 
+import { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
+
 const nextConfig: NextConfig = {
-    images: {
+  images: {
+    domains: ["plus.unsplash.com", "www.shutterstock.com"],
     remotePatterns: [
       {
         protocol: "https",
@@ -11,6 +12,6 @@ const nextConfig: NextConfig = {
     ],
   },
 };
- 
+
 const withNextIntl = createNextIntlPlugin();
 export default withNextIntl(nextConfig);

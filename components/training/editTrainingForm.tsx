@@ -1,5 +1,9 @@
 "use client";
-import { newCategory, newTraining } from "@/types";
+
+import React, { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { newTrainingSchema } from "@/app/models/db/lib/schemas/trainingSchema";
+import { newTraining } from "@/types";
 import ImageUploader from "@/components/imageUpload";
 import {
   Card,
@@ -8,57 +12,100 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import React, { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-interface prop {
+
+interface Props {
   training: newTraining;
   action: (data: newTraining) => Promise<void>;
 }
-function editCategoryForm({ training, action }: prop) {
+
+export default function EditTrainingForm({ training, action }: Props) {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+
   const [form, setForm] = useState<newTraining>({
     id: training.id ?? "",
+    slug: training.slug ?? "",
     name_en: training.name_en ?? "",
-    name_ar: training.name_ar,
+    name_ar: training.name_ar ?? "",
     description_en: training.description_en ?? "",
     description_ar: training.description_ar ?? "",
+    category_en: training.category_en ?? "",
+    category_ar: training.category_ar ?? "",
+    start_date: training.start_date ? new Date(training.start_date) : new Date(),
+    end_date: training.end_date ? new Date(training.end_date) : new Date(),
+    price: training.price ?? 0,
+    capacity: training.capacity ?? 0,
+    image: training.image ?? "",
+    is_deleted: training.is_deleted ?? false,
   });
-  const [isPending, startTransition] = useTransition();
-  const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    setForm((prev) => {
+      const updated = { ...prev, [name]: value };
+
+      if (name === "name_en") {
+        updated.slug = value
+          .toLowerCase()
+          .replace(/&/g, "and")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "");
+      }
+
+      return updated;
+    });
   };
 
   const handleFormSubmit = () => {
+    const validation = newTrainingSchema.safeParse(form);
+
+    if (!validation.success) {
+      const fieldErrors: Record<string, string> = {};
+      validation.error.issues.forEach((err) => {
+        fieldErrors[err.path[0] as string] = err.message;
+      });
+      setErrors(fieldErrors);
+      setToast({ message: "Please fill the highlighted fields.", type: "error" });
+      setTimeout(() => setToast(null), 3000);
+      return;
+    }
+
+    setErrors({});
     startTransition(async () => {
       try {
         await action(form);
-        setToast({
-          message: "Training updated successfully!",
-          type: "success",
-        });
+        setToast({ message: "Training updated successfully!", type: "success" });
         setTimeout(() => {
           setToast(null);
-          router.replace("/admin/dashboard/training");
-        }, 1500);
+          router.push("/admin/dashboard/training");
+        }, 200);
       } catch (error) {
         console.error(error);
-        setToast({ message: "Failed to update Training.", type: "error" });
+        setToast({ message: "Failed to update training.", type: "error" });
         setTimeout(() => setToast(null), 3000);
       }
     });
   };
+
+  const handleUploadComplete = (url: string) => {
+    setForm({ ...form, image: url });
+  };
+
+  const handleImageDelete = () => {
+    setForm({ ...form, image: "" });
+  };
+
   return (
-    <main className="ml-3 xl:ml-7 mb-7">
-      <div className="flex flex-col justify-start items-start border-b border-gray-500 w-[70vw] mb-7">
-        <h1 className="text-lg md:text-2xl font-bold">Edit Training</h1>
-        <p className="text-xs md:text-base text-gray-600">ID: {training.id}</p>
+    <main className="ml-3 xl:ml-7 mb-10 text-gray-800">
+      <div className="flex flex-col border-b border-gray-300 pb-3 w-[65vw] mb-8">
+        <h1 className="text-2xl font-semibold text-[#676e32]">Edit Training</h1>
+        <p className="text-sm text-gray-500">ID: {training.id}</p>
       </div>
 
       <form
@@ -66,87 +113,192 @@ function editCategoryForm({ training, action }: prop) {
           e.preventDefault();
           handleFormSubmit();
         }}
-        className="h-full w-full lg:w-[70vw] flex flex-col gap-5"
+        className="h-full w-full lg:w-[65vw] flex flex-col gap-6"
       >
-        <Card className="w-full h-full">
+        <Card className="w-full shadow-md hover:shadow-lg transition-all duration-300">
           <CardHeader>
-            <CardTitle>Edit Training Details</CardTitle>
-            <CardDescription>
-              Fill out the required fields below to update your Training.
-            </CardDescription>
+            <CardTitle className="text-[#676e32]">Training Details</CardTitle>
+            <CardDescription>Update the training information below.</CardDescription>
           </CardHeader>
 
-          <CardContent className="flex flex-col items-start gap-5 mb-7">
-            <div className="flex flex-col lg:flex lg:flex-row lg:justify-start gap-7 ">
-              <div className="flex flex-col">
-                <label className="text-base text-black mb-1">
-                  <span className="text-red-500 text-sm">*</span> English Name
+          <CardContent className="flex flex-col gap-6 mb-7">
+            {/* Slug */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="flex flex-col md:w-[90%]">
+                <label className="text-sm font-medium text-gray-700 mb-1">
+                  Slug (Auto Generated)
                 </label>
                 <input
                   type="text"
-                  name="name_en"
-                  value={form.name_en}
-                  onChange={handleInputChange}
-                  className="border px-2 py-1 rounded border-black bg-white w-[80vw] md:w-[75vw] lg:w-[55vw] xl:w-[19vw] h-[5vh] text-black"
-                  required
-                />
-              </div>
-              <div className="flex flex-col">
-                <label className="text-base text-black mb-1">
-                  <span className="text-red-500 text-sm">*</span> Arabic Name
-                </label>
-                <input
-                  type="text"
-                  name="name_ar"
-                  value={form.name_ar}
-                  onChange={handleInputChange}
-                  className="border px-2 py-1 rounded border-black bg-white w-[80vw] md:w-[75vw] lg:w-[55vw] xl:w-[19vw] h-[5vh] text-black"
-                  required
+                  name="slug"
+                  value={form.slug}
+                  readOnly
+                  className="border border-gray-300 px-3 py-2 rounded-md bg-gray-100 text-gray-800 cursor-not-allowed"
                 />
               </div>
             </div>
 
-            <div className="flex flex-col">
-              <label className="text-base text-black mb-1">
-                <span className="text-red-500 text-sm">*</span> English
-                Description
+            {/* Names */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[
+                { label: "English Name", name: "name_en", value: form.name_en },
+                { label: "Arabic Name", name: "name_ar", value: form.name_ar },
+              ].map((field) => (
+                <div key={field.name} className="flex flex-col md:w-[90%]">
+                  <label className="text-sm font-medium text-gray-700 mb-1">
+                    <span className="text-red-500">*</span> {field.label}
+                  </label>
+                  <input
+                    type="text"
+                    name={field.name}
+                    value={field.value}
+                    onChange={handleInputChange}
+                    className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
+                  />
+                  {errors[field.name] && (
+                    <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Category (Select Inputs) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="flex flex-col md:w-[90%]">
+                <label className="text-sm font-medium text-gray-700 mb-1">
+                  <span className="text-red-500">*</span> English Category
+                </label>
+                <select
+                  name="category_en"
+                  value={form.category_en}
+                  onChange={handleInputChange}
+                  className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
+                >
+                  <option value="">Select a category</option>
+                  <option value="Schools Training">Schools Training</option>
+                  <option value="Corporate Team Building">Corporate Team Building</option>
+                </select>
+                {errors.category_en && (
+                  <p className="text-red-500 text-sm mt-1">{errors.category_en}</p>
+                )}
+              </div>
+
+              <div className="flex flex-col md:w-[90%]">
+                <label className="text-sm font-medium text-gray-700 mb-1">
+                  <span className="text-red-500">*</span> Arabic Category
+                </label>
+                <select
+                  name="category_ar"
+                  value={form.category_ar}
+                  onChange={handleInputChange}
+                  className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
+                >
+                  <option value="">اختر الفئة</option>
+                  <option value="تدريب المدارس">تدريب المدارس</option>
+                  <option value="بناء فرق الشركات">بناء فرق الشركات</option>
+                </select>
+                {errors.category_ar && (
+                  <p className="text-red-500 text-sm mt-1">{errors.category_ar}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Dates */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[ 
+                { label: "Start Date", name: "start_date", value: form.start_date },
+                { label: "End Date", name: "end_date", value: form.end_date },
+              ].map((field) => (
+                <div key={field.name} className="flex flex-col md:w-[90%]">
+                  <label className="text-sm font-medium text-gray-700 mb-1">
+                    <span className="text-red-500">*</span> {field.label}
+                  </label>
+                  <input
+                    type="date"
+                    name={field.name}
+                    value={new Date(field.value).toISOString().split("T")[0]}
+                    onChange={(e) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        [field.name]: new Date(e.target.value),
+                      }))
+                    }
+                    className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Price & Capacity */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[ 
+                { label: "Price", name: "price", value: form.price, type: "number" },
+                { label: "Capacity", name: "capacity", value: form.capacity, type: "number" },
+              ].map((field) => (
+                <div key={field.name} className="flex flex-col md:w-[90%]">
+                  <label className="text-sm font-medium text-gray-700 mb-1">
+                    <span className="text-red-500">*</span> {field.label}
+                  </label>
+                  <input
+                    type={field.type}
+                    name={field.name}
+                    value={field.value}
+                    onChange={handleInputChange}
+                    className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Descriptions */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[ 
+                { label: "English Description", name: "description_en", value: form.description_en },
+                { label: "Arabic Description", name: "description_ar", value: form.description_ar },
+              ].map((field) => (
+                <div key={field.name} className="flex flex-col md:w-[90%]">
+                  <label className="text-sm font-medium text-gray-700 mb-1">
+                    <span className="text-red-500">*</span> {field.label}
+                  </label>
+                  <textarea
+                    name={field.name}
+                    value={field.value}
+                    onChange={handleInputChange}
+                    className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 h-[12vh] resize-none focus:outline-none focus:ring-2 focus:ring-[#676e32]"
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Image Upload */}
+            <div className="flex flex-col md:w-[60%]">
+              <label className="text-base text-black mb-2">
+                <span className="text-red-500">*</span> Training Image
               </label>
-              <textarea
-                name="description_en"
-                value={form.description_en}
-                onChange={handleInputChange}
-                className="border px-2 py-1 rounded border-black bg-white w-[80vw] md:w-[75vw] lg:w-[65vw] xl:w-[40vw] h-[15vh] text-black"
-                required
+              <ImageUploader
+                endpoint="courses"
+                initialImageUrl={form.image ?? ""}
+                onUploadComplete={handleUploadComplete}
+                onUploadError={(e) =>
+                  setToast({ message: e.message, type: "error" })
+                }
+                onDelete={handleImageDelete}
               />
             </div>
 
-            <div className="flex flex-col">
-              <label className="text-base text-black mb-1">
-                <span className="text-red-500 text-sm">*</span> Arabic
-                Description
-              </label>
-              <textarea
-                name="description_ar"
-                value={form.description_ar}
-                onChange={handleInputChange}
-                className="border px-2 py-1 rounded border-black bg-white w-[80vw] md:w-[75vw] lg:w-[65vw] xl:w-[40vw] h-[15vh] text-black"
-                required
-              />
-            </div>
-            <div className="w-full flex justify-center mt-5 ">
-              <div className="flex flex-row gap-3">
+            {/* Buttons */}
+            <div className="flex justify-center mt-8">
+              <div className="flex gap-4">
                 <button
                   type="button"
-                  className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
-                  onClick={() => {
-                    router.replace("/admin/dashboard/banners");
-                  }}
+                  className="px-5 py-2 rounded-md border border-gray-400 cursor-pointer text-gray-700 hover:bg-gray-100 transition"
+                  onClick={() => router.replace("/admin/dashboard/training")}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-[#125892] text-white px-4 py-2 rounded-md cursor-pointer hover:bg-[#0f4473]"
+                  className="px-5 py-2 rounded-md bg-[#676e32] text-white cursor-pointer hover:bg-[#7b8444] transition"
                   disabled={isPending}
                 >
                   {isPending ? "Updating..." : "Save Changes"}
@@ -157,11 +309,12 @@ function editCategoryForm({ training, action }: prop) {
         </Card>
       </form>
 
+      {/* Toast */}
       {toast && (
         <div
-          className={`fixed bottom-5 right-5 z-50 px-5 py-3 rounded-lg shadow-lg text-white font-medium transition-all duration-300 ${
-            toast.type === "success" ? "bg-green-600" : "bg-red-600"
-          }`}
+          className={`fixed bottom-5 right-5 z-50 px-5 py-3 rounded-lg shadow-lg text-white font-medium transition-all duration-500 transform ${
+            toast ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"
+          } ${toast.type === "success" ? "bg-[#676e32]" : "bg-red-600"}`}
         >
           {toast.message}
         </div>
@@ -169,5 +322,3 @@ function editCategoryForm({ training, action }: prop) {
     </main>
   );
 }
-
-export default editCategoryForm;

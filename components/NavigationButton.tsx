@@ -24,7 +24,7 @@ export default function NavigationButton({ routeName, value }: NavigationButtonP
   return (
     <button
       onClick={handleClick}
-      className="px-5 py-2 bg-[#676e32] text-white font-medium rounded-md cursor-pointer hover:bg-[#7b8444] transition"
+      className="px-5 py-2 bg-[#676e32] text-white mb-20 font-medium rounded-md cursor-pointer hover:bg-[#7b8444] transition"
     >
       {value}
     </button>

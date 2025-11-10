@@ -10,10 +10,10 @@ export const ourFileRouter = {
     return { uploadedUrl: file.url };
   }),
 
-  consulting: f({
+  rooms: f({
     image: { maxFileSize: "2MB", maxFileCount: 5 },
   }).onUploadComplete(async ({ file }) => {
-    console.log("Consulting Upload Complete:", file.url);
+    console.log("Room Upload Complete:", file.url);
     return { uploadedUrl: file.url };
   }),
 
