@@ -11,14 +11,12 @@ export default async function RoomsAndTents({ isArabic }: Props) {
   const rooms = await getRoomsByRoomType("cabins");
 
   return (
-    <section className="w-full my-20 bg-[#f1f1f1] py-14">
+    <section className="w-full  ">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold text-[#515151] mb-4">
-            {isArabic ? "اكتشف كبائننا المميزة" : "Discover Our Unique Cabins"}
-          </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto text-sm sm:text-base">
+         
+          <p className="text-gray-900 max-w-2xl mx-auto text-sm sm:text-lg">
             {isArabic
               ? "استمتع بتجربة إقامة فريدة وسط الطبيعة، مع كل ما تحتاجه من راحة وخصوصية."
               : "Enjoy a unique stay amidst nature, with all the comfort and privacy you need."}

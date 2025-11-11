@@ -31,6 +31,8 @@ export const bookAnActivity = async (data: newActivityBooking) => {
       [data.activity_id]
     );
 
+    console.log("capacityOfTheActivity.rows[0]: ",data);
+    
     const totalBooked = numberOfBooking.rows[0].total_booked;
     const capacity = capacityOfTheActivity.rows[0].capacity;
     const activityPrice = capacityOfTheActivity.rows[0].price;
@@ -64,7 +66,7 @@ export const bookAnActivity = async (data: newActivityBooking) => {
         ]
       );
 
-      const cart = await createCart(data.user_id, client);
+      const cart = await createCart(data.user_id??"", client);
       await addNewItem(
         {
           cart_id: cart.id ?? "",
@@ -92,7 +94,7 @@ export const bookAnActivity = async (data: newActivityBooking) => {
       };
     }
   } catch (error) {
-    await client.query("ROLLBACK"); // undo changes if something fails
+    await client.query("ROLLBACK"); 
     console.error("Error in Adding activity booking:", error);
     throw error;
   } finally {
@@ -218,7 +220,7 @@ export const deleteActivityBookingById = async (id: string) => {
       [id]
     );
 
-    const cartDetails = await createCart(result.rows[0].user_id, client); // get the cart id, note that there is already a cart for this costumer, so we will not create new one
+    const cartDetails = await createCart(result.rows[0].user_id??"", client); // get the cart id, note that there is already a cart for this costumer, so we will not create new one
     await removeCartItemByBookingId(result.rows[0].id ?? "", client);
     await updateCartTotalAmount(
       {
@@ -320,7 +322,7 @@ export const editActivityBookingById = async (
       ]
     );
 
-    const cart = await createCart(result.rows[0].user_id, client);
+    const cart = await createCart(result.rows[0].user_id??"", client);
     await editCartItemByBookingId(
       {
         booking_id: result.rows[0].id ?? "",
@@ -371,7 +373,7 @@ export const checkAvailableActivities = async (
   );
 
   if (activityCapacity.rows[0].capacity === 0) {
-    await client.query("ROlLBACK");
+    await client.query("ROLLBACK");
     return { data: null, message: "Activity Is Not Available", status: 409 };
   } else {
     const numberOfBooking = await client.query<{
@@ -386,7 +388,7 @@ export const checkAvailableActivities = async (
     const isAvailable =
       Number(activityCapacity.rows[0].capacity) - Number(totalBooking);
     if (isAvailable === 0) {
-          await client.query("ROlLBACK");
+          await client.query("ROLLBACK");
 
       return { data: null, message: "Activity Is Not Available", status: 409 };
     } else {
@@ -400,7 +402,7 @@ export const checkAvailableActivities = async (
     }
   }
   } catch (error) {
-    await client.query("ROlLBACK");
+    await client.query("ROLLBACK");
     console.log("Error In Checking The Availability");
     
   }finally{

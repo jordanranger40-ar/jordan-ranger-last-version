@@ -1,9 +1,7 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import type { newRoom } from "@/types/index";
-import Link from "next/link";
 
 interface CardProps {
   data: newRoom;
@@ -14,11 +12,14 @@ const FlippingCard: React.FC<CardProps> = ({ data, isArabic }: CardProps) => {
   return (
     <div
       dir={isArabic ? "rtl" : "ltr"}
-      className="relative mx-auto w-full max-w-sm rounded-3xl border border-zinc-200 bg-white p-4 ring-4 ring-zinc-300/25 sm:p-6"
+      className="relative mx-auto w-full max-w-sm rounded-[2rem_0.5rem_2rem_0.5rem] border border-zinc-200 bg-white p-4 ring-4 ring-zinc-300/25 sm:p-6 overflow-hidden transform-gpu transition-transform duration-500 hover:scale-105 hover:rotate-1"
+      style={{
+        boxShadow: "0 6px 20px rgba(0,0,0,0.25)",
+      }}
     >
       <div className="flex flex-col gap-4">
         {/* صورة الغرفة */}
-        <div className="relative overflow-hidden rounded-2xl">
+        <div className="relative overflow-hidden rounded-[2rem_0.5rem_2rem_0.5rem]">
           <img
             src={data.room_images[0]}
             alt={isArabic ? data.name_ar : data.name_en}
@@ -28,11 +29,7 @@ const FlippingCard: React.FC<CardProps> = ({ data, isArabic }: CardProps) => {
           />
 
           {/* شارة المميز */}
-          <div
-            className={`absolute bottom-4 ${
-              isArabic ? "right-4" : "left-4"
-            }`}
-          >
+          <div className={`absolute bottom-4 ${isArabic ? "right-4" : "left-4"}`}>
             <span className="inline-flex items-center rounded-full bg-[#676e32] px-3 py-1 text-xs font-medium text-white">
               {isArabic ? "المميز" : "Superhost"}
             </span>
@@ -55,7 +52,7 @@ const FlippingCard: React.FC<CardProps> = ({ data, isArabic }: CardProps) => {
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 16 16"
                 fill="currentColor"
-                className="inline-block size-4 text-[#676e32]"
+                className="inline-block w-4 h-4 text-[#676e32]"
               >
                 <path
                   fillRule="evenodd"
@@ -96,6 +93,13 @@ const FlippingCard: React.FC<CardProps> = ({ data, isArabic }: CardProps) => {
             </p>
           </div>
         </div>
+      </div>
+
+      {/* shine subtle عند hover */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div
+          className="absolute top-0 left-0 w-full h-full bg-gradient-to-tr from-white/0 via-white/10 to-white/0 opacity-0 transition duration-500 rounded-[2rem_0.5rem_2rem_0.5rem] hover:opacity-40"
+        />
       </div>
     </div>
   );

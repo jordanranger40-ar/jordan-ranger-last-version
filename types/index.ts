@@ -418,12 +418,13 @@ export type newActivityBooking = {
   id?: string;
   start_time: Date;
   end_time: Date;
-  created_at: Date;
-  is_confirmed: boolean;
-  user_id: string;
-  activity_id: string;
+  created_at?: Date;
+  is_confirmed?: boolean;
+  user_id?: string;
+  activity_id?: string;
   quantity: number;
   price: number;
+  
 };
 
 export type updateActivityBooking = {
