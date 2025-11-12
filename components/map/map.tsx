@@ -72,7 +72,7 @@ export default function JerashDarkMap({ isArabic }: { isArabic: boolean }) {
 
   return (
     <div>
-      <section className="relative w-full mt-40 py-20">
+      <section className="relative w-full mt-20 py-20">
         <div className="max-w-6xl mx-auto px-6 text-center mb-12">
           <h2 className="text-3xl font-bold text-[#484d23] mb-4">
             {isArabic ? "موقعنا على الخريطة" : "Find Us on the Map"}

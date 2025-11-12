@@ -1,5 +1,6 @@
 import { getRoomBySlug } from "@/app/models/db/lib/services/rooms";
 import { roomFeatures } from "@/types";
+import Link from "next/link";
 
 interface PageProps {
   params: { locale: string; slug: string | string[] };
@@ -61,9 +62,11 @@ export default async function Page({ params }: PageProps) {
             <span className="text-4xl font-extrabold text-[#676e32]">{data.price}</span>
             <span className="text-gray-500 text-lg">{isArabic ? "د.ا / الليلة" : "JOD / night"}</span>
           </div>
-          <button className="mt-6 px-12 py-4 bg-[#676e32] text-white text-lg font-semibold rounded-full shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300">
-            {isArabic ? "احجز هذه الغرفة" : "Reserve This Room"}
-          </button>
+         
+          
+            <Link href={`/roomsBooking/${data.id}`} className="w-full h-full"><button  className="mt-6 px-12 py-4 bg-[#676e32] text-white text-lg font-semibold rounded-full shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300"> {isArabic ? "احجز هذه الغرفة" : "Reserve This Room" }</button></Link>
+          
+         
         </div>
 
         <div className="flex-1">

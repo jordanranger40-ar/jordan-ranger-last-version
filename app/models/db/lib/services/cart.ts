@@ -26,7 +26,7 @@ export const getCartByUserId = async (userId: string) => {
     "SELECT * FROM cart INNER JOIN cart_items ON cart.id = cart_items.cart_id where user_id= $1 ",
     [userId]
   );
-  return { data: result, message: "All Cart Details", status: 200 };
+  return { data: result.rows, message: "All Cart Details", status: 200 };
 };
 
 export const updateCartTotalAmount = async (

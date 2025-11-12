@@ -25,7 +25,7 @@ export default function BookingConfirmation({
   continueButton
 }: BookingConfirmationProps) {
   // calculate duration
-  
+  console.log("pricew: ",price);
   const durationMs = new Date(end).getTime() - new Date(start).getTime();
   const hours = Math.floor(durationMs / (1000 * 60 * 60));
   const days = Math.floor(hours / 24);
@@ -35,8 +35,13 @@ export default function BookingConfirmation({
       ? `${days} day${days > 1 ? "s" : ""}${remHours ? ` ${remHours}h` : ""}`
       : `${remHours} hour${remHours !== 1 ? "s" : ""}`;
 
-  const totalPrice = price ? price * quantity : undefined;
+      
+      console.log("price: ",price);
+            console.log("quantity: ",quantity);
 
+      
+
+  const totalPrice = price ? price * quantity * Number(duration[0])  : undefined;
   return (
     <div className="max-w-lg mx-auto bg-white shadow-lg rounded-xl p-6 border border-gray-200 space-y-6 animate-fadeIn">
       {/* Success header */}

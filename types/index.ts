@@ -265,21 +265,20 @@ export type RoomBookingWithDetails = {
   room_images: string[];
   room_type_en: string;
   room_type_ar: string;
-  booking_price:number;
+  booking_price: number;
   slug: string;
 };
 
-export type ActivityBookingWithDetails= {
-
+export type ActivityBookingWithDetails = {
   id: string; // training_booking id
   is_confirmed: boolean;
   is_deleted: boolean;
   created_at: Date;
   quantity: number;
-  
+
   start_time: Date;
   end_time: Date;
-booking_price:Number;
+  booking_price: number;
   activity_id?: string;
   name_en: string;
   name_ar: string;
@@ -295,14 +294,12 @@ booking_price:Number;
   slug: string;
 
   //user Deatils
-  
+
   user_id: string;
   first_name: string;
   last_name: string;
   email: string;
-
-
-}
+};
 
 export type TrainingBookingWithDetails = {
   id: string; // training_booking id
@@ -384,11 +381,11 @@ export type newBooking = {
   id?: string;
   start_time: Date;
   end_time: Date;
-  created_at: Date;
-  is_confirmed: boolean;
+  created_at?: Date;
+  is_confirmed?: boolean;
   user_id: string;
   room_id: string;
-  price: number;
+  price?: number;
 };
 
 export type userDetails = {
@@ -424,7 +421,6 @@ export type newActivityBooking = {
   activity_id?: string;
   quantity: number;
   price: number;
-  
 };
 
 export type updateActivityBooking = {

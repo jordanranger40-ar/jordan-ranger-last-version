@@ -5,33 +5,38 @@ import ActivityBookingForm from "./ActivityBookingForm";
 import BookingConfirmation from "./BookingConfirmation";
 import { CircleX } from "lucide-react";
 import { useSession } from "next-auth/react";
+import BookingProgressBar from "./BookingProgressBar"; // ✅ import it
 
 type Activity = { id: string; name: string; capacity?: number; price?: number };
 
-
 export default function ActivityBookingPanel({ activity }: { activity: Activity }) {
-  const session= useSession()
-const userDetails= session.data?.user
+  const { data: session } = useSession();
+  const userDetails = session?.user;
   const [open, setOpen] = useState(false);
   const [available, setAvailable] = useState<number | null>(null);
   const [selectedRange, setSelectedRange] = useState<{ start: string; end: string } | null>(null);
   const [bookingDone, setBookingDone] = useState(false);
   const [quantity, setQuantity] = useState(1);
-
   const modalRef = useRef<HTMLDivElement>(null);
 
+  // ✅ Compute current booking step
+  const currentStep = bookingDone ? 3 : selectedRange ? 2 : 1;
+
+  // close modal when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
         setOpen(false);
         setBookingDone(false);
+        setSelectedRange(null);
+        setAvailable(null);
       }
     };
     if (open) document.addEventListener("mousedown", handleClickOutside);
-    else document.removeEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
+  // close modal on Escape
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -40,10 +45,8 @@ const userDetails= session.data?.user
       }
     };
     if (open) document.addEventListener("keydown", handleEsc);
-    else document.removeEventListener("keydown", handleEsc);
     return () => document.removeEventListener("keydown", handleEsc);
   }, [open]);
-  console.log(activity.price)
 
   return (
     <div className="mt-6">
@@ -69,27 +72,30 @@ const userDetails= session.data?.user
               </button>
             </div>
 
-            {/* Show confirmation if booking done */}
+            {/* ✅ Booking Progress Bar */}
+            <BookingProgressBar currentStep={currentStep} />
+
+            {/* ✅ Step 3: Confirmation */}
             {bookingDone && selectedRange && (
               <BookingConfirmation
                 activityName={activity.name}
                 start={selectedRange.start}
                 end={selectedRange.end}
                 quantity={quantity}
-                price={quantity* (Number(activity.price)??1)}
-                user={{ name: userDetails?.firstName??"" + userDetails?.lastName, email: userDetails?.email }} 
+                price={activity.price ?? 1}
+                user={{
+                  name: `${userDetails?.firstName ?? ""} ${userDetails?.lastName ?? ""}`,
+                  email: userDetails?.email ?? "",
+                }}
                 onGoToCart={() => {
                   setOpen(false);
                   window.location.href = "/cart";
                 }}
-                continueButton= {()=>{
-                  setOpen(false)
-                }}
+                continueButton={() => setOpen(false)}
               />
             )}
-            
 
-            {/* Show booking forms if booking not done */}
+            {/* ✅ Step 1: Check Availability */}
             {!bookingDone && !selectedRange && (
               <CheckAvailabilityForm
                 activityId={activity.id}
@@ -100,19 +106,20 @@ const userDetails= session.data?.user
               />
             )}
 
+            {/* ✅ Step 2: Fill Booking Form */}
             {!bookingDone && selectedRange && available !== null && (
               <ActivityBookingForm
-              activityId={activity.id}
-              available={available}
-              selectedRange={selectedRange}
-              onBooked={(success, bookedQuantity) => {
-                if (success) {
-                  setQuantity(bookedQuantity); // ✅ احفظ الكمية الفعلية
-                  setBookingDone(true);
-                }
-              }}
-            />
-            
+                activityId={activity.id}
+                available={available}
+                price={activity.price ?? 1}
+                selectedRange={selectedRange}
+                onBooked={(success, bookedQuantity) => {
+                  if (success) {
+                    setQuantity(bookedQuantity);
+                    setBookingDone(true);
+                  }
+                }}
+              />
             )}
           </div>
         </div>

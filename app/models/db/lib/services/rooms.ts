@@ -164,7 +164,7 @@ export const getRoomById = async (id: string) => {
     [id]
   );
 
-  return result.rows;
+  return result.rows[0];
 };
 
 

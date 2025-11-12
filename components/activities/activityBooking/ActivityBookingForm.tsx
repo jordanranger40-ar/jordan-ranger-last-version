@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Clock, User, Mail } from "lucide-react"; // icons
 import { bookActivity } from "./(fetch)/bookActivity"; // your server function
-import BookingConfirmation from "./BookingConfirmation";
 
 function formatDurationISO(startIso: string, endIso: string) {
   const s = new Date(startIso);
@@ -23,11 +22,13 @@ export default function ActivityBookingForm({
   activityId,
   selectedRange,
   available,
+  price,
   onBooked,
 }: {
   activityId: string;
   selectedRange: { start: string; end: string };
   available: number;
+  price:number
   onBooked: (success: boolean, quantity: number) => void;
 
 }) {
@@ -43,6 +44,10 @@ export default function ActivityBookingForm({
   }, []);
 
   const duration = formatDurationISO(selectedRange.start, selectedRange.end);
+  console.log("type: ",typeof Number(duration[0]),duration[0]);
+  
+  console.log("yrgedhwjk: ",Number(selectedRange.end)-Number(selectedRange.start));
+  
 
   const handleBook = async () => {
     if (!session) {
@@ -115,10 +120,12 @@ export default function ActivityBookingForm({
           </div>
         </div>
       </div>
-
+<div className="text-sm text-gray-600 mb-2">Price: {price} JOD / Person / Hour</div>
       {/* Quantity Input */}
       <label className="block">
-        <div className="text-sm text-gray-600 mb-1">Quantity (max {available})</div>
+        
+        <div className="text-sm text-gray-600 mb-2">Quantity (max {available} Persons)</div>
+        
         <input
           type="number"
           min={1}
@@ -127,6 +134,7 @@ export default function ActivityBookingForm({
           onChange={(e) => setQuantity(Number(e.target.value))}
           className="border rounded-md px-3 py-2 w-32 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
         />
+         <div className="text-sm text-gray-600 mb-1 mt-2">Total Price: {price * quantity * Number(duration[0])} JOD </div>
       </label>
 
       {/* Book Button */}

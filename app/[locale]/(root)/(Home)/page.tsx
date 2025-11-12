@@ -10,25 +10,25 @@ import ComingSoon from "@/components/coming-soon/coming-soon";
 import { getBannerData } from "@/app/models/db/lib/services/banners";
 import { newBanner, newCategory, newTraining } from "@/types";
 import ServicesSection from "@/components/services-section/services-section";
-import TestimonialsSection from "@/components/testimonials-section/testimonials-section"
+import TestimonialsSection from "@/components/testimonials-section/testimonials-section";
 interface PageProps {
   params: {
     locale: string;
   };
 }
 export default async function Home({ params }: PageProps) {
-  const { locale } = params; 
+  const { locale } = params;
   const isArabic = locale === "ar";
 
   let banners: newBanner[] = [];
   let categories: newCategory[] = [];
-  let trainingData: newTraining[] = []; 
+  let trainingData: newTraining[] = [];
 
   try {
     banners = await getBannerData();
     categories = await getAllcategories();
     const trainingResponse = await getAllTraining();
-    trainingData = trainingResponse.data; 
+    trainingData = trainingResponse.data;
   } catch (error) {
     console.error("Failed to fetch data:", error);
   }
@@ -68,6 +68,7 @@ export default async function Home({ params }: PageProps) {
       <ComingSoon isArabic={isArabic} />
 
       <Mapbox3D isArabic={isArabic} />
+      
     </main>
   );
 }

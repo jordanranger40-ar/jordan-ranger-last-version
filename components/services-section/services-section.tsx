@@ -4,7 +4,7 @@ interface Props {
   }
 export default function ServicesSection({isArabic}:Props) {
   return (
-    <section className="w-full mt-40 px-6 md:px-20">
+    <section className="w-full mt-20 px-6 md:px-20">
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-12">
     {[
       { title: isArabic ? "تخييم فاخر" : "Luxury Camping", icon: "🏕️" },
