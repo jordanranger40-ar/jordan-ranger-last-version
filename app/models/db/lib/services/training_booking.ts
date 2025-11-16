@@ -325,5 +325,12 @@ export const editTrainingBookingById = async (
   }
 };
 
+export const getQuantityOfATraining= async (id:string)=>{
+  
+ const result= await pool.query<{total_booked:string}>("SELECT  COALESCE(SUM(quantity), 0) AS total_booked FROM training_booking WHERE training_id = $1",[id])
+ 
+ return result.rows[0]
 
+
+}
 

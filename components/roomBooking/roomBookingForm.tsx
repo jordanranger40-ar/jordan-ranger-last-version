@@ -6,6 +6,7 @@ import "react-date-range/dist/theme/default.css";
 import { CalendarDays, CheckCircle } from "lucide-react";
 import { bookRoom } from "./(fetch)/bookARoom";
 import { newRoom } from "@/types";
+import { useRouter } from "next/navigation";
 
 type Props = {
   room: newRoom;
@@ -23,6 +24,11 @@ export default function RoomBookingPage({
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [isBooked, setIsBooked] = useState(false);
+  const router = useRouter();
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
   // Generate all disabled dates
   const disabledDates = bookedDates.flatMap((d) => {
@@ -58,20 +64,26 @@ export default function RoomBookingPage({
       endDate.setDate(endDate.getDate() + 1);
     }
 
-    const nights = calculateNights(startDate, endDate);
-
     setIsLoading(true);
     try {
-      await bookRoom({
+      const result = await bookRoom({
         room_id: room.id ?? "",
         start_time: startDate,
         end_time: endDate,
       });
-      setIsBooked(true);
-      onBooked({
-        start: startDate.toISOString(),
-        end: endDate.toISOString(),
-      });
+
+      if (result.message === "Please login to book the Room") {
+        setToast({ message: `Please login to book the Room`, type: "error" });
+        setTimeout(() => {
+          return router.push("/login");
+        }, 1000);
+      } else {
+        setIsBooked(true);
+        onBooked({
+          start: startDate.toISOString(),
+          end: endDate.toISOString(),
+        });
+      }
     } catch (error) {
       console.error("Booking failed:", error);
       alert("Something went wrong while booking. Please try again.");
@@ -149,6 +161,15 @@ export default function RoomBookingPage({
           )}
         </div>
       </div>
+      {toast && (
+        <div
+          className={`fixed bottom-5 right-5 z-50 px-5 py-3 rounded-lg shadow-lg text-white font-medium transition-all duration-300 ${
+            toast.type === "success" ? "bg-green-600" : "bg-red-600"
+          }`}
+        >
+          {toast.message}
+        </div>
+      )}
     </div>
   );
 }

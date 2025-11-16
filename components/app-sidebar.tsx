@@ -45,8 +45,7 @@ const items = [
     url: "/admin/dashboard/roomsBooking",
     icon: Settings,
   },
-  { title: "Consulting", url: "/admin/dashboard/consulting", icon: Tag },
-  { title: "Services", url: "/admin/dashboard/services", icon: Handshake },
+
   { title: "Training", url: "/admin/dashboard/training", icon: PenLine },
   {
     title: "TrainingBooking",
@@ -54,17 +53,13 @@ const items = [
     icon: PenLine,
   },
   { title: "Activities", url: "/admin/dashboard/activities", icon: BookOpen },
- { title: "ActivitiesBooking", url: "/admin/dashboard/activitiesBooking", icon: BookOpen },
-
-  { title: "Courses", url: "/admin/dashboard/courses", icon: BookOpen },
-  { title: "My Team", url: "/admin/dashboard/ourTeam", icon: Users },
-  { title: "Clients", url: "/admin/dashboard/clients", icon: Crown },
   {
-    title: "Applications",
-    url: "/admin/dashboard/applications",
-    icon: FilePen,
+    title: "ActivitiesBooking",
+    url: "/admin/dashboard/activitiesBooking",
+    icon: BookOpen,
   },
-  { title: "Settings", url: "/admin/dashboard/settings", icon: Settings },
+
+  { title: "Clients", url: "/admin/dashboard/clients", icon: Crown },
 ];
 
 export function AppSidebar() {

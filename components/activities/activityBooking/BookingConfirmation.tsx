@@ -1,6 +1,6 @@
 "use client";
 
-import { User, Mail, Clock } from "lucide-react";
+import { User, Mail, Clock, Users } from "lucide-react";
 import { format } from "date-fns";
 
 type BookingConfirmationProps = {
@@ -8,10 +8,10 @@ type BookingConfirmationProps = {
   start: string;
   end: string;
   quantity: number;
-  price?: number; 
-  user?: { name?: string; email?: string }; 
+  price?: number;
+  user?: { name?: string; email?: string };
   onGoToCart: () => void;
-  continueButton?:()=> void
+  continueButton?: () => void;
 };
 
 export default function BookingConfirmation({
@@ -22,10 +22,9 @@ export default function BookingConfirmation({
   price,
   user,
   onGoToCart,
-  continueButton
+  continueButton,
 }: BookingConfirmationProps) {
-  // calculate duration
-  console.log("pricew: ",price);
+  // Calculate duration
   const durationMs = new Date(end).getTime() - new Date(start).getTime();
   const hours = Math.floor(durationMs / (1000 * 60 * 60));
   const days = Math.floor(hours / 24);
@@ -35,58 +34,110 @@ export default function BookingConfirmation({
       ? `${days} day${days > 1 ? "s" : ""}${remHours ? ` ${remHours}h` : ""}`
       : `${remHours} hour${remHours !== 1 ? "s" : ""}`;
 
-      
-      console.log("price: ",price);
-            console.log("quantity: ",quantity);
+  // Calculate total
+  const totalPrice = price ? price * quantity : undefined;
 
-      
-
-  const totalPrice = price ? price * quantity * Number(duration[0])  : undefined;
   return (
-    <div className="max-w-lg mx-auto bg-white shadow-lg rounded-xl p-6 border border-gray-200 space-y-6 animate-fadeIn">
-      {/* Success header */}
+    <div className="w-full max-w-xl mx-auto bg-white shadow-lg rounded-2xl p-6 border border-gray-100 space-y-6">
+      {/* Header */}
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-green-600 mb-2">✅ Booking Added to Your Cart</h2>
-        <p className="text-gray-500">You can review or checkout your bookings in the cart.</p>
+        <h2 className="text-2xl font-semibold text-emerald-600 mb-1">
+          ✅ Booking added to your cart
+        </h2>
+        <p className="text-sm text-gray-500">
+          You can review or checkout your bookings in the cart.
+        </p>
       </div>
 
-      {/* User info */}
+      {/* User Info */}
       {user && (user.name || user.email) && (
-        <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg">
-          <User className="w-6 h-6 text-gray-500" />
-          <div>
-            {user.name && <p className="font-medium text-gray-700">{user.name}</p>}
-            {user.email && (
-              <p className="text-sm text-gray-500 flex items-center gap-1">
-                <Mail className="w-4 h-4 text-gray-400" /> {user.email}
-              </p>
-            )}
+        <div className="flex flex-col gap-3 bg-gray-50 p-4 rounded-lg">
+          <div className="flex items-center gap-3">
+            <User className="w-6 h-6 text-gray-500 shrink-0" />
+            <div>
+              {user.name && (
+                <div className="font-medium text-gray-800">{user.name}</div>
+              )}
+              {user.email && (
+                <div className="flex items-center gap-2 text-gray-500">
+                  <Mail className="w-4 h-4 text-gray-400" />
+                  <span>{user.email}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Activity name now below user */}
+          <div className="flex items-start gap-3 border-t border-gray-200 pt-3">
+            <Clock className="w-5 h-5 text-gray-500 mt-0.5" />
+            <div>
+              <div className="text-xs text-gray-500">Activity</div>
+              <div className="text-sm font-semibold text-gray-800">{activityName}</div>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Booking details */}
-      <div className="bg-gray-50 p-4 rounded-lg space-y-2">
-        <h3 className="text-lg font-semibold">{activityName}</h3>
-        <p className="text-gray-700 flex items-center gap-1 text-sm">
-          <Clock className="w-4 h-4" /> {format(new Date(start), "PPpp")} — {format(new Date(end), "PPpp")}
-        </p>
-        <p className="text-sm text-gray-500">Duration: {duration}</p>
-        <p className="text-sm text-gray-500">Quantity: {quantity}</p>
-        {totalPrice !== undefined && <p className="text-base  text-gray-500">Total: {totalPrice} JOD</p>}
+      {/* Booking Details */}
+      <div className="bg-gray-50 p-4 rounded-lg space-y-3">
+        <h3 className="text-lg font-medium text-gray-800">Booking Details</h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div>
+            <div className="text-xs text-gray-500">Start</div>
+            <div className="text-sm text-gray-800">
+              {format(new Date(start), "PPp")}
+            </div>
+          </div>
+          <div>
+            <div className="text-xs text-gray-500">End</div>
+            <div className="text-sm text-gray-800">
+              {format(new Date(end), "PPp")}
+            </div>
+          </div>
+          <div>
+            <div className="text-xs text-gray-500">Duration</div>
+            <div className="text-sm text-gray-800">{duration}</div>
+          </div>
+        </div>
+
+        <div className="mt-4 border-t pt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="flex items-center gap-2">
+            <Users className="w-5 h-5 text-gray-500" />
+            <div>
+              <div className="text-xs text-gray-500">Persons</div>
+              <div className="text-sm text-gray-800">{quantity}</div>
+            </div>
+          </div>
+          <div>
+            <div className="text-xs text-gray-500">Price</div>
+            <div className="text-sm text-gray-800">
+              {price !== undefined ? `${Number(price).toFixed(2)} JOD` : "—"}
+            </div>
+          </div>
+          <div>
+            <div className="text-xs text-gray-500">Total</div>
+            <div className="text-sm font-semibold text-gray-900">
+              {totalPrice !== undefined ? `${totalPrice.toFixed(2)} JOD` : "—"}
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Go to cart button */}
-      <div className="text-center flex flex-row gap-4">
+      {/* Buttons */}
+      <div className="flex flex-col gap-3 sm:flex-row">
         <button
           onClick={onGoToCart}
-          className="bg-[#676e32] text-white px-6 py-2 rounded-lg hover:bg-[#7c863a] transition w-full"
+          aria-label="Go to cart"
+          className="w-full sm:w-1/2 inline-flex items-center justify-center gap-2 rounded-xl bg-[#676e32] hover:bg-[#7c863a] text-white px-5 py-3 font-medium transition-shadow shadow-sm"
         >
           Go to Cart
         </button>
-         <button
+
+        <button
           onClick={continueButton}
-          className="bg-[#676e32] text-white px-6 py-2 rounded-lg hover:bg-[#7c863a] transition w-full"
+          aria-label="Continue"
+          className="w-full sm:w-1/2 inline-flex items-center justify-center gap-2 rounded-xl border border-[#676e32] text-[#676e32] px-5 py-3 font-medium hover:bg-[#eaebe4] transition"
         >
           Continue
         </button>

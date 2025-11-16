@@ -3,8 +3,8 @@
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Clock, User, Mail } from "lucide-react"; // icons
-import { bookActivity } from "./(fetch)/bookActivity"; // your server function
+import { Clock, User, Mail } from "lucide-react";
+import { bookActivity } from "./(fetch)/bookActivity";
 
 function formatDurationISO(startIso: string, endIso: string) {
   const s = new Date(startIso);

@@ -1,9 +1,9 @@
 "use client";
 
-import { User, Mail, Clock, HomeIcon } from "lucide-react";
+import { User, Mail, HomeIcon } from "lucide-react";
 import { format, setHours, setMinutes } from "date-fns";
 
-type BookingConfirmationProps = {
+type RoomBookingConfirmationProps = {
   RoomName: string;
   start: string;
   end: string;
@@ -21,12 +21,12 @@ export default function RoomBookingConfirmation({
   user,
   onGoToCart,
   continueButton,
-}: BookingConfirmationProps) {
-  // Force the start time to 3 PM and end time to 12 PM
+}: RoomBookingConfirmationProps) {
+  // Force start/end times
   const startDate = setMinutes(setHours(new Date(start), 15), 0); // 3:00 PM
   const endDate = setMinutes(setHours(new Date(end), 12), 0); // 12:00 PM
 
-  // Calculate duration
+  // Duration calculation
   const durationMs = endDate.getTime() - startDate.getTime();
   const hours = Math.floor(durationMs / (1000 * 60 * 60));
   const days = Math.floor(hours / 24);
@@ -39,67 +39,105 @@ export default function RoomBookingConfirmation({
   const totalPrice = price ? price * (days || 1) : undefined;
 
   return (
-    <div className="max-w-lg mx-auto bg-white shadow-lg rounded-xl p-6 border border-gray-200 space-y-6 animate-fadeIn">
+    <div className="w-full max-w-xl mx-auto bg-white shadow-lg rounded-2xl p-6 border border-gray-100 space-y-6">
       {/* Header */}
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-green-600 mb-2">
-          ✅ Booking Added to Your Cart
+        <h2 className="text-2xl font-semibold text-emerald-600 mb-1">
+          ✅ Booking added to your cart
         </h2>
-        <p className="text-gray-500">
+        <p className="text-sm text-gray-500">
           You can review or checkout your bookings in the cart.
         </p>
       </div>
 
       {/* User Info */}
-      {user && (user.name || user.email) && (
-        <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg">
-          <User className="w-6 h-6 text-gray-500" />
-          <div>
-            {user.name && (
-              <p className="font-medium text-gray-700">{user.name}</p>
-            )}
-            {user.email && (
-              <p className="text-sm text-gray-500 flex items-center gap-1">
-                <Mail className="w-4 h-4 text-gray-400" /> {user.email}
-              </p>
-            )}
+      {user && (
+        <div className="flex flex-col gap-3 bg-gray-50 p-4 rounded-lg">
+          <div className="flex items-center gap-3">
+            <User className="w-6 h-6 text-gray-500 shrink-0" />
+            <div>
+              {user.name && (
+                <div className="font-medium text-gray-800">{user.name}</div>
+              )}
+              {user.email && (
+                <div className="flex items-center gap-2 text-gray-500">
+                  <Mail className="w-4 h-4 text-gray-400" />
+                  <span>{user.email}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Room name now below user */}
+          <div className="flex items-start gap-3 border-t border-gray-200 pt-3">
+            <HomeIcon className="w-5 h-5 text-gray-500 mt-0.5" />
+            <div>
+              <div className="text-xs text-gray-500">Room</div>
+              <div className="text-sm font-semibold text-gray-800">{RoomName}</div>
+            </div>
           </div>
         </div>
       )}
 
       {/* Booking Details */}
-      <div className="bg-gray-50 p-4 rounded-lg space-y-2">
-        <div className="flex items-center gap-2 text-gray-700 font-medium">
-          <HomeIcon className="w-5 h-5" />
-          <span>{RoomName}</span>
+      <div className="bg-gray-50 p-4 rounded-lg space-y-3">
+        <h3 className="text-lg font-medium text-gray-800">Stay Details</h3>
+
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+          <div>
+            <div className="text-xs text-gray-500">Check-in</div>
+            <div className="text-sm text-gray-800">
+              {format(startDate, "PPp")}
+            </div>
+          </div>
+          <div>
+            <div className="text-xs text-gray-500">Check-out</div>
+            <div className="text-sm text-gray-800">{format(endDate, "PPp")}</div>
+          </div>
+          <div>
+            <div className="text-xs text-gray-500">Duration</div>
+            <div className="text-sm text-gray-800">{duration}</div>
+          </div>
         </div>
 
-        <p className="text-gray-700 flex items-center gap-2 text-sm">
-          <Clock className="w-4 h-4" />
-          {format(startDate, "PPp")} — {format(endDate, "PPp")}
-        </p>
-        <p className="text-sm text-gray-500">Duration: {duration}</p>
-        {totalPrice !== undefined && (
-          <p className="text-base text-gray-600 font-medium">
-            Total Price: <span className="text-[#676e32]">{totalPrice} JOD</span>
-          </p>
-        )}
+        <div className="mt-4 border-t pt-3 grid grid-cols-1 gap-3 md:grid-cols-3">
+          <div>
+            <div className="text-xs text-gray-500">Price per night</div>
+            <div className="text-sm text-gray-800">
+              {price !== undefined ? `${price.toFixed(2)} JOD` : "—"}
+            </div>
+          </div>
+          <div>
+            <div className="text-xs text-gray-500">Total</div>
+            <div className="text-sm font-semibold text-gray-900">
+              {totalPrice !== undefined ? `${totalPrice} JOD` : "—"}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Buttons */}
-      <div className="flex flex-row gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row">
         <button
           onClick={onGoToCart}
-          className="bg-[#676e32] text-white px-6 py-2 rounded-lg hover:bg-[#7c863a] transition w-full"
+          aria-label="Go to cart"
+          className="w-full sm:w-1/2 inline-flex items-center justify-center gap-2 rounded-xl bg-[#676e32] hover:bg-[#7c863a] text-white px-5 py-3 font-medium transition-shadow shadow-sm"
         >
           Go to Cart
         </button>
+
         <button
           onClick={continueButton}
-          className="bg-[#676e32] text-white px-6 py-2 rounded-lg hover:bg-[#7c863a] transition w-full"
+          aria-label="Continue"
+          className="w-full sm:w-1/2 inline-flex items-center justify-center gap-2 rounded-xl border border-[#676e32] text-[#676e32] px-5 py-3 font-medium hover:bg-[#eaebe4] transition"
         >
           Continue
         </button>
+      </div>
+
+      {/* Note */}
+      <div className="text-xs text-gray-400 text-center">
+        Tip: Room stays are automatically set from 3:00 PM check-in to 12:00 PM check-out.
       </div>
     </div>
   );
