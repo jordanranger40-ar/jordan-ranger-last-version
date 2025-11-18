@@ -17,9 +17,9 @@ export default function Bannercards() {
           key={index}
           className="relative h-64 w-[90vw] sm:w-[42vw] md:w-[22vw] overflow-hidden group transition-transform duration-500 transform-gpu hover:scale-105 hover:rotate-1"
           style={{
-            backgroundColor: item.color, // اللون صلب
-            borderRadius: '2rem 0.5rem 2rem 0.5rem', // زوايا غير متماثلة
-            boxShadow: '0 6px 20px rgba(0,0,0,0.25)', // شادو أخف
+            backgroundColor: item.color,
+            borderRadius: '2rem 0.5rem 2rem 0.5rem',
+            boxShadow: '0 6px 20px rgba(0,0,0,0.25)', 
           }}
         >
           {/* محتوى البطاقة */}

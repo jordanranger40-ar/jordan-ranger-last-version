@@ -51,7 +51,7 @@ export default async function RootLayout({ children, params }: Props) {
           <main className="flex-1">{children}</main>
 
        
-          <Footer />
+          <Footer locale={locale} />
 
           <Toaster
             position="bottom-right"

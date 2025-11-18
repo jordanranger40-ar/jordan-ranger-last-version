@@ -3,7 +3,7 @@ import {
   type newActivity,
   type newActivityBooking,
   type updateActivityBooking,
-} from "@/types/index";
+} from "../../../../../types/index";
 import pool from "../index";
 import { createCart, updateCartTotalAmount } from "./cart";
 import {
@@ -36,7 +36,8 @@ export const bookAnActivity = async (data: newActivityBooking) => {
     const totalBooked = numberOfBooking.rows[0].total_booked;
     const capacity = capacityOfTheActivity.rows[0].capacity;
     const activityPrice = capacityOfTheActivity.rows[0].price;
-    const totalBookingPrice = Number(activityPrice) * Number(data.quantity);
+    const diffHours = (data.end_time.getTime() - data.start_time.getTime()) / (1000 * 60 * 60);
+    const totalBookingPrice = Number(activityPrice) * Number(data.quantity) * Number(diffHours);
     console.log("totalBooked: ", totalBooked);
     console.log("capacity: ", capacity);
     console.log("ebfueufueffu", data.quantity);

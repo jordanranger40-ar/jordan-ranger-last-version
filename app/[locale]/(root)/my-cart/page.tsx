@@ -18,7 +18,8 @@ export default async function Page() {
   }
 
   const data = await getCartByUserId(session.user.id);
-
+   console.log("data: ",data);
+   
  
   const safeData = JSON.parse(JSON.stringify(data.data || []));
 

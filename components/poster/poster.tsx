@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { useLocale } from "next-intl";
+import LightButton from "../ui/light-button";
 
 export default function PosterSection() {
   const locale = useLocale();
@@ -54,13 +55,9 @@ export default function PosterSection() {
           </h1>
           <p className="text-lg md:text-xl text-gray-200 mb-6">{description}</p>
 
-          <button
-            className="mt-4 px-6 py-3 bg-white text-[#484d23] font-semibold 
-            rounded-full shadow-md hover:bg-[#dcdca8] hover:scale-105 
-            transition-all duration-300 w-auto inline-block"
-          >
+      <LightButton>
             {isArabic ? "استكشف الآن" : "Explore Now"}
-          </button>
+          </LightButton>
         </div>
       </div>
     </section>

@@ -19,15 +19,30 @@
     "activities": "Activities",
     "indooractivities": "Indoor Activities",
     "outdooractivities": "Outdoor Activities",
-    "test1": "Test Indoor 1",
-    "test2": "Test Indoor 2",
     "cabins": "Cabins",
     "tents": "Tents",
-    "corporateteambuilding":"Corporate Team Building",
-    "schooltraining":"School Training",
-    "rangeracademy":"Ranger Academy"
-    
+    "corporateteambuilding": "Corporate Team Building",
+    "schooltraining": "School Training",
+    "rangeracademy": "Ranger Academy"
   },
+
+  "Footer": {
+    "discoverTitle": "Discover Your Next Adventure",
+    "discoverDesc": "The perfect camping and adventure platform in the heart of nature.",
+    "importantLinks": "Important Links",
+    "home": "Home",
+    "rooms": "Rooms",
+    "trips": "Trips",
+    "events": "Events",
+    "bookNow": "Book Now",
+    "newsletter": "Newsletter",
+    "newsletterDesc": "Subscribe to receive updates and exclusive offers.",
+    "emailPlaceholder": "Enter your email",
+    "subscribe": "Subscribe",
+    "followUs": "Follow Us",
+    "rights": "All rights reserved."
+  },
+
   "stats": {
     "projects": "Projects Completed",
     "clients": "Clients Served",

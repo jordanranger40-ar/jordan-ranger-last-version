@@ -5,9 +5,10 @@ import ActivityBookingForm from "./ActivityBookingForm";
 import BookingConfirmation from "./BookingConfirmation";
 import { CircleX } from "lucide-react";
 import { useSession } from "next-auth/react";
-import BookingProgressBar from "./BookingProgressBar"; // ✅ import it
+import BookingProgressBar from "./BookingProgressBar"; 
+import DarkButton from "@/components/ui/dark-button";
 
-type Activity = { id: string; name: string; capacity?: number; price?: number };
+type Activity = { id: string ; name: string; capacity?: number; price?: number };
 
 export default function ActivityBookingPanel({ activity }: { activity: Activity }) {
   const { data: session } = useSession();
@@ -50,17 +51,17 @@ export default function ActivityBookingPanel({ activity }: { activity: Activity 
 
   return (
     <div className="mt-6">
-      <button
+      <DarkButton
         onClick={() => {
           setOpen(true);
           setAvailable(null);
           setSelectedRange(null);
           setBookingDone(false);
         }}
-        className="bg-[#676e32] text-white px-4 py-2 rounded-md hover:bg-[#7c863a]"
+
       >
         Book this activity
-      </button>
+      </DarkButton>
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
@@ -89,7 +90,7 @@ export default function ActivityBookingPanel({ activity }: { activity: Activity 
                 }}
                 onGoToCart={() => {
                   setOpen(false);
-                  window.location.href = "/cart";
+                  window.location.href = "/my-cart";
                 }}
                 continueButton={() => setOpen(false)}
               />

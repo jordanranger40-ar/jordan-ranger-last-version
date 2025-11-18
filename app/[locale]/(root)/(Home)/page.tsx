@@ -11,6 +11,8 @@ import { getBannerData } from "@/app/models/db/lib/services/banners";
 import { newBanner, newCategory, newTraining } from "@/types";
 import ServicesSection from "@/components/services-section/services-section";
 import TestimonialsSection from "@/components/testimonials-section/testimonials-section";
+import DarkButton from "@/components/ui/dark-button";
+import LightButton from "@/components/ui/light-button";
 interface PageProps {
   params: {
     locale: string;
@@ -45,10 +47,12 @@ export default async function Home({ params }: PageProps) {
         />
       </div>
 
+
       {/* Poster */}
       <section className="relative z-10 w-full mt-40">
         <Poster />
       </section>
+
 
       <SectionDivider text={isArabic ? "اكتشف غرفنا" : "Discover Our Rooms"} />
       <section className="relative z-10 w-full">

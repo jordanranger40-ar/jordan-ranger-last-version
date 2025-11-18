@@ -1,5 +1,6 @@
 import { getRoomBySlug } from "@/app/models/db/lib/services/rooms";
 import { roomFeatures } from "@/types";
+import Link from "next/link";
 
 interface PageProps {
   params: { locale: string; slug: string | string[] };
@@ -16,7 +17,7 @@ export default async function Page({ params }: PageProps) {
         dir={direction}
         className={`text-center py-20 text-xl text-gray-700 ${isArabic ? "text-right" : "text-left"}`}
       >
-        {isArabic ? "الخيمة غير موجودة" : "tent not found"}
+        {isArabic ? "الخيمة غير موجودة" : "Tent not found"}
       </div>
     );
   }
@@ -48,7 +49,7 @@ export default async function Page({ params }: PageProps) {
         </div>
       </div>
 
-      {/* ================= Room Info Section ================= */}
+      {/* ================= tent Info Section ================= */}
       <div className="max-w-7xl mx-auto px-6 md:px-12 mt-12 md:mt-16 flex flex-col md:flex-row gap-12">
         <div className="flex-1 space-y-6">
           <h2 className="text-3xl md:text-4xl font-semibold text-[#333333]">
@@ -61,14 +62,16 @@ export default async function Page({ params }: PageProps) {
             <span className="text-4xl font-extrabold text-[#676e32]">{data.price}</span>
             <span className="text-gray-500 text-lg">{isArabic ? "د.ا / الليلة" : "JOD / night"}</span>
           </div>
-          <button className="mt-6 px-12 py-4 bg-[#676e32] text-white text-lg font-semibold rounded-full shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300">
-            {isArabic ? "احجز هذه الخيمة" : "Reserve This tent"}
-          </button>
+         
+          
+            <Link href={`/accommodationBooking/${data.id}`} className="w-full h-full"><button  className="mt-6 px-12 py-4 bg-[#676e32] text-white text-lg font-semibold rounded-full shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300"> {isArabic ? "احجز هذه الخيمة" : "Reserve This tent" }</button></Link>
+          
+         
         </div>
 
         <div className="flex-1">
           <h3 className="text-2xl font-semibold text-[#333333] mb-6">
-            {isArabic ? "مرافق الخيمة" : "Room Amenities"}
+            {isArabic ? "مرافق الخيمة" : "tent Amenities"}
           </h3>
           <div className="grid sm:grid-cols-2 md:grid-cols-2 gap-6">
             {data.features.map((feature: roomFeatures, index: number) => (

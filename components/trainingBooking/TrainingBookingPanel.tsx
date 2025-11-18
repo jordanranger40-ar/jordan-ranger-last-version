@@ -6,6 +6,7 @@ import { CircleX } from "lucide-react";
 import { useSession } from "next-auth/react";
 import BookingProgressBar from "./BookingProgressBar";
 import { newTraining } from "@/types";
+import DarkButton from "../ui/dark-button";
 
 export default function TrainingBookingPanel({
   training,
@@ -59,16 +60,16 @@ export default function TrainingBookingPanel({
   
   return (
     <div className="mt-6">
-      <button
+      <DarkButton
         onClick={() => {
           setOpen(true);
           setBookingDone(false);
           setQuantity(1);
         }}
-        className="bg-[#676e32] text-white px-4 py-2 rounded-md hover:bg-[#7c863a]"
+       
       >
         Book this Training
-      </button>
+      </DarkButton>
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
@@ -105,7 +106,7 @@ export default function TrainingBookingPanel({
                 }}
                 onGoToCart={() => {
                   setOpen(false);
-                  window.location.href = "/cart";
+                  window.location.href = "/my-cart";
                 }}
                 continueButton={() => setOpen(false)}
               />

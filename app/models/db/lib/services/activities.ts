@@ -81,7 +81,7 @@ export const getActivityById = async (id: string) => {
 };
 
 export const getActivityBySlug = async (slug: string) => {
-  const result = await pool.query(" select * from activities where slug=$1 ", [
+  const result = await pool.query<newActivity>(" select * from activities where slug=$1 ", [
     slug,
   ]);
   return result.rows;

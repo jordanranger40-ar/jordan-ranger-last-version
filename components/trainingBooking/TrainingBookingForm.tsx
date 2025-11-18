@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { User, Mail, Users } from "lucide-react";
 import { bookTrainingFunction } from "./(fetch)/bookTraining";
+import DarkButton from "../ui/dark-button";
 
 export default function TrainingBookingForm({
   training_id,
@@ -135,7 +136,7 @@ export default function TrainingBookingForm({
 
       {/* Book Button */}
       <div>
-        <button
+        <DarkButton
           onClick={handleBook}
           disabled={loading || available <= 0}
           className="bg-[#676e32] text-white px-6 py-2 rounded-md hover:bg-[#7c863a] disabled:opacity-60 transition"
@@ -145,7 +146,7 @@ export default function TrainingBookingForm({
             : loading
             ? "Booking..."
             : `Book (${quantity})`}
-        </button>
+        </DarkButton>
       </div>
 
       {/* Message */}

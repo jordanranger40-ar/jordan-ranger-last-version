@@ -1,6 +1,6 @@
 import React from 'react'
 import OutdoorActivitiesHeader from '@/components/activities/outdoor-activities/outdoor-activities-header'
-import OutdoorAvtivitiesSection from '@/components/activities/outdoor-activities/outdoor-activities'
+import OutdoorAvtivitiesSection from '@/components/activities/outdoor-activities/outdoor-activities-section'
 interface PageProps {
     params: {
       locale: string;

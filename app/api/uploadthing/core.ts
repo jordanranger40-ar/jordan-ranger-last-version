@@ -17,10 +17,10 @@ export const ourFileRouter = {
     return { uploadedUrl: file.url };
   }),
 
-  ourTeam: f({
+  activities: f({
     image: { maxFileSize: "2MB", maxFileCount: 1 },
   }).onUploadComplete(async ({ file }) => {
-    console.log("Our Team Upload Complete:", file.url);
+    console.log("Activity Upload Complete:", file.url);
     return { uploadedUrl: file.url };
   }),
 

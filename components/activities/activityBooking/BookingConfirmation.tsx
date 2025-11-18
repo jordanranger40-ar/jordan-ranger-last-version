@@ -33,9 +33,9 @@ export default function BookingConfirmation({
     days > 0
       ? `${days} day${days > 1 ? "s" : ""}${remHours ? ` ${remHours}h` : ""}`
       : `${remHours} hour${remHours !== 1 ? "s" : ""}`;
-
+console.log(duration)
   // Calculate total
-  const totalPrice = price ? price * quantity : undefined;
+  const totalPrice = price ? price * quantity * Number(duration[0]) : undefined;
 
   return (
     <div className="w-full max-w-xl mx-auto bg-white shadow-lg rounded-2xl p-6 border border-gray-100 space-y-6">

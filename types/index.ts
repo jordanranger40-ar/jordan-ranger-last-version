@@ -461,6 +461,7 @@ export type cartWithItems = {
   checked_out_at: Date;
   booking_type: string;
   booking_id: string;
+  price:number;
 };
 
 export type newCartItem = {

@@ -1,4 +1,5 @@
 import React from 'react'
+import Link from 'next/link';
 
 interface Props {
   isArabic: boolean;
@@ -9,15 +10,16 @@ export default function ServicesSection({ isArabic }: Props) {
     <section className="w-full mt-20 px-6 md:px-20">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-12">
         {[
-          { title: isArabic ? "الفعاليات الداخلية" : "Indoor Activities", icon: "🏠" },          
-          { title: isArabic ? "الفعاليات الخارجية" : "Outdoor Activities", icon: "🌳" },       
-          { title: isArabic ? "الاقامات" : "Accommodation", icon: "🛏️" },                      
-          { title: isArabic ? "التدريب المدرسي" : "School Training", icon: "📚" },               
-          { title: isArabic ? "تدريبات وبناء فرق" : "Corporate Team Building", icon: "🤝" },  
-          { title: isArabic ? "المطعم" : "Restaurant", icon: "🍽️" },                            
+          { title: isArabic ? "الفعاليات الداخلية" : "Indoor Activities", icon: "🏠",link:"/indoor-activities" },          
+          { title: isArabic ? "الفعاليات الخارجية" : "Outdoor Activities", icon: "🌳",link:"/outdoor-activities" },       
+          { title: isArabic ? "الاقامات" : "Accommodation", icon: "🛏️",link:"/indoor-activities" },                      
+          { title: isArabic ? "التدريب المدرسي" : "School Training", icon: "📚",link:"/school-training" },               
+          { title: isArabic ? "تدريبات وبناء فرق" : "Corporate Team Building", icon: "🤝" ,link:"/corporate-team-building"},  
+          { title: isArabic ? "المطعم" : "Restaurant", icon: "🍽️" ,link:"/restaurant"},                            
         ].map((service, i) => (
+          <Link  key={i} href={service.link} >
           <div
-            key={i}
+           
             className="relative overflow-hidden group transition-transform duration-500 transform-gpu hover:-translate-y-2 hover:shadow-[0_12px_25px_rgba(0,0,0,0.25)]"
             style={{
               borderRadius: '2rem 0.5rem 2rem 0.5rem', // زوايا غير متماثلة
@@ -37,6 +39,7 @@ export default function ServicesSection({ isArabic }: Props) {
               <h3 className="text-xl font-semibold text-[#484d23]">{service.title}</h3>
             </div>
           </div>
+          </Link>
         ))}
       </div>
     </section>

@@ -49,8 +49,8 @@ export default function RoomBookingWizard({
             name: `${user?.firstName ?? ""} ${user?.lastName ?? ""}`,
             email: user?.email,
           }}
-          onGoToCart={() => (window.location.href = "/cart")}
-          continueButton={() => (window.location.href = "/rooms")}
+          onGoToCart={() => (window.location.href = "/my-cart")}
+          continueButton={() => (window.location.href = "/Accommodation/Cabins")}
         />
       )}
     </div>

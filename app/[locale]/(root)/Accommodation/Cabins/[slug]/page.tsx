@@ -64,7 +64,7 @@ export default async function Page({ params }: PageProps) {
           </div>
          
           
-            <Link href={`/roomsBooking/${data.id}`} className="w-full h-full"><button  className="mt-6 px-12 py-4 bg-[#676e32] text-white text-lg font-semibold rounded-full shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300"> {isArabic ? "احجز هذه الغرفة" : "Reserve This Room" }</button></Link>
+            <Link href={`/accommodationBooking/${data.id}`} className="w-full h-full"><button  className="mt-6 px-12 py-4 bg-[#676e32] text-white text-lg font-semibold rounded-full shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300"> {isArabic ? "احجز هذه الغرفة" : "Reserve This Room" }</button></Link>
           
          
         </div>

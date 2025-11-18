@@ -43,11 +43,11 @@ export default function Navbar({ categories, trainingData }: Props) {
   ];
   const rangerAcademyItams = [
     {
-      href: "/school-training",
+      href: "/training/school-training",
       label: t("schooltraining"),
     },
     {
-      href: "/corporate-team-building",
+      href: "/training/corporate-team-building",
       label: t("corporateteambuilding"),
     },
  

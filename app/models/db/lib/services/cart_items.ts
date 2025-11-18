@@ -32,7 +32,7 @@ export const removeCartItemByItemId = async (item_id: string) => {
     const bookingType = itemDetails.rows[0].booking_type;
     const cartId = itemDetails.rows[0].cart_id;
 
-    if (bookingType === "activities") {
+    if (bookingType === "activity") {
       // if item type= activity, then clear the activity booking
       await client.query("delete from activities_booking where id=$1", [
         bookingId,
@@ -49,13 +49,13 @@ export const removeCartItemByItemId = async (item_id: string) => {
 
     await client.query("DELETE FROM cart_items WHERE id = $1", [item_id]); // get the total amount of the items that in the cart_items table
     const totalResult = await client.query<{ total: number }>(
-      "SELECT COALESCE(SUM(total_price), 0) AS total FROM cart_items WHERE cart_id = $1",
+      "SELECT COALESCE(SUM(price), 0) AS total FROM cart_items WHERE cart_id = $1",
       [cartId]
     );
 
     const newTotal = totalResult.rows[0].total;
 
-    await client.query("UPDATE carts SET total_amount = $1 WHERE id = $2", [
+    await client.query("UPDATE cart SET total_amount = $1 WHERE id = $2", [
       //update the total amount
       newTotal,
       cartId,

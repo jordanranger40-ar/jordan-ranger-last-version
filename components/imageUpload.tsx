@@ -57,7 +57,7 @@ export default function ImageUploader({
 
   
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className="flex flex-col  gap-2">
       <UploadDropzone<OurFileRouter, keyof OurFileRouter>
         endpoint={endpoint}
         onUploadBegin={() => {
@@ -81,7 +81,7 @@ export default function ImageUploader({
           container:
             "flex flex-col items-center justify-center h-48 w-full max-w-sm text-center p-4 border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors",
           button:
-            "bg-[#125892] text-white rounded-md px-4 py-4 mt-4 hover:bg-[#0f4473]",
+            "bg-[#676e32] text-white rounded-md px-4 py-4 mt-4 hover:bg-[#7b8444]",
           label: "text-gray-500 dark:text-gray-400",
         }}
         content={{

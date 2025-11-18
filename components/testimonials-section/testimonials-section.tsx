@@ -36,8 +36,8 @@ export default function TestimonialsSection({isArabic}:Props) {
               key={i}
               className="relative overflow-hidden group transition-transform duration-500 transform-gpu hover:-translate-y-2 hover:shadow-[0_12px_25px_rgba(0,0,0,0.25)]"
               style={{
-                borderRadius: "2rem 0.5rem 2rem 0.5rem", // زوايا غير متماثلة
-                boxShadow: "0 6px 15px rgba(0,0,0,0.15)", // شادو أخف
+                borderRadius: "2rem 0.5rem 2rem 0.5rem", 
+                boxShadow: "0 6px 15px rgba(0,0,0,0.15)", 
               }}
             >
               {/* shine subtle عند hover */}

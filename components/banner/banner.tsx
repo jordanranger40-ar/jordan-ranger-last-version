@@ -8,6 +8,7 @@ import { newBanner } from "@/types";
 import Snavbar from "@/components/header/snavbar";
 import { Button } from "@/components/ui/button";
 import { newTraining, newCategory } from "@/types";
+import LightButton from "../ui/light-button";
 import {
   Carousel,
   CarouselContent,
@@ -62,9 +63,7 @@ export function Banner({ banners, locale, categories, trainingData }: Props) {
                     <div>
                       <h2 className="text-5xl font-bold">{title}</h2>
                       <p className="text-xl mt-6 max-w-3xl mx-auto">{description}</p>
-                      <Button variant="outline" className="text-black mt-6">
-                        enroll now
-                      </Button>
+                      <LightButton>Enroll Now</LightButton>
                     </div>
                   </div>
                 </article>
@@ -74,11 +73,11 @@ export function Banner({ banners, locale, categories, trainingData }: Props) {
         </CarouselContent>
 
         <CarouselPrevious
-          className="carousel-button left-4"
+          className="mt-4  bg-white text-[#484d23] font-semibold rounded-full shadow-md hover:bg-[#dcdca8] hover:scale-105 transition-all duration-300"
           onPointerDown={() => autoplay.current.stop()}
         />
         <CarouselNext
-          className="carousel-button right-4"
+          className="mt-4  bg-white text-[#484d23] font-semibold rounded-full shadow-md hover:bg-[#dcdca8] hover:scale-105 transition-all duration-300"
           onPointerDown={() => autoplay.current.stop()}
         />
       </Carousel>

@@ -7,31 +7,45 @@
     "restaurant": "المطعم",
     "facilities": "المرافق",
     "Orienteering": "التوجيه",
-    "expedition activities": " الرحلات الاستكشافية",
+    "expedition activities": "الرحلات الاستكشافية",
     "Ranger Camp Activity": "نشاط معسكر الرينجر",
     "tour operators": "منظمو الرحلات",
     "training room": "غرفة التدريب",
-  "activities": "الأنشطة",
-  "indooractivities": "الأنشطة الداخلية",
-  "outdooractivities": "الأنشطة الخارجية",
-  "test1": "اختبار داخلي 1",
-  "test2": "اختبار داخلي 2",
-  
+    "activities": "الأنشطة",
+    "indooractivities": "الأنشطة الداخلية",
+    "outdooractivities": "الأنشطة الخارجية",
     "menu": "القائمة",
     "menuDescription": "استخدم القائمة للتنقل داخل الموقع",
     "aboutus": "عن جوردان رينجر",
-    "ourclients": "عملائنا",  
+    "ourclients": "عملائنا",
     "contactus": "اتصل بنا",
-    "cabins":"الغرف",
-    "tents":"الخيام",
-    "corporateteambuilding":"بناء فريق الشركة",
-     "schooltraining":"تدريب المدرسة",
-     "rangeracademy":"رينجر اكاديمي"
-
+    "cabins": "الغرف",
+    "tents": "الخيام",
+    "corporateteambuilding": "بناء فريق الشركة",
+    "schooltraining": "تدريب المدرسة",
+    "rangeracademy": "رينجر أكاديمي"
   },
+
   "stats": {
     "projects": "المشاريع المكتملة",
     "clients": "العملاء",
     "experience": "سنوات الخبرة"
+  },
+
+  "Footer": {
+    "discoverTitle": "اكتشف مغامرتك القادمة",
+    "discoverDesc": "منصة التخييم والمغامرات المثالية في قلب الطبيعة.",
+    "importantLinks": "روابط مهمة",
+    "home": "الرئيسية",
+    "rooms": "غرفنا",
+    "trips": "الرحلات",
+    "events": "الفعاليات",
+    "bookNow": "احجز الآن",
+    "newsletter": "اشترك في النشرة",
+    "newsletterDesc": "اشترك ليصلك كل جديد وعروضنا الحصرية.",
+    "emailPlaceholder": "أدخل بريدك الإلكتروني",
+    "subscribe": "اشترك",
+    "followUs": "تابعنا",
+    "rights": "جميع الحقوق محفوظة."
   }
 }

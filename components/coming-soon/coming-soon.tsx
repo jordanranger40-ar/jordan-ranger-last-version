@@ -1,5 +1,6 @@
 
 import React from 'react'
+import LightButton from '../ui/light-button';
 interface Props {
     isArabic: boolean;
   }
@@ -19,9 +20,8 @@ export default function ComingSoon({isArabic}:Props) {
         ? "أنشطة جديدة وتجارب تخييم استثنائية بانتظاركم."
         : "New activities and unique camping experiences are on the way!"}
     </p>
-    <button className="bg-white text-[#484d23] font-semibold px-6 py-3 rounded-md hover:bg-[#dcdca8] transition-all duration-300">
-      {isArabic ? "اعرف أكثر" : "Learn More"}
-    </button>
+<LightButton>      {isArabic ? "اعرف أكثر" : "Learn More"}
+    </LightButton>
   </div>
   </section>
 
