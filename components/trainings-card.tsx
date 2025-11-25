@@ -18,7 +18,7 @@ export default function TrainingsCard({ data, isArabic }: Props) {
     >
       <div className="bg-[#676e32] rounded-full w-20 h-20 flex items-center justify-center mb-5 transition-transform transform">
         <img
-          src={data.image}
+          src={data.card_image}
           alt={isArabic ? data.name_ar : data.name_en}
           className="w-12 h-12 object-contain"
         />

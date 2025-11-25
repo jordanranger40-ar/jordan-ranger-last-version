@@ -39,6 +39,7 @@ export default function EditfeatureForm({ feature, action }: Props) {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    
   };
 
   const handleFormSubmit = () => {
@@ -67,7 +68,7 @@ export default function EditfeatureForm({ feature, action }: Props) {
         setTimeout(() => {
           setToast(null);
           router.push("/admin/dashboard/room_features");
-        }, 1500);
+        }, 750);
       } catch (error) {
         console.error(error);
         setToast({ message: "Failed to update feature.", type: "error" });

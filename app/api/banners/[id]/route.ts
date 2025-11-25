@@ -1,8 +1,8 @@
 
 import { NextResponse } from "next/server";
-import { type tokenPayload } from "../../consulting/route";
 import jwt, { Secret } from "jsonwebtoken";
 import { deleteBanner, editBanner } from "@/app/models/db/lib/services/banners";
+import {tokenPayload} from "@/types/index"
 
 export const PUT = async (
   request: Request,

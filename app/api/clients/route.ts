@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import Jwt, { Secret } from "jsonwebtoken";
-import { type tokenPayload } from "../consulting/route";
+import { type tokenPayload } from "@/types/index";
 import { addNewClient, getAllClients } from "@/app/models/db/lib/services/clients";
 
 export const POST = async (request: Request) => {

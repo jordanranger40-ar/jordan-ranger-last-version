@@ -5,90 +5,102 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Clock, User, Mail } from "lucide-react";
 import { bookActivity } from "./(fetch)/bookActivity";
-
-function formatDurationISO(startIso: string, endIso: string) {
-  const s = new Date(startIso);
-  const e = new Date(endIso);
-  const diffMs = e.getTime() - s.getTime();
-  const hours = Math.floor(diffMs / (1000 * 60 * 60));
-  const days = Math.floor(hours / 24);
-  const remHours = hours % 24;
-  if (days > 0)
-    return `${days} day${days > 1 ? "s" : ""}${remHours ? ` ${remHours}h` : ""}`;
-  return `${remHours} hour${remHours !== 1 ? "s" : ""}`;
-}
+import { toast } from "sonner";
 
 export default function ActivityBookingForm({
+  locale,
   activityId,
   selectedRange,
   available,
   price,
+  minimum_quantity,
   onBooked,
 }: {
+  locale: string;
   activityId: string;
-  selectedRange: { start: string; end: string };
+  selectedRange: { start: string };
   available: number;
-  price:number
+  price: number;
+  minimum_quantity: number;
   onBooked: (success: boolean, quantity: number) => void;
-
 }) {
+  const isArabic = locale === "ar";
+
+  
   const { data: session } = useSession();
   const router = useRouter();
-  const [quantity, setQuantity] = useState<number>(1);
+
+  const [quantity, setQuantity] = useState<number>(minimum_quantity);
   const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
   const [userTimeZone, setUserTimeZone] = useState<string>("");
+  const [showQuantityMessage, setShowQuantityMessage] = useState<boolean>(false);
+
+  useEffect(() => {
+    setQuantity(minimum_quantity);
+    if (Number(minimum_quantity) > 1) setShowQuantityMessage(true);
+  }, [minimum_quantity]);
 
   useEffect(() => {
     setUserTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone);
   }, []);
 
-  const duration = formatDurationISO(selectedRange.start, selectedRange.end);
-  console.log("type: ",typeof Number(duration[0]),duration[0]);
-  
-  console.log("yrgedhwjk: ",Number(selectedRange.end)-Number(selectedRange.start));
-  
+    console.log("isArabic: ",isArabic);
 
   const handleBook = async () => {
     if (!session) {
+      toast.error(
+        isArabic ? "يرجى تسجيل الدخول لحجز النشاط." : "Please login to book the activity."
+      );
       router.push("/login");
       return;
     }
-
-    if (quantity < 1 || quantity > available) {
-      setMsg("Invalid quantity");
+    if (!selectedRange?.start) {
+      toast.error(isArabic ? "يرجى اختيار الوقت." : "Please select a time.");
+      return;
+    }
+    if (quantity < minimum_quantity) {
+      toast.error(
+        isArabic
+          ? `الحد الأدنى للكمية هو ${minimum_quantity}`
+          : `Minimum quantity is ${minimum_quantity}`
+      );
+      return;
+    }
+    if (quantity > available) {
+      toast.error(
+        isArabic
+          ? `فقط ${available} مقاعد متاحة`
+          : `Only ${available} spaces available`
+      );
       return;
     }
 
     setLoading(true);
-    setMsg(null);
-
     try {
       const result = await bookActivity({
         activity_id: activityId,
         start_time: new Date(selectedRange.start),
-        end_time: new Date(selectedRange.end),
         quantity,
       });
 
       if (result.success) {
-        setMsg("✅ Booking confirmed!");
-        onBooked(true,quantity);
+        toast.success(isArabic ? "✅ تم إرسال الحجز!" : "✅ Booking Submitted!");
+        onBooked(true, quantity);
       } else {
-        setMsg(result.message || "Booking failed");
-        onBooked(false,quantity);
+        toast.error(result.message || (isArabic ? "فشل الحجز" : "Booking failed"));
+        onBooked(false, quantity);
       }
     } catch (err) {
       console.error(err);
-      setMsg("Network error");
-      onBooked(false,quantity);
+      toast.error(isArabic ? "خطأ في الشبكة" : "Network error");
+      onBooked(false, quantity);
     } finally {
       setLoading(false);
     }
   };
-  
+
   return (
-    <div className="border-t pt-6 mt-6 space-y-5 p-4 rounded-lg shadow-md bg-white">
+    <div className="border-t pt-6 mt-6 space-y-5 p-4 rounded-lg shadow-md bg-white" dir={isArabic ? "rtl" : "ltr"}>
       {/* User Info */}
       {session && (
         <div className="flex items-center gap-4 mb-4">
@@ -103,38 +115,56 @@ export default function ActivityBookingForm({
         </div>
       )}
 
-      {/* Selected Range */}
+      {/* Selected Time */}
       <div className="flex items-center gap-2 text-gray-700">
         <div>
           <div className="text-sm font-medium flex flex-row gap-2 mb-2">
-            <Clock className="w-5 h-5 text-gray-500" /> Selected range
+            <Clock className="w-5 h-5 text-gray-500" /> 
+            {isArabic ? "الوقت المحدد" : "Selected Time"}
           </div>
+
           <div className="text-gray-800 font-semibold mb-2">
-            {new Date(selectedRange.start).toLocaleString()} —{" "}
-            {new Date(selectedRange.end).toLocaleString()}
+            {selectedRange?.start
+              ? new Date(selectedRange.start).toLocaleString(isArabic ? "ar-JO" : "en-US", {
+                  timeZone: "Asia/Amman",
+                })
+              : isArabic ? "لم يتم اختيار الوقت" : "No time selected"}
           </div>
-          <div className="text-sm text-gray-500 mb-2">Duration: {duration}</div>
-          <div className="text-xs text-gray-400 ">
-            ⚠️ Times are shown in <strong>Jordan time (GMT+3)</strong>.  
-            Your local time zone: <strong>{userTimeZone}</strong>
+
+          <div className="text-xs text-gray-400">
+            ⚠️ {isArabic 
+                  ? "الأوقات معروضة بتوقيت الأردن (GMT+3). المنطقة الزمنية المحلية الخاصة بك:" 
+                  : "Times shown in Jordan time (GMT+3). Your local timezone:"} 
+            <strong> {userTimeZone}</strong>
           </div>
         </div>
       </div>
-<div className="text-sm text-gray-600 mb-2">Price: {price} JOD / Person / Hour</div>
+
+      {/* Price Info */}
+      <div className="text-sm text-gray-600 mb-2">
+        {isArabic ? "السعر" : "Price"}: {price} JOD / {isArabic ? "شخص" : "Person"}
+      </div>
+
       {/* Quantity Input */}
       <label className="block">
-        
-        <div className="text-sm text-gray-600 mb-2">Quantity (max {available} Persons)</div>
-        
+        <div className="text-sm text-gray-600 mb-2">
+          {isArabic
+            ? `الكمية (الحد الأدنى ${minimum_quantity}, الحد الأقصى ${available})`
+            : `Quantity (min ${minimum_quantity}, max ${available})`}
+        </div>
+
         <input
           type="number"
-          min={1}
+          min={Number(minimum_quantity)}
           max={available}
           value={quantity}
           onChange={(e) => setQuantity(Number(e.target.value))}
           className="border rounded-md px-3 py-2 w-32 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
         />
-         <div className="text-sm text-gray-600 mb-1 mt-2">Total Price: {price * quantity * Number(duration[0])} JOD </div>
+
+        <div className="text-sm text-gray-600 mb-1 mt-2">
+          {isArabic ? "السعر الإجمالي" : "Total Price"}: {price * quantity} JOD
+        </div>
       </label>
 
       {/* Book Button */}
@@ -144,18 +174,16 @@ export default function ActivityBookingForm({
           disabled={loading}
           className="bg-[#676e32] text-white px-6 py-2 rounded-md hover:bg-[#7c863a] disabled:opacity-60 transition"
         >
-          {loading ? "Booking..." : `Book (${quantity})`}
+          {loading ? (isArabic ? "جارٍ الحجز..." : "Booking...") : `${isArabic ? "احجز" : "Book"} (${quantity})`}
         </button>
+        {showQuantityMessage && (
+          <div className="flex justify-start text-sm flex-row font-semibold text-gray-500 mt-2">
+            {isArabic
+              ? `يجب أن تكون الكمية على الأقل ${minimum_quantity}`
+              : `Quantity should be at least ${minimum_quantity}`}
+          </div>
+        )}
       </div>
-
-      {/* Message */}
-      {msg && (
-        <div
-          className={`text-sm mt-2 ${msg.includes("✅") ? "text-green-600" : "text-red-600"}`}
-        >
-          {msg}
-        </div>
-      )}
     </div>
   );
 }

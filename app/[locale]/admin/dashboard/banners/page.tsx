@@ -1,118 +1,58 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import Link from "next/link";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { SquarePen, Plus } from "lucide-react";
-import { getBannerData } from "@/app/models/db/lib/services/banners";
-import Image from "next/image";
-import DeleteBannerButton from "@/components/banner/deleteBannerButton";
-import { deleteBanner } from "./(actions)/deleteBannerAction";
 
-export default async function UsersTable() {
-  const banners = await getBannerData();
+import { getBannerData } from "@/app/models/db/lib/services/banners";
+import { BannerColumns } from "@/components/columns/banner-columns";
+import { DataTable } from "@/components/data-table";
+import { deleteBanner } from "./(actions)/deleteBannerAction";
+import NavigationButton from "@/components/NavigationButton";
+import { Card, CardContent } from "@/components/ui/card";
+import { FolderOpen } from "lucide-react";
+
+export default async function BannerTable() {
+  const allBanners = (await getBannerData()) || [];
 
   return (
-    <main className="flex flex-col justify-center items-center xl:ml-5 m-2">
+    <main className="flex flex-col justify-center items-center ml-7 w-[75vw]">
       {/* Header */}
       <div className="flex flex-col justify-start items-start mb-6 border-b border-gray-300 w-full">
         <h1 className="text-lg md:text-2xl font-bold">Banners</h1>
         <h2 className="text-sm md:text-lg text-gray-600">
-          A list of your Banners.
+          A list of Banners.
         </h2>
       </div>
-{banners.length === 0 ? (
-        <div className="w-full text-center py-10 text-gray-500 text-lg min-w-[80vw]">
-          No banners found. Please add a new banner.
-        </div>
-      ) : (  <div className="w-full overflow-x-auto border border-gray-300 rounded-2xl p-2">
-        <div className="min-w-[80vw]">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead className="hidden xl:table-cell">Description</TableHead>
-                <TableHead>Image</TableHead>
-                <TableHead>Created At</TableHead>
-                <TableHead></TableHead>
-                <TableHead></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {banners.map((banner, i) => (
-                <TableRow key={i}>
-                  <TableCell className="text-xs sm:text-base">{banner.alt}</TableCell>
 
-                  {/* Description */}
-                  <TableCell className="text-xs sm:text-base hidden xl:table-cell">
-                    {banner.description_en?.substring(0, 50)}...
-                  </TableCell>
-
-                  {/* Image */}
-                  <TableCell className="text-xs sm:text-base">
-                    <Image
-                      src={banner.image ?? ""}
-                      alt={banner.alt}
-                      width={75}
-                      height={75}
-                      className="rounded-full object-cover"
-                    />
-                  </TableCell>
-
-                  {/* Created At */}
-                  <TableCell className="text-xs sm:text-base">
-                    {banner.created_at?.toLocaleDateString()}
-                  </TableCell>
-
-                  {/* Edit Icon */}
-                  <TableCell>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Link href={`/admin/dashboard/banners/${banner.id}`}>
-                            <SquarePen className="w-5 h-5 text-[#125892] cursor-pointer hover:text-[#125892]" />
-                          </Link>
-                        </TooltipTrigger>
-                        <TooltipContent side="top" align="center">
-                          <p>Edit</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </TableCell>
-
-                  {/* Delete Icon */}
-                  <TableCell>
-                    <DeleteBannerButton bannerId={banner.id ?? ""} deleteAction={deleteBanner} />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
-)}
-      {/* Table container */}
-    
-      {/* Add Button under the table */}
-      <div className="w-full flex justify-end mt-4">
-        <Link
-          href="/admin/dashboard/banners/newBanner"
-          className="bg-[#125892] hover:bg-[#0f4473] text-white px-5 py-3 rounded-md flex items-center gap-2"
-        >
-          <Plus className="w-5 h-5" />
-          Add
-        </Link>
-      </div>
+      {/* Conditional rendering */}
+      {allBanners.length === 0 ? (
+        <Card className="w-full h-64 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 bg-gray-50">
+          <CardContent className="flex flex-col items-center text-center">
+            <FolderOpen className="w-10 h-10 text-gray-400 mb-3" />
+            <h3 className="text-gray-600 text-lg font-medium">
+              No Banners Found
+            </h3>
+            <p className="text-gray-500 text-sm mb-4">
+              You Haven’t Added Any Banner Yet.
+            </p>
+            <NavigationButton
+              routeName="newClient"
+              value="Add New Client"
+            />
+          </CardContent>
+        </Card>
+      ) : (
+        <>
+          <DataTable
+            columns={BannerColumns}
+            data={allBanners}
+            routeName="banners"
+            deleteAction={deleteBanner}
+          />
+          <NavigationButton
+            routeName="newBanner"
+            value="Add New Banner"
+          />
+        </>
+      )}
     </main>
   );
 }
+
+

@@ -1,6 +1,6 @@
 import {
   bookARoom,
-  getAllRoomsbookings,
+  getAllRoomsBookings,
 } from "@/app/models/db/lib/services/room_booking";
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
@@ -14,6 +14,13 @@ export const POST = async (request: Request) => {
     } else {
       const body = await request.json();
       const result = await bookARoom(body);
+
+      if (!result) {
+        return NextResponse.json(
+          { message: "No result returned from bookARoom" },
+          { status: 400 }
+        );
+      }
       return NextResponse.json(
         { data: result.result, message: result.message },
         { status: result.status }
@@ -37,12 +44,12 @@ export const GET = async (request: Request) => {
         authHeader,
         process.env.NEXTAUTH_SECRET as string
       ) as tokenPayload;
-      console.log("payload: ",payload);
-      
+      console.log("payload: ", payload);
+
       if (payload.role !== "admin") {
         return NextResponse.json({ message: "Unauthorized" }, { status: 501 });
       } else {
-        const result = await getAllRoomsbookings();
+        const result = await getAllRoomsBookings();
         return NextResponse.json(
           { data: result.data, message: result.message },
           { status: result.status }

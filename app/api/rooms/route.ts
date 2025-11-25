@@ -26,6 +26,8 @@ export const POST = async (request: Request) => {
       }
     }
   } catch (error) {
+    console.log("error: ",error);
+    
     return NextResponse.json(
       { data: error, message: "error in adding the room" },
       { status: 500 }

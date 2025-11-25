@@ -1,6 +1,6 @@
 "use client";
 
-import { User, Mail, Clock, User2 } from "lucide-react";
+import { User, Mail,  User2 } from "lucide-react";
 import { format } from "date-fns";
 
 type BookingConfirmationProps = {
@@ -9,9 +9,7 @@ type BookingConfirmationProps = {
   end: string;
   quantity: number;
   price?: number;
-  // optional: controls how the price should be interpreted.
-  // "person" => price per person
-  // "person_per_hour" => price per person per hour (will multiply by duration hours)
+
   priceUnit?: "person" | "person_per_hour";
   user?: { name?: string; email?: string };
   onGoToCart: () => void;

@@ -31,7 +31,7 @@ function Page() {
         { email: form.email }
       );
       setSuccess(true);
-    } catch (error: any) {
+    } catch (error) {
       setMessage(
         isArabic
           ? "حدث خطأ أثناء إرسال الرابط. حاول مرة أخرى."

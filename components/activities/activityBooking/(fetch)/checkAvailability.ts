@@ -1,9 +1,9 @@
 export async function checkActivityAvailability(
   activityId: string,
   start: string,
-  end: string
+ 
 ): Promise<{ success: boolean; available?: number; message?: string }> {
-  if (!start || !end) {
+  if (!start ) {
     return { success: false, message: "Please choose start and end time" };
   }
 
@@ -14,7 +14,7 @@ export async function checkActivityAvailability(
         method: "POST",
         body: JSON.stringify({
           start_time: new Date(start).toISOString(),
-          end_time: new Date(end).toISOString(),
+       
         }),
       }
     );
@@ -25,6 +25,8 @@ export async function checkActivityAvailability(
       if (data.data > 0) {
         return { success: true, available: data.data };
       } else {
+        console.log(" data:v : ",data);
+        
         return { success: false, message: "Not available for selected time." };
       }
     } else {

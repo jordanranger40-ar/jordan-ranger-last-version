@@ -36,7 +36,7 @@ export default function CreateRoomForm({ action }: Props) {
     price: 0,
     cover_image: "",
     room_images: [],
-    roomFeatures: [],
+    room_features: [],
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -47,6 +47,8 @@ export default function CreateRoomForm({ action }: Props) {
     >
   ) => {
     const { name, value } = e.target;
+    console.log("name: ",name," value: ",value);
+    
     setForm((prev) => {
       const updated = { ...prev, [name]: value };
 
@@ -56,6 +58,10 @@ export default function CreateRoomForm({ action }: Props) {
           .replace(/&/g, "and")
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/^-+|-+$/g, "");
+      }
+
+      if (name === "price") {
+        updated.price = Number(value)
       }
 
       return updated;
@@ -175,6 +181,7 @@ export default function CreateRoomForm({ action }: Props) {
                     <span className="text-red-500">*</span> {field.label}
                   </label>
                   <select
+                  disabled={isPending}
                     name={field.name}
                     value={field.value}
                     onChange={handleInputChange}
@@ -207,6 +214,7 @@ export default function CreateRoomForm({ action }: Props) {
                     <span className="text-red-500">*</span> {field.label}
                   </label>
                   <input
+                  disabled={isPending}
                     type="text"
                     name={field.name}
                     value={field.value}
@@ -229,6 +237,7 @@ export default function CreateRoomForm({ action }: Props) {
                 <span className="text-red-500">*</span> Price
               </label>
               <input
+              disabled={isPending}
                 type="number"
                 name="price"
                 value={form.price}
@@ -261,6 +270,7 @@ export default function CreateRoomForm({ action }: Props) {
                     <span className="text-red-500">*</span> {field.label}
                   </label>
                   <textarea
+                  disabled={isPending}
                     name={field.name}
                     value={field.value}
                     onChange={handleInputChange}
@@ -281,12 +291,12 @@ export default function CreateRoomForm({ action }: Props) {
                 <span className="text-red-500">*</span> Room Features
               </label>
               <RoomFeaturesMultiSelect
-                selectedFeatures={form.roomFeatures}
+                selectedFeatures={form.room_features}
                 onChange={(features) =>
-                  setForm((prev) => ({ ...prev, roomFeatures: features }))
+                  setForm((prev) => ({ ...prev, room_features: features }))
                 }
               />
-              {errors.roomFeatures && (
+              {errors.room_features && (
                 <p className="text-red-500 text-sm mt-1">
                   {errors.roomFeatures}
                 </p>
@@ -342,6 +352,7 @@ export default function CreateRoomForm({ action }: Props) {
               <div className="flex gap-4">
                 <button
                   type="button"
+                  disabled={isPending}
                   className="px-5 py-2 rounded-md border border-gray-400 cursor-pointer text-gray-700 hover:bg-gray-100 transition"
                   onClick={() => router.replace("/admin/dashboard/rooms")}
                 >

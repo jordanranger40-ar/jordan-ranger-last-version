@@ -8,13 +8,6 @@ interface Props {
   selectedFeatures: roomFeatures[];
   onChange: (features: roomFeatures[]) => void;
   placeholder?: string;
-  maxHeight?: string;
-}
-
-interface Props {
-  selectedFeatures: roomFeatures[];
-  onChange: (features: roomFeatures[]) => void;
-  placeholder?: string;
   maxHeight?: string; // tailwind h- class fallback, e.g. "h-56"
 }
 

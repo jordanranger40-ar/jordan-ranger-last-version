@@ -2,6 +2,8 @@
 import { newActivitySchema } from "@/app/models/db/lib/schemas/activitySchema";
 import { newActivity } from "@/types";
 import ImageUploader from "@/components/imageUpload";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@radix-ui/react-dropdown-menu";
 import {
   Card,
   CardContent,
@@ -36,6 +38,8 @@ export default function CreateActivityForm({ action }: Props) {
     poster_image: "",
     header_image: "",
     capacity: 0,
+    coming_soon: false,
+    minimum_quantity: 1,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -51,7 +55,11 @@ export default function CreateActivityForm({ action }: Props) {
       let updated = { ...prev, [name]: value };
 
       // convert numeric inputs to numbers
-      if (name === "price" || name === "capacity") {
+      if (
+        name === "price" ||
+        name === "capacity" ||
+        name === "minimum_quantity"
+      ) {
         updated = { ...prev, [name]: Number(value) };
       }
 
@@ -96,7 +104,7 @@ export default function CreateActivityForm({ action }: Props) {
         setTimeout(() => {
           setToast(null);
           router.push("/admin/dashboard/activities");
-        }, 200);
+        }, 700);
       } catch (error) {
         console.error(error);
         setToast({ message: "Failed to Create Activity.", type: "error" });
@@ -168,6 +176,7 @@ export default function CreateActivityForm({ action }: Props) {
                     <span className="text-red-500">*</span> {field.label}
                   </label>
                   <select
+                  disabled={isPending}
                     name={field.name}
                     value={field.value}
                     onChange={handleInputChange}
@@ -200,6 +209,7 @@ export default function CreateActivityForm({ action }: Props) {
                     <span className="text-red-500">*</span> {field.label}
                   </label>
                   <input
+                  disabled={isPending}
                     type="text"
                     name={field.name}
                     value={field.value}
@@ -222,9 +232,9 @@ export default function CreateActivityForm({ action }: Props) {
                   <span className="text-red-500">*</span> Price
                 </label>
                 <input
+                disabled={isPending}
                   type="number"
                   name="price"
-                  value={form.price}
                   onChange={handleInputChange}
                   className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
                 />
@@ -233,8 +243,7 @@ export default function CreateActivityForm({ action }: Props) {
                 )}
               </div>
             </div>
-
-            {/* Capacity */}
+            {/* Capacity And Minimum Quantity */}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="flex flex-col md:w-[90%] ">
@@ -242,14 +251,31 @@ export default function CreateActivityForm({ action }: Props) {
                   <span className="text-red-500">*</span> Capacity
                 </label>
                 <input
+                disabled={isPending}
                   type="number"
                   name="capacity"
-                  value={form.capacity}
                   onChange={handleInputChange}
                   className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
                 />
                 {errors.capacity && (
                   <p className="text-red-500 text-sm mt-1">{errors.capacity}</p>
+                )}
+              </div>
+              <div className="flex flex-col md:w-[90%] ">
+                <label className="text-sm font-medium text-gray-700 mb-1">
+                  <span className="text-red-500">*</span> Minimum Quantity
+                </label>
+                <input
+                disabled={isPending}
+                  type="number"
+                  name="minimum_quantity"
+                  onChange={handleInputChange}
+                  className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
+                />
+                {errors.minimum_quantity && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.minimum_quantity}
+                  </p>
                 )}
               </div>
             </div>
@@ -273,6 +299,7 @@ export default function CreateActivityForm({ action }: Props) {
                     <span className="text-red-500">*</span> {field.label}
                   </label>
                   <textarea
+                  disabled={isPending}
                     name={field.name}
                     value={field.value}
                     onChange={handleInputChange}
@@ -285,6 +312,22 @@ export default function CreateActivityForm({ action }: Props) {
                   )}
                 </div>
               ))}
+            </div>
+
+            <div className="flex items-center gap-3  rounded-2xl border border-gray-200 p-4 bg-gray-50  w-fit">
+              <Checkbox
+                id="coming_soon"
+                name="coming_soon"
+                checked={form.coming_soon}
+                disabled={isPending}
+                onCheckedChange={(checked) => {
+                  setForm({ ...form, coming_soon: checked === true });
+                }}
+                className="shadow-black cursor-pointer"
+              />
+              <Label className="text-sm font-medium text-gray-800 cursor-pointer select-none">
+                Coming Soon
+              </Label>
             </div>
 
             {/* Card, Poster & Header Images */}
@@ -362,6 +405,7 @@ export default function CreateActivityForm({ action }: Props) {
             <div className="flex justify-center mt-8">
               <div className="flex gap-4">
                 <button
+                disabled={isPending}
                   type="button"
                   className="px-5 py-2 rounded-md border border-gray-400 cursor-pointer text-gray-700 hover:bg-gray-100 transition"
                   onClick={() => router.replace("/admin/dashboard/activities")}

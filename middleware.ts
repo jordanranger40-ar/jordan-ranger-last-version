@@ -21,15 +21,16 @@ export async function middleware(req: NextRequest) {
 
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const { nextUrl } = req;
+  const pathWithoutLocale = nextUrl.pathname.replace(/^\/(en|ar)/, "");
 
   const isLoggedIn = !!token;
   const role = token?.role;
 
-  const isOnProtectedRoute = protectedRoutes.includes(nextUrl.pathname);
-  const isAdminRoutes = adminRoutes.includes(nextUrl.pathname);
-  const isOnAuthRoute = authRoutes.includes(nextUrl.pathname);
+   const isOnProtectedRoute = protectedRoutes.some(route => pathWithoutLocale.startsWith(route));
+const isAdminRoutes = adminRoutes.some(route => pathWithoutLocale.startsWith(route));
+const isOnAuthRoute = authRoutes.some(route => pathWithoutLocale.startsWith(route));
 
-  if (isOnProtectedRoute && !isLoggedIn) {
+ if (isOnProtectedRoute && !isLoggedIn) {
     let callbackURL = nextUrl.pathname;
     if (nextUrl.search) callbackURL += nextUrl.search;
     const encodedCallbackURL = encodeURIComponent(callbackURL);

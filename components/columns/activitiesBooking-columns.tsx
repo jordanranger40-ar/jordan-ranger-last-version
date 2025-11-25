@@ -25,18 +25,7 @@ export const activitiesBookingsColumns: ColumnDef<ActivityBookingWithDetails>[] 
     enableSorting: false,
     enableHiding: false,
   },
-  {
-    accessorKey: "room_type_en",
-    header: ({ column }) => (
-      <button
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="flex items-center gap-1 cursor-pointer"
-      >
-        Room Type <ArrowUpDown className="h-4 w-4" />
-      </button>
-    ),
-    enableSorting: true,
-  },
+ 
   {
     accessorKey: "name_en",
     header: ({ column }) => (
@@ -44,7 +33,7 @@ export const activitiesBookingsColumns: ColumnDef<ActivityBookingWithDetails>[] 
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         className="flex items-center gap-1 cursor-pointer"
       >
-        Room Name <ArrowUpDown className="h-4 w-4" />
+        Activity Name <ArrowUpDown className="h-4 w-4" />
       </button>
     ),
     enableSorting: true,

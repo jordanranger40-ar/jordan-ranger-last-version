@@ -1,18 +1,15 @@
 import React from "react";
-import TrainingsCard from "@/components/trainings-card"
+import TrainingsCard from "@/components/trainings-card";
 import Link from "next/link";
-import {getTrainingByType} from "@/app/models/db/lib/services/training"
+import { getTrainingByType } from "@/app/models/db/lib/services/training";
 interface Props {
-    params: Promise<{ locale: string; slug: string ;  }>;
-     isArabic: boolean
-  }
+  isArabic: boolean;
+}
 
+export default async function TrainingSection({ isArabic }: Props) {
+  const data = await getTrainingByType("Schools Training");
 
-export default async function TrainingSection ({ isArabic  }: Props) {
-  const data=await getTrainingByType("Schools Training") 
- 
-  
-console.log(data.data)
+  console.log(data.data);
   return (
     <section
       dir={isArabic ? "rtl" : "ltr"}
@@ -29,15 +26,11 @@ console.log(data.data)
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 px-6 w-full max-w-7xl">
         {data.data.map((data, idx) => (
-               <Link  key={idx} href={`/training/school-training/${data.slug ?? ""}`}>
-     <TrainingsCard      isArabic={isArabic} data={data} />
-     </Link>
+          <Link key={idx} href={`/training/school-training/${data.slug ?? ""}`}>
+            <TrainingsCard isArabic={isArabic} data={data} />
+          </Link>
         ))}
       </div>
-
-    
     </section>
-  )
-};
-
-
+  );
+}

@@ -4,9 +4,9 @@ import TourOperatorsSection from "@/components/tour-operators/tourOperatorsSecti
 
 
 interface PageProps {
-    params: {
+    params: Promise<{
       locale: string;
-    };
+    }>;
   }
   
 

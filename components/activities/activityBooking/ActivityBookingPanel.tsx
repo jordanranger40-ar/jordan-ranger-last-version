@@ -3,85 +3,109 @@ import { useState, useRef, useEffect } from "react";
 import CheckAvailabilityForm from "./CheckAvailabilityForm";
 import ActivityBookingForm from "./ActivityBookingForm";
 import BookingConfirmation from "./BookingConfirmation";
+import BookingProgressBar from "./BookingProgressBar";
+import DarkButton from "@/components/ui/dark-button";
 import { CircleX } from "lucide-react";
 import { useSession } from "next-auth/react";
-import BookingProgressBar from "./BookingProgressBar"; 
-import DarkButton from "@/components/ui/dark-button";
+import { newActivity } from "@/types";
+import { useLocale } from "next-intl";
 
-type Activity = { id: string ; name: string; capacity?: number; price?: number };
+type Activity = newActivity;
 
 export default function ActivityBookingPanel({ activity }: { activity: Activity }) {
   const { data: session } = useSession();
   const userDetails = session?.user;
+  const locale = useLocale();
+  const isArabic = locale === "ar";
+
   const [open, setOpen] = useState(false);
   const [available, setAvailable] = useState<number | null>(null);
-  const [selectedRange, setSelectedRange] = useState<{ start: string; end: string } | null>(null);
+  const [selectedRange, setSelectedRange] = useState<{ start: string } | null>(null);
   const [bookingDone, setBookingDone] = useState(false);
   const [quantity, setQuantity] = useState(1);
+
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // ✅ Compute current booking step
   const currentStep = bookingDone ? 3 : selectedRange ? 2 : 1;
 
-  // close modal when clicking outside
+  // -----------------------------
+  // Handlers for modal behavior
+  // -----------------------------
+  const openModal = () => {
+    // Reset booking state but keep open true
+    setSelectedRange(null);
+    setAvailable(null);
+    setBookingDone(false);
+    setQuantity(1);
+    setOpen(true);
+  };
+
+  const closeModal = () => {
+    setOpen(false);
+    setSelectedRange(null);
+    setAvailable(null);
+    setBookingDone(false);
+    setQuantity(1);
+  };
+
+  // Close modal on click outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-        setOpen(false);
-        setBookingDone(false);
-        setSelectedRange(null);
-        setAvailable(null);
+        closeModal();
       }
     };
     if (open) document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
-  // close modal on Escape
+  // Close modal on Escape
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setOpen(false);
-        setBookingDone(false);
-      }
+      if (event.key === "Escape") closeModal();
     };
     if (open) document.addEventListener("keydown", handleEsc);
     return () => document.removeEventListener("keydown", handleEsc);
   }, [open]);
 
+  // -----------------------------
+  // Render
+  // -----------------------------
   return (
     <div className="mt-6">
-      <DarkButton
-        onClick={() => {
-          setOpen(true);
-          setAvailable(null);
-          setSelectedRange(null);
-          setBookingDone(false);
-        }}
-
-      >
-        Book this activity
+      <DarkButton onClick={openModal}>
+        {isArabic ? "احجز هذا النشاط" : "Book this activity"}
       </DarkButton>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div ref={modalRef} className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          dir={isArabic ? "rtl" : "ltr"}
+        >
+          <div
+            ref={modalRef}
+            className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative"
+          >
+            {/* Modal Header */}
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Book {activity.name}</h3>
-              <button onClick={() => setOpen(false)} className="text-gray-600 cursor-pointer">
+              <h3 className="text-lg font-semibold">
+                {isArabic
+                  ? `احجز ${activity.name_ar ?? activity.name_en}`
+                  : `Book ${activity.name_en}`}
+              </h3>
+              <button onClick={closeModal} className="text-gray-600 cursor-pointer">
                 <CircleX />
               </button>
             </div>
 
-            {/* ✅ Booking Progress Bar */}
-            <BookingProgressBar currentStep={currentStep} />
+            {/* Booking Progress */}
+            <BookingProgressBar currentStep={currentStep}  locale={locale}/>
 
-            {/* ✅ Step 3: Confirmation */}
+            {/* Step 3: Booking Confirmation */}
             {bookingDone && selectedRange && (
               <BookingConfirmation
-                activityName={activity.name}
+                activityName={isArabic ? activity.name_ar ?? activity.name_en : activity.name_en}
                 start={selectedRange.start}
-                end={selectedRange.end}
                 quantity={quantity}
                 price={activity.price ?? 1}
                 user={{
@@ -89,29 +113,32 @@ export default function ActivityBookingPanel({ activity }: { activity: Activity 
                   email: userDetails?.email ?? "",
                 }}
                 onGoToCart={() => {
-                  setOpen(false);
+                  closeModal();
                   window.location.href = "/my-cart";
                 }}
-                continueButton={() => setOpen(false)}
+                continueButton={closeModal}
+                locale={locale}
               />
             )}
 
-            {/* ✅ Step 1: Check Availability */}
+            {/* Step 1: Check Availability */}
             {!bookingDone && !selectedRange && (
               <CheckAvailabilityForm
-                activityId={activity.id}
+                activityId={activity.id ?? ""}
                 onAvailable={(remaining, range) => {
                   setAvailable(remaining);
                   setSelectedRange(range);
                 }}
+                locale={locale}
               />
             )}
 
-            {/* ✅ Step 2: Fill Booking Form */}
+            {/* Step 2: Booking Form */}
             {!bookingDone && selectedRange && available !== null && (
               <ActivityBookingForm
-                activityId={activity.id}
+                activityId={activity.id ?? ""}
                 available={available}
+                minimum_quantity={activity.minimum_quantity}
                 price={activity.price ?? 1}
                 selectedRange={selectedRange}
                 onBooked={(success, bookedQuantity) => {
@@ -120,6 +147,7 @@ export default function ActivityBookingPanel({ activity }: { activity: Activity 
                     setBookingDone(true);
                   }
                 }}
+                locale={locale}
               />
             )}
           </div>

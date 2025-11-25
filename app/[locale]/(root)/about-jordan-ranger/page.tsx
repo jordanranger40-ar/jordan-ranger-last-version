@@ -15,9 +15,9 @@ type Client = {
 };
 
 interface PageProps {
-  params: {
+  params: Promise <{
     locale: string;
-  };
+  }>;
 }
 
 export default async function AboutPage({ params }: PageProps) {

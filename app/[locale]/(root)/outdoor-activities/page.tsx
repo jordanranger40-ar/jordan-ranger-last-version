@@ -2,9 +2,9 @@ import React from 'react'
 import OutdoorActivitiesHeader from '@/components/activities/outdoor-activities/outdoor-activities-header'
 import OutdoorAvtivitiesSection from '@/components/activities/outdoor-activities/outdoor-activities-section'
 interface PageProps {
-    params: {
+    params: Promise<{
       locale: string;
-    };
+    }>;
   }
 export default async function page({ params }: PageProps) {
   const { locale } = await params;

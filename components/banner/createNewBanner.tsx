@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import {toast} from "sonner"
 
 interface Props {
   action: (data: {
@@ -28,10 +29,7 @@ export default function AddBannerForm({ action }: Props) {
     description_ar: "",
     image: "",
   });
-
   const [isPending, startTransition] = useTransition();
-  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -42,8 +40,7 @@ export default function AddBannerForm({ action }: Props) {
 
   const handleUploadError = (error: Error) => {
     console.error(error);
-    setToast({ message: `Upload failed: ${error.message}`, type: "error" });
-    setTimeout(() => setToast(null), 3000);
+    toast.error(`Upload failed: ${error.message}`)
   };
 
   const handleImageDelete = () => {
@@ -54,16 +51,13 @@ export default function AddBannerForm({ action }: Props) {
     startTransition(async () => {
       try {
         await action({ ...form });
-        setToast({ message: "Banner added successfully!", type: "success" });
-
+        toast.success("Banner added successfully!")
         setTimeout(() => {
-          setToast(null);
           router.replace("/admin/dashboard/banners");
         }, 1500);
       } catch (error) {
         console.error(error);
-        setToast({ message: "Failed to add banner.", type: "error" });
-        setTimeout(() => setToast(null), 3000);
+        toast.success("Failed to add banner.")
       }
     });
   };
@@ -152,7 +146,7 @@ export default function AddBannerForm({ action }: Props) {
                 </button>
                 <button
                   type="submit"
-                  className="bg-[#125892] text-white px-4 py-2 rounded-md cursor-pointer hover:bg-[#0f4473]"
+                  className="bg-[#676e32] text-white px-4 py-2 rounded-md cursor-pointer hover:bg-[#89971b]"
                   disabled={isPending}
                 >
                   {isPending ? "Adding..." : "Add Banner"}
@@ -162,16 +156,7 @@ export default function AddBannerForm({ action }: Props) {
           </CardContent>
         </Card>
       </form>
-
-      {toast && (
-        <div
-          className={`fixed bottom-5 right-5 z-50 px-5 py-3 rounded-lg shadow-lg text-white font-medium transition-all duration-300 ${
-            toast.type === "success" ? "bg-green-600" : "bg-red-600"
-          }`}
-        >
-          {toast.message}
-        </div>
-      )}
+      
     </main>
   );
 }

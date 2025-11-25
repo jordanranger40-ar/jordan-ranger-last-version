@@ -1,12 +1,5 @@
 "use server";
 
-/*
-import { BannerData } from "@/types/index";
-
-export const getBannerData= async (): Promise<BannerData[]> => {
-  const result = await pool.query<BannerData>("SELECT * FROM banners");
-  return result.rows;
-};*/
 
 import { newBanner } from "@/types";
 import pool from "../index";

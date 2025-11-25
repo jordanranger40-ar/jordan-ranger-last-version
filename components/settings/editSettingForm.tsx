@@ -1,6 +1,5 @@
 "use client";
 import { newSetting } from "@/types";
-import ImageUploader from "@/components/imageUpload";
 import {
   Card,
   CardContent,
@@ -22,7 +21,7 @@ interface prop {
   action: (data: newSetting) => Promise<void>;
 }
 
-function editSettingForm({ setting, action }: prop) {
+function EditSettingForm({ setting, action }: prop) {
   const router = useRouter();
   const [form, setForm] = useState<newSetting>({
     id: setting.id ?? "",
@@ -44,19 +43,6 @@ function editSettingForm({ setting, action }: prop) {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleUploadComplete = (url: string) => {
-    setForm({ ...form, value_en: url });
-  };
-
-  const handleUploadError = (error: Error) => {
-    console.error(error);
-    setToast({ message: `Upload failed: ${error.message}`, type: "error" });
-    setTimeout(() => setToast(null), 3000);
-  };
-
-  const handleImageDelete = () => {
-    setForm({ ...form, value_en: "" });
-  };
 
   const handleFormSubmit = () => {
     startTransition(async () => {
@@ -209,4 +195,4 @@ function editSettingForm({ setting, action }: prop) {
   );
 }
 
-export default editSettingForm;
+export default EditSettingForm;

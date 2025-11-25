@@ -43,3 +43,12 @@ export const deleteClient = async (id: string) => {
     return result.rows;
   }
 };
+
+
+export const getClientById = async (id: string) => {
+  const result = await pool.query("select * from clients where id=$1 ", [
+    id,
+  ]);
+  
+    return result.rows;
+  }

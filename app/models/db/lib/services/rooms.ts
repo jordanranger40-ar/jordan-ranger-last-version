@@ -9,13 +9,15 @@ export const addNewRoom = async (newRoom: newRoom) => {
     description_ar,
     cover_image,
     price,
-    roomFeatures,
+    room_features,
     room_images,
-    slug
+    slug,
+    room_type_en,
+    room_type_ar,
   } = newRoom;
 
   const result1 = await pool.query<newRoom>(
-    "INSERT INTO rooms (name_en, description_en, name_ar, description_ar, cover_image, price, room_images,slug) VALUES ($1,$2,$3,$4,$5,$6, $7::text[],$8) RETURNING *",
+    "INSERT INTO rooms (name_en, description_en, name_ar, description_ar, cover_image, price, room_images,slug, room_type_en,room_type_ar) VALUES ($1,$2,$3,$4,$5,$6, $7::text[],$8,$9,$10) RETURNING *",
     [
       name_en,
       description_en,
@@ -24,12 +26,14 @@ export const addNewRoom = async (newRoom: newRoom) => {
       cover_image,
       price,
       room_images,
-      slug
+      slug,
+      room_type_en,
+      room_type_ar,
     ]
   );
 
   const checkFeature = await Promise.all(
-    roomFeatures.map(async (feature) => {
+    room_features.map(async (feature) => {
       const existing = await pool.query<roomFeatures>(
         `SELECT id FROM room_features 
          WHERE feature_title_en = $1 AND feature_description_en = $2`,
@@ -84,8 +88,10 @@ export const editRoom = async (id: string, modifiedRoom: modifiedRoom) => {
          cover_image = COALESCE($5, cover_image),
          price = COALESCE($6, price),
          room_images = COALESCE($7, room_images),
-         slug = COALESCE($8, slug)
-     WHERE id = $9
+         slug = COALESCE($8, slug),
+         room_type_en = COALESCE($9, room_type_en),
+         room_type_ar = COALESCE($10, room_type_ar)
+     WHERE id = $11
      RETURNING *`,
     [
       modifiedRoom.name_en,
@@ -96,6 +102,8 @@ export const editRoom = async (id: string, modifiedRoom: modifiedRoom) => {
       modifiedRoom.price,
       modifiedRoom.room_images,
       modifiedRoom.slug,
+      modifiedRoom.room_type_en,
+      modifiedRoom.room_type_ar,
       id,
     ]
   );
@@ -104,8 +112,8 @@ export const editRoom = async (id: string, modifiedRoom: modifiedRoom) => {
   await pool.query("DELETE FROM rooms_with_features WHERE room_id = $1", [id]);
 
   // ✅ Re-insert new links
-  if (modifiedRoom.roomFeatures && modifiedRoom.roomFeatures.length > 0) {
-    for (const feature of modifiedRoom.roomFeatures) {
+  if (modifiedRoom.room_features && modifiedRoom.room_features.length > 0) {
+    for (const feature of modifiedRoom.room_features) {
       // Ensure the feature exists (if new)
       let featureId = feature.id;
 
@@ -146,7 +154,6 @@ export const editRoom = async (id: string, modifiedRoom: modifiedRoom) => {
   return { room: result.rows[0] };
 };
 
-
 export const deleteRoomById = async (id: string) => {
   await pool.query("delete from rooms_with_features where room_id= $1", [id]);
 
@@ -159,14 +166,17 @@ export const deleteRoomById = async (id: string) => {
 };
 
 export const getRoomById = async (id: string) => {
+  console.log("idmnbtrftyuiopoiugf id: ", id);
+
   const result = await pool.query(
-    "SELECT r.id, r.name_en, r.description_en, r.name_ar, r.description_ar, r.cover_image, r.price, r.room_images, json_agg(json_build_object('id', f.id,'feature_title_en', f.feature_title_en,'feature_description_en', f.feature_description_en,'feature_title_ar', f.feature_title_ar,'feature_description_ar', f.feature_description_ar) ) AS features FROM rooms r LEFT JOIN rooms_with_features rwf ON r.id = rwf.room_id LEFT JOIN room_features f ON f.id = rwf.room_features_id where r.id=$1 GROUP BY r.id; ",
+    "SELECT r.id, r.name_en, r.description_en, r.name_ar, r.description_ar, r.cover_image, r.price, r.room_images,r.slug, r.room_type_en,r.room_type_ar, json_agg(json_build_object('id', f.id,'feature_title_en', f.feature_title_en,'feature_description_en', f.feature_description_en,'feature_title_ar', f.feature_title_ar,'feature_description_ar', f.feature_description_ar) ) AS room_features FROM rooms r LEFT JOIN rooms_with_features rwf ON r.id = rwf.room_id LEFT JOIN room_features f ON f.id = rwf.room_features_id where r.id=$1 GROUP BY r.id; ",
     [id]
   );
 
+  console.log("result: ", result);
+
   return result.rows[0];
 };
-
 
 export const getRoomBySlug = async (slug: string) => {
   const result = await pool.query<newRoom>(
@@ -177,13 +187,24 @@ export const getRoomBySlug = async (slug: string) => {
   return result.rows[0];
 };
 
-
-
-export const getRoomsByRoomType= async (roomType:string)=>{
-   const result = await pool.query<newRoom>(
+export const getRoomsByRoomType = async (roomType: string) => {
+  const result = await pool.query<newRoom>(
     "SELECT r.id, r.name_en, r.description_en, r.slug , r.name_ar, r.description_ar, r.cover_image, r.price, r.room_images, json_agg(json_build_object('id', f.id,'feature_title_en', f.feature_title_en,'feature_description_en', f.feature_description_en,'feature_title_ar', f.feature_title_ar,'feature_description_ar', f.feature_description_ar) ) AS features FROM rooms r LEFT JOIN rooms_with_features rwf ON r.id = rwf.room_id LEFT JOIN room_features f ON f.id = rwf.room_features_id where r.room_type_en=$1  GROUP BY r.id ",
     [roomType]
   );
 
   return result.rows;
+};
+
+
+export const getRoomsNameAndId= async ()=>{
+
+  try {
+    const result= await pool.query<{ id: string; name_en: string }>("select id,name_en from rooms")
+    return result.rows
+  } catch (error) {
+    console.log(error);
+    return "Error In Getting The Rooms Names And ID"
+    
+  }
 }

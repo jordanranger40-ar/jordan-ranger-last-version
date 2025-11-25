@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import jwt, { Secret } from "jsonwebtoken";
-import { tokenPayload } from "../../../consulting/route";
+import { type tokenPayload } from "@/types/index";
 import { editUser, removeUser } from "@/app/models/db/lib/services/users";
 
 export const PUT = async (

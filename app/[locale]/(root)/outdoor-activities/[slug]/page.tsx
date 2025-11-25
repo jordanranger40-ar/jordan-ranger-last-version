@@ -3,12 +3,13 @@ import ActivityBookingPanel from "@/components/activities/activityBooking/Activi
 import Image from "next/image";
 
 interface PageProps {
-  params: { locale: string; slug: string | string[] };
+  params: Promise<{ locale: string; slug: string  }>;
 }
 
 export default async function Page({ params }: PageProps) {
-  const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
-  const isArabic = params.locale === "ar";
+  const par= await params
+  const slug = Array.isArray(par.slug) ? par.slug[0] : par.slug;
+  const isArabic = par.locale === "ar";
   const direction = isArabic ? "rtl" : "ltr";
 
   const activityData = await getActivityBySlug(slug);
@@ -56,7 +57,7 @@ export default async function Page({ params }: PageProps) {
           {isArabic ? activity.name_ar : activity.name_en}
         </h2>
 
-        <p className="mb-6 text-gray-700 break-words">
+        <p className="mb-6 text-gray-700 ">
           {isArabic ? activity.description_ar : activity.description_en}
         </p>
 
@@ -64,12 +65,7 @@ export default async function Page({ params }: PageProps) {
           <div className="flex w-full">
             <div className={isArabic ? "self-end" : "self-start"}>
               <ActivityBookingPanel
-                activity={{
-                  id: activity.id,
-                  name: isArabic ? activity.name_ar : activity.name_en,
-                  capacity: activity.capacity,
-                  price: activity.price,
-                }}
+                activity={activity}
               />
             </div>
           </div>

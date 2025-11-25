@@ -1,10 +1,9 @@
 import React from "react";
 import { getServerSession } from "next-auth";
-import Link from "next/link";
 
 import { getAllcategories } from "@/app/models/db/lib/services/Accommodation";
 import { getAllTraining } from "@/app/models/db/lib/services/training";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/models/db/authOptions";
 
 import Menu from "./menu";
 import LanguageSwitcher from "./languageSwitcher";

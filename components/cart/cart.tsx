@@ -14,12 +14,16 @@ const Cart: React.FC<CartProps> = ({ data, action }: CartProps) => {
 
   const shipping = 0;
   const tax = 0;
+ let total_amount:number=0
+  if(data){
+total_amount= Number(data[0].total_amount)
+  }
 
   const handleRemoveItem = async (id?: string) => {
     if (!id) return;
 
     try {
-      await action(id);
+       action(id);
       console.log(id);
 
       setCartItems((prev) => prev.filter((item) => item.id !== id));
@@ -92,7 +96,7 @@ const Cart: React.FC<CartProps> = ({ data, action }: CartProps) => {
             <li className="flex justify-between text-sm text-[#484d23]">
               Total{" "}
               <span className="font-semibold">
-                ${Number(data[0].total_amount).toFixed(2)}
+                ${Number(total_amount).toFixed(2)}
               </span>
             </li>
           </ul>

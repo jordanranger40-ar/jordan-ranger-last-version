@@ -9,13 +9,13 @@ type Client = {
 };
 
 interface PageProps {
-  params: {
+  params: Promise<{
     locale: string;
-  };
+  }>;
 }
 
 export default async function OurClients({ params }: PageProps) {
-  const { locale } = params;
+  const { locale } = await params;
   const isArabic = locale === "ar";
 
   const clients: Client[] = await getAllClients();

@@ -158,7 +158,7 @@ export default function EditBannerForm({ banner, action }: Props) {
                 </button>
                 <button
                   type="submit"
-                  className="bg-[#125892] text-white px-4 py-2 rounded-md cursor-pointer hover:bg-[#0f4473]"
+                  className="bg-[#676e32] text-white px-4 py-2 rounded-md cursor-pointer hover:bg-[#7e8d0d]"
                   disabled={isPending}
                 >
                   {isPending ? "Updating..." : "Save Changes"}

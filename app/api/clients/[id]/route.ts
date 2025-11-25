@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { type tokenPayload } from "../../consulting/route";
+import { type tokenPayload } from "@/types/index";
 import jwt, { Secret } from "jsonwebtoken";
 import { deleteClient, editClients } from "@/app/models/db/lib/services/clients";
 

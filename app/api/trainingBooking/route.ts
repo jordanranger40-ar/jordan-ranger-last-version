@@ -14,6 +14,10 @@ export const POST = async (request: Request) => {
     } else {
       const body = await request.json();
       const result = await bookATraining(body);
+       if (!result) return NextResponse.json(
+        { data: null, message: "Training not found" },
+        { status: 404 }
+      );
       return NextResponse.json(
         { data: result.result, message: result.message },
         { status: result.status }

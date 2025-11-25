@@ -22,6 +22,12 @@ import {
 } from "@/components/ui/select";
 import { newSetting } from "@/types";
 
+type UploadThingFile = {
+  url: string;
+  name: string;
+  key: string;
+};
+
 interface Option {
   value: string; // key stored in DB (key_name_en)
   label: string; // human label shown to user
@@ -100,7 +106,7 @@ export default function CreateNewSetting({
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setField(e.target.name as keyof newSetting, e.target.value as any);
+    setField(e.target.name as keyof newSetting, e.target.value );
   };
 
   // Called by ImageUploader on completion
@@ -119,7 +125,7 @@ export default function CreateNewSetting({
   };
 
   // Video upload via UploadDropzone (UploadThing) — make sure you created "videos" endpoint on server
-  const handleVideoUploadComplete = (res: any) => {
+  const handleVideoUploadComplete = (res: UploadThingFile[]) => {
     setIsUploading(false);
     if (res && res[0]) {
       const url = res[0].url as string;

@@ -36,7 +36,7 @@ import {
   SquarePen,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-
+import BulkDeleteButton from "./BulkDeleteButton";
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData, TValue> {
     hiddenByDefault?: boolean;
@@ -57,19 +57,21 @@ export function DataTable<TData>({
   deleteAction,
 }: DataTableProps<TData>) {
   const initialVisibility: VisibilityState = Object.fromEntries(
-    columns.map((col) => {
-      const key =
-        col.id ??
-        (col as { accessorKey?: string }).accessorKey ??
-        undefined;
-      if (!key) return [];
-      return [key, col.meta?.hiddenByDefault ? false : true];
-    }).filter((entry): entry is [string, boolean] => entry.length === 2)
+    columns
+      .map((col) => {
+        const key =
+          col.id ?? (col as { accessorKey?: string }).accessorKey ?? undefined;
+        if (!key) return [];
+        return [key, col.meta?.hiddenByDefault ? false : true];
+      })
+      .filter((entry): entry is [string, boolean] => entry.length === 2)
   );
 
   const [columnVisibility, setColumnVisibility] =
     useState<VisibilityState>(initialVisibility);
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [rowSelection, setRowSelection] = useState({});
+
   const router = useRouter();
 
   const columnsWithActions: ColumnDef<TData>[] = [
@@ -81,7 +83,7 @@ export function DataTable<TData>({
         const rowData = row.original as TData & { id: string };
         return (
           <div className="flex gap-2">
-            <Button
+            {<Button
               size="sm"
               variant="outline"
               onClick={() => router.push(`${routeName}/${rowData.id}`)}
@@ -89,7 +91,7 @@ export function DataTable<TData>({
             >
               <SquarePen />
             </Button>
-            <DeleteButton id={rowData.id ?? ""} deleteAction={deleteAction} />
+            }<DeleteButton id={rowData.id ?? ""} deleteAction={deleteAction} />
           </div>
         );
       },
@@ -104,23 +106,43 @@ export function DataTable<TData>({
     state: {
       columnVisibility,
       sorting,
+      rowSelection,
     },
     onColumnVisibilityChange: setColumnVisibility,
     onSortingChange: setSorting,
+    onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
 
+  const selectedRows = table.getSelectedRowModel().flatRows;
+console.log("table.getSelectedRowModel(): ",table.getSelectedRowModel());
+
+  const selectedIds = selectedRows.map(
+    (row) => (row.original as TData & { id: string }).id
+  );
+
   return (
-    <div className="space-y-4 mb-20 ml-4 mr-4 w-full">
+    <div className="space-y-4 mb-20 ml-0 mr-0 lg:ml-4 lg:mr-4 w-full">
       {/* === Column Visibility Menu === */}
-      <div className="flex items-center justify-between">
+      <div className="flex justify-end flex-row items-end gap-2">
+         {selectedIds.length > 0 && (
+        <BulkDeleteButton
+          ids={selectedIds}
+          deleteAction={deleteAction}
+          onFinish={() => {
+            setRowSelection({});
+            router.refresh?.();
+          }}
+        />
+      )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
+            <Button variant="outline" className="">
               View <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
+            
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
@@ -134,7 +156,7 @@ export function DataTable<TData>({
                   checked={column.getIsVisible()}
                   onCheckedChange={(value) => column.toggleVisibility(!!value)}
                 >
-                  { column.id}
+                  {column.id}
                 </DropdownMenuCheckboxItem>
               ))}
           </DropdownMenuContent>

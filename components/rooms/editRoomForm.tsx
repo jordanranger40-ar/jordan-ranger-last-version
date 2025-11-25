@@ -19,6 +19,8 @@ interface Props {
 }
 
 export default function EditRoomForm({ room, action }: Props) {
+  console.log("room bfhidaiadijadi: ",room);
+
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [toast, setToast] = useState<{
@@ -37,7 +39,9 @@ export default function EditRoomForm({ room, action }: Props) {
     price: room.price,
     cover_image: room.cover_image ?? "",
     room_images: room.room_images ?? [],
-    roomFeatures: room.roomFeatures ?? [],
+   room_features: (room.room_features ?? []).filter(
+  (f: roomFeatures) => f && f.id
+),
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -48,6 +52,8 @@ export default function EditRoomForm({ room, action }: Props) {
     >
   ) => {
     const { name, value } = e.target;
+    console.log("name: ",name,"value: ",value);
+    
     setForm((prev) => {
       const updated = { ...prev, [name]: value };
 
@@ -57,6 +63,10 @@ export default function EditRoomForm({ room, action }: Props) {
           .replace(/&/g, "and")
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/^-+|-+$/g, "");
+      }
+
+      if (name === "price") {  
+        updated.price = Number(value) 
       }
 
       return updated;
@@ -79,7 +89,7 @@ export default function EditRoomForm({ room, action }: Props) {
       setTimeout(() => setToast(null), 3000);
       return;
     }
-    console.log("form.roomFeatures: ", form.roomFeatures);
+    console.log("form.roomFeatures: ", form.room_features);
 
     setErrors({});
     startTransition(async () => {
@@ -113,6 +123,9 @@ export default function EditRoomForm({ room, action }: Props) {
   const handleRoomImagesDelete = () => {
     setForm((prev) => ({ ...prev, room_images: [] }));
   };
+
+  console.log("FORM FEATURES:", form.room_features);
+
 
   return (
     <main className="ml-3 xl:ml-7 mb-10 text-gray-800">
@@ -180,6 +193,7 @@ export default function EditRoomForm({ room, action }: Props) {
                   <select
                     name={field.name}
                     value={field.value}
+                    disabled={isPending}
                     onChange={handleInputChange}
                     className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
                   >
@@ -213,6 +227,7 @@ export default function EditRoomForm({ room, action }: Props) {
                     type="text"
                     name={field.name}
                     value={field.value}
+                    disabled={isPending}
                     onChange={handleInputChange}
                     className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
                   />
@@ -235,6 +250,7 @@ export default function EditRoomForm({ room, action }: Props) {
                   type="number"
                   name="price"
                   value={form.price}
+                  disabled={isPending}
                   onChange={handleInputChange}
                   className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
                 />
@@ -265,6 +281,7 @@ export default function EditRoomForm({ room, action }: Props) {
                   <textarea
                     name={field.name}
                     value={field.value}
+                    disabled={isPending}
                     onChange={handleInputChange}
                     className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 h-[12vh] resize-none focus:outline-none focus:ring-2 focus:ring-[#676e32]"
                   />
@@ -283,9 +300,9 @@ export default function EditRoomForm({ room, action }: Props) {
                 <span className="text-red-500">*</span> Room Features
               </label>
               <RoomFeaturesMultiSelect
-                selectedFeatures={form.roomFeatures}
+                selectedFeatures={form.room_features}
                 onChange={(features) =>
-                  setForm((prev) => ({ ...prev, roomFeatures: features }))
+                  setForm((prev) => ({ ...prev, room_features: features }))
                 }
               />
               {errors.roomFeatures && (
@@ -343,6 +360,7 @@ export default function EditRoomForm({ room, action }: Props) {
             <div className="flex justify-center mt-8">
               <div className="flex gap-4">
                 <button
+                disabled={isPending}
                   type="button"
                   className="px-5 py-2 rounded-md border border-gray-400 cursor-pointer text-gray-700 hover:bg-gray-100 transition"
                   onClick={() => router.replace("/admin/dashboard/rooms")}
@@ -350,6 +368,7 @@ export default function EditRoomForm({ room, action }: Props) {
                   Cancel
                 </button>
                 <button
+                
                   type="submit"
                   className="px-5 py-2 rounded-md bg-[#676e32] text-white cursor-pointer hover:bg-[#7b8444] transition"
                   disabled={isPending}

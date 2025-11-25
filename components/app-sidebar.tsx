@@ -13,18 +13,18 @@ import {
 } from "@/components/ui/sidebar";
 
 import {
-  Tag,
+ 
   Ticket,
-  Users,
   LayoutDashboard,
   UserCheck,
-  Handshake,
-  BookOpen,
+  
   PenLine,
   Crown,
   House,
-  FilePen,
   Settings,
+  Warehouse,
+  CalendarClock,
+  Activity
 } from "lucide-react";
 
 import logoDash from "@/public/images/reversed logo.png";
@@ -39,25 +39,26 @@ const items = [
     url: "/admin/dashboard/room_features",
     icon: Settings,
   },
-  { title: "Rooms ", url: "/admin/dashboard/rooms", icon: Settings },
+  { title: "Rooms ", url: "/admin/dashboard/rooms", icon: Warehouse },
   {
     title: "Room Booking ",
     url: "/admin/dashboard/roomsBooking",
-    icon: Settings,
+    icon: CalendarClock,
   },
 
   { title: "Training", url: "/admin/dashboard/training", icon: PenLine },
   {
     title: "TrainingBooking",
     url: "/admin/dashboard/trainingsBooking",
-    icon: PenLine,
+    icon: CalendarClock,
   },
-  { title: "Activities", url: "/admin/dashboard/activities", icon: BookOpen },
+  { title: "Activities", url: "/admin/dashboard/activities", icon: Activity },
   {
     title: "ActivitiesBooking",
     url: "/admin/dashboard/activitiesBooking",
-    icon: BookOpen,
+    icon: CalendarClock,
   },
+  { title: "Disable Dates", url: "/admin/dashboard/disable_booking", icon: Activity },
 
   { title: "Clients", url: "/admin/dashboard/clients", icon: Crown },
 ];

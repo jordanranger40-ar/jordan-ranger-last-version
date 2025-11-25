@@ -17,7 +17,6 @@ interface ImageUploaderProps {
 export default function ImageUploader({
   endpoint,
   onUploadComplete,
-  onUploadError,
   initialImageUrl,
   onDelete,
 }: ImageUploaderProps) {

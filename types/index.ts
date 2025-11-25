@@ -100,9 +100,11 @@ export type newTraining = {
   end_date: Date;
   price: number;
   capacity: number;
-  image: string;
+  card_image: string;
   is_deleted: boolean;
   slug: string;
+  post_image: string;
+  header_image: string;
 };
 export type newUser = {
   id?: string;
@@ -270,7 +272,7 @@ export type RoomBookingWithDetails = {
 };
 
 export type ActivityBookingWithDetails = {
-  id: string; // training_booking id
+  id: string; 
   is_confirmed: boolean;
   is_deleted: boolean;
   created_at: Date;
@@ -320,7 +322,7 @@ export type TrainingBookingWithDetails = {
   description_en: string;
   name_ar: string;
   description_ar: string;
-  image: string;
+  card_image: string;
   category_en: string;
   category_ar: string;
   capacity: number;
@@ -328,6 +330,8 @@ export type TrainingBookingWithDetails = {
   start_date: Date;
   end_date: Date;
   slug: string;
+  post_image: string;
+  header_image: string;
 };
 
 export type roomFeatures = {
@@ -349,7 +353,7 @@ export type newRoom = {
   price: number;
   room_images: string[];
   is_deleted?: boolean;
-  roomFeatures: roomFeatures[];
+  room_features: roomFeatures[];
   room_type_en: string;
   room_type_ar: string;
   slug: string;
@@ -365,7 +369,7 @@ export type modifiedRoom = {
   price: number;
   room_images: string[];
   is_deleted?: boolean;
-  roomFeatures: roomFeatures[];
+  room_features: roomFeatures[];
   room_type_en: string;
   room_type_ar: string;
   slug: string;
@@ -409,18 +413,20 @@ export type newActivity = {
   capacity: number;
   price: number;
   slug: string;
+  minimum_quantity:number,
+  coming_soon:boolean
 };
 
 export type newActivityBooking = {
   id?: string;
   start_time: Date;
-  end_time: Date;
+  end_time?: Date;
   created_at?: Date;
   is_confirmed?: boolean;
   user_id?: string;
   activity_id?: string;
   quantity: number;
-  price: number;
+  price?: number;
 };
 
 export type updateActivityBooking = {
@@ -441,7 +447,7 @@ export type newTrainingBooking = {
   is_confirmed?: boolean;
   is_deleted?: boolean;
   created_at?: Date;
-  price: number;
+  price?: number;
 };
 
 export type newCart = {
@@ -472,3 +478,17 @@ export type newCartItem = {
   booking_id: string;
   price: number;
 };
+
+export interface DisableBookingData {
+  id?:string;
+  type: "activity" | "room";
+  ref_id: string; 
+  start_date: string | null; 
+  end_date: string | null; 
+}
+
+export interface GetDisabledDatesParams {
+  type: "activity" | "room";
+  ref_id: string; 
+}
+

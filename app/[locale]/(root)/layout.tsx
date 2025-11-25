@@ -13,7 +13,7 @@ import { Toaster } from "sonner";
 
 type Props = {
   children: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 };
 
 export function generateStaticParams() {
@@ -31,10 +31,7 @@ export default async function RootLayout({ children, params }: Props) {
 
   const messages = (await import(`../../../messages/${locale}.json`)).default;
 
-  const [categories, trainingData] = await Promise.all([
-    getAllcategories(),
-    getAllTraining(),
-  ]);
+ 
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>

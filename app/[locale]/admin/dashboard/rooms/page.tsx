@@ -9,6 +9,9 @@ import NavigationButton from "@/components/NavigationButton";
 export default async function RoomsTable() {
   const allRooms = (await getAllRooms()) || [];
 
+  console.log("allRooms: ",allRooms);
+  
+
   return (
     <main className="flex flex-col justify-center items-center ml-7 w-[75vw]">
       {/* Header */}

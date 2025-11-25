@@ -2,8 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+
 
 export default function VideoHeroSection() {
   const sectionRef = useRef<HTMLElement>(null);

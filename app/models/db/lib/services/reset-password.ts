@@ -36,6 +36,9 @@ export const resetPassword = async (token: string, newPassword: string) => {
     [await hashPassword(newPassword), resetToken.rows[0].user_id]
   );
 
+  console.log(result);
+  
+
   await pool.query("DELETE FROM reset_password_token WHERE token = $1", [
     token,
   ]);

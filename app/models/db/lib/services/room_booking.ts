@@ -1,4 +1,8 @@
-import { RoomBookingWithDetails, type newBooking, type newRoom } from "@/types/index";
+import {
+  RoomBookingWithDetails,
+  type newBooking,
+  type newRoom,
+} from "@/types/index";
 import pool from "../index";
 import { createCart, updateCartTotalAmount } from "./cart";
 import {
@@ -6,6 +10,9 @@ import {
   removeCartItemByBookingId,
   editCartItemByBookingId,
 } from "./cart_items";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const bookARoom = async (data: newBooking) => {
   const client = await pool.connect();
@@ -176,7 +183,6 @@ export const getBookingById = async (id: string) => {
   };
 };
 
-
 export const deleteBookingById = async (id: string) => {
   const client = await pool.connect();
   try {
@@ -316,4 +322,148 @@ export const editBookingById = async (data: newBooking, bookingId: string) => {
   } finally {
     client.release();
   }
+};
+
+export const getRoomBookingByDate = async (
+  start_date: Date | null,
+  end_date: Date | null
+): Promise<{ data: RoomBookingWithDetails[]; message: string }> => {
+  try {
+    const result = await pool.query<RoomBookingWithDetails>(
+      `SELECT 
+        rb.id AS id,
+        rb.start_time,
+        rb.end_time,
+        rb.created_at,
+        rb.is_confirmed,
+        rb.is_deleted,
+        u.id AS user_id,
+        u.first_name,
+        u.last_name,
+        u.email,
+        r.id AS room_id,
+        r.name_en,
+        r.description_en,
+        r.name_ar,
+        r.description_ar,
+        r.cover_image,
+        r.price,
+        r.room_images,
+        r.room_type_en,
+        r.room_type_ar,
+        r.slug
+      FROM room_booking rb
+      JOIN users u ON rb.user_id = u.id
+      JOIN rooms r ON rb.room_id = r.id
+      WHERE rb.is_deleted = false
+      AND (
+        $1::date IS NULL AND $2::date IS NULL 
+        AND rb.start_time >= CURRENT_DATE
+      )
+      OR (
+        ($1::date IS NOT NULL AND $2::date IS NOT NULL)
+        AND rb.start_time <= $2::date
+        AND rb.end_time >= $1::date
+      )
+      ORDER BY rb.start_time ASC;`,
+      [
+        start_date ? start_date.toISOString().split("T")[0] : null,
+        end_date ? end_date.toISOString().split("T")[0] : null,
+      ]
+    );
+
+    return { data: result.rows, message: "Booking In This Range" };
+  } catch (error) {
+    console.log("getting error: ", error);
+    return { data: [], message: "Error In Getting Booking In This Range" };
+  }
+};
+
+
+export const updateBookingStatus = async (
+  is_confirmed: boolean,
+  id: string
+) => {
+  const result = await pool.query(
+    `UPDATE room_booking 
+     SET is_confirmed = COALESCE($1, is_confirmed)
+     WHERE id = $2
+     RETURNING *`,
+    [is_confirmed, id]
+  );
+
+ 
+  if (result.rows[0].is_confirmed) {
+    const bookingDetails = await pool.query<RoomBookingWithDetails>(
+      `SELECT 
+        rb.id AS id,
+        rb.start_time,
+        rb.end_time,
+        rb.created_at,
+        rb.is_confirmed,
+        rb.is_deleted,
+        u.id AS user_id,
+        u.first_name,
+        u.last_name,
+        u.email,
+        r.id AS room_id,
+        r.name_en,
+        r.description_en,
+        r.name_ar,
+        r.description_ar,
+        r.cover_image,
+        r.price,
+        r.room_images,
+        r.room_type_en,
+        r.room_type_ar,
+        r.slug,
+        rb.price as booking_price
+      FROM room_booking rb
+      JOIN users u ON rb.user_id = u.id
+      JOIN rooms r ON rb.room_id = r.id
+      WHERE rb.is_deleted = false AND rb.id = $1`,
+      [id]
+    );
+
+    const booking = bookingDetails.rows[0];
+
+ 
+    const formatDate = (value: string | Date) =>
+      new Date(value).toLocaleString("en-GB", {
+        dateStyle: "medium",
+        timeStyle: "short",
+      });
+
+    
+    await resend.emails.send({
+      from: process.env.Email_from || "onboarding@resend.dev",
+      to: booking.email,
+      subject: "Your Booking Has Been Confirmed ✔️",
+      html: `
+        <div style="font-family: Arial; line-height: 1.6;">
+          <h2>Your Booking is Confirmed 🎉</h2>
+          <p>Hello ${booking.first_name},</p>
+
+          <p>Great news! Your booking has been <strong>confirmed</strong>.</p>
+
+          <h3>Booking Details</h3>
+          <p><b>Room Type:</b> ${booking.room_type_en}</p>
+          <p><b>Room Name:</b> ${booking.name_en}</p>
+          <p><b>Start:</b> ${formatDate(booking.start_time)}</p>
+          <p><b>End:</b> ${formatDate(booking.end_time)}</p>
+          <p><b>Total Price:</b> ${booking.booking_price} JOD</p>
+
+          <br/>
+          <p>Thank you for choosing <b>Jordan Ranger</b>.</p>
+          <p>Best regards,<br/>Jordan Ranger Team</p>
+        </div>
+      `,
+    });
+  }
+
+  return {
+    data: result,
+    message: "Booking Has Been Updated Successfully",
+    status: 201,
+  };
 };

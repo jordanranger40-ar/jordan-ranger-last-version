@@ -11,15 +11,14 @@ import { getBannerData } from "@/app/models/db/lib/services/banners";
 import { newBanner, newCategory, newTraining } from "@/types";
 import ServicesSection from "@/components/services-section/services-section";
 import TestimonialsSection from "@/components/testimonials-section/testimonials-section";
-import DarkButton from "@/components/ui/dark-button";
-import LightButton from "@/components/ui/light-button";
+
 interface PageProps {
-  params: {
+  params: Promise <{
     locale: string;
-  };
+  }> 
 }
 export default async function Home({ params }: PageProps) {
-  const { locale } = params;
+  const { locale } = await params;
   const isArabic = locale === "ar";
 
   let banners: newBanner[] = [];

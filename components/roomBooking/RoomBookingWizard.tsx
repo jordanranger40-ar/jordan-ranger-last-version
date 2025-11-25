@@ -9,12 +9,15 @@ import { newRoom } from "@/types";
 type RoomBookingWizardProps = {
   room: newRoom;
   bookedDates: { start: string; end: string }[];
+  locale: string; // "ar" or "en"
 };
 
 export default function RoomBookingWizard({
   room,
   bookedDates,
+  locale,
 }: RoomBookingWizardProps) {
+  const isArabic = locale === "ar";
   const { data: session } = useSession();
   const user = session?.user;
 
@@ -25,13 +28,20 @@ export default function RoomBookingWizard({
   const [bookingDone, setBookingDone] = useState(false);
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-6 w-[95%] ">
-      <BookingProgressBar currentStep={bookingDone ? 2 : 1} />
+    <div
+      className="bg-white shadow-md rounded-lg p-6 w-[95%]"
+      dir={isArabic ? "rtl" : "ltr"}
+    >
+      <BookingProgressBar
+        currentStep={bookingDone ? 2 : 1}
+        locale={locale}
+      />
 
       {!bookingDone && (
         <RoomBookingForm
           room={room}
           bookedDates={bookedDates}
+          locale={locale}
           onBooked={(range) => {
             setSelectedRange(range);
             setBookingDone(true);
@@ -41,7 +51,7 @@ export default function RoomBookingWizard({
 
       {bookingDone && selectedRange && (
         <BookingConfirmation
-          RoomName={room.name_en}
+          RoomName={isArabic ? room.name_ar ?? room.name_en : room.name_en}
           start={selectedRange.start}
           end={selectedRange.end}
           price={Number(room.price) ?? 0}
@@ -50,7 +60,10 @@ export default function RoomBookingWizard({
             email: user?.email,
           }}
           onGoToCart={() => (window.location.href = "/my-cart")}
-          continueButton={() => (window.location.href = "/Accommodation/Cabins")}
+          continueButton={() =>
+            (window.location.href = "/Accommodation/Cabins")
+          }
+          locale={locale}
         />
       )}
     </div>

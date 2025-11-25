@@ -3,22 +3,6 @@ import { ColumnDef } from "@tanstack/react-table";
 import { newActivity } from "@/types/index";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowUpDown } from "lucide-react";
-/*
-export type newActivity = {
-  id?: string;
-  name_en: string;
-  name_ar: string;
-  description_en: string;
-  description_ar: string;
-  location_type_en: string;
-  location_type_ar: string;
-  card_image: string;
-  poster_image: string;
-  header_image: string;
-  capacity: number;
-  price: number;
-  slug: string;
-};*/
 
 export const activitiesColumns: ColumnDef<newActivity>[] = [
   {
@@ -108,9 +92,9 @@ export const activitiesColumns: ColumnDef<newActivity>[] = [
       return (
         <>
           {type === "indoor" ? (
-            <div className="text-[#676e32]  ">{englishDesc}</div>
+            <div className="text-[#676e32]  ">{englishDesc.slice(1,35)+"..."}</div>
           ) : (
-            <div className="">{englishDesc}</div>
+            <div className="">{englishDesc.slice(1,35)+"..."}</div>
           )}
         </>
       );
@@ -134,9 +118,9 @@ export const activitiesColumns: ColumnDef<newActivity>[] = [
       return (
         <>
           {type === "indoor" ? (
-            <div className="text-[#676e32]  ">{arabicDesc}</div>
+            <div className="text-[#676e32]  ">{arabicDesc.slice(1,35)+"..."}</div>
           ) : (
-            <div >{arabicDesc}</div>
+            <div >{arabicDesc.slice(1,35)+"..."}</div>
           )}
         </>
       );

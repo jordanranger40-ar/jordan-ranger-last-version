@@ -14,7 +14,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { SquarePen, Plus } from "lucide-react";
-import DeleteSettingButton from "@/components/settings/deleteSetting";
+import DeleteSettingButton from "@/components/deleteButton";
 import { deleteSetting } from "./(fetch)/deleteSetting";
 import { getSettingsData } from "@/app/models/db/lib/services/settings";
 
@@ -73,7 +73,7 @@ export default async function SettingsTable() {
 
                     {/* Edit Icon */}
                     <TableCell>
-                      <div className="flex items-center gap-[6px]">
+                      <div className="flex items-center gap-1.5">
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -90,7 +90,7 @@ export default async function SettingsTable() {
                         </TooltipProvider>
 
                         <DeleteSettingButton
-                          settingId={setting.id ?? ""}
+                          id={setting.id ?? ""}
                           deleteAction={deleteSetting}
                         />
                       </div>

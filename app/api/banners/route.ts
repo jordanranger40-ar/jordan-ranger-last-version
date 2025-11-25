@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server"
 import Jwt, { Secret } from "jsonwebtoken";
-import {type tokenPayload} from "../consulting/route" 
 import { addNewBanner } from "@/app/models/db/lib/services/banners";
-
+import {tokenPayload} from "@/types/index"
 export const POST= async(request:Request)=>{
     try {
        

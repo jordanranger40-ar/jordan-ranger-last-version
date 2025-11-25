@@ -1,4 +1,8 @@
-import { TrainingBookingWithDetails, type newTraining, type newTrainingBooking } from "@/types/index";
+import {
+  TrainingBookingWithDetails,
+  type newTraining,
+  type newTrainingBooking,
+} from "@/types/index";
 import pool from "../index";
 import { createCart, updateCartTotalAmount } from "./cart";
 import {
@@ -6,6 +10,9 @@ import {
   removeCartItemByBookingId,
   editCartItemByBookingId,
 } from "./cart_items";
+import { Resend } from "resend";
+
+const resend=  new Resend(process.env.RESEND_API_KEY)
 
 export const bookATraining = async (data: newTrainingBooking) => {
   const client = await pool.connect();
@@ -109,7 +116,9 @@ export const getAllTrainingsbookings = async () => {
       t.description_en,
       t.name_ar,
       t.description_ar,
-      t.image,
+      t.card_image,
+      t.post_image,
+      t.header_image,
       t.category_en,
       t.category_ar,
       t.capacity,
@@ -119,7 +128,7 @@ export const getAllTrainingsbookings = async () => {
       t.slug
     FROM training_booking tb
     JOIN users u ON tb.user_id = u.id
-    JOIN training t ON tb.training_id = t.id`,
+    JOIN training t ON tb.training_id = t.id`
   );
 
   return {
@@ -142,7 +151,7 @@ export const getAllbookingsByTrainingId = async (id: string) => {
 };
 
 export const getTrainingBookingById = async (id: string) => {
-  const result = await pool.query<newTrainingBooking>(
+  const result = await pool.query<TrainingBookingWithDetails>(
     `SELECT 
       tb.id AS id,
       tb.training_id,
@@ -160,7 +169,9 @@ export const getTrainingBookingById = async (id: string) => {
       t.description_en,
       t.name_ar,
       t.description_ar,
-      t.image,
+      t.card_image,
+      t.post_image,
+      t.header_image,
       t.category_en,
       t.category_ar,
       t.capacity,
@@ -181,7 +192,6 @@ export const getTrainingBookingById = async (id: string) => {
     status: 200,
   };
 };
-
 
 export const deleteTrainingBookingById = async (id: string) => {
   const client = await pool.connect();
@@ -325,12 +335,158 @@ export const editTrainingBookingById = async (
   }
 };
 
-export const getQuantityOfATraining= async (id:string)=>{
-  
- const result= await pool.query<{total_booked:string}>("SELECT  COALESCE(SUM(quantity), 0) AS total_booked FROM training_booking WHERE training_id = $1",[id])
+export const getQuantityOfATraining = async (id: string) => {
+  const result = await pool.query<{ total_booked: string }>(
+    "SELECT  COALESCE(SUM(quantity), 0) AS total_booked FROM training_booking WHERE training_id = $1",
+    [id]
+  );
+
+  return result.rows[0];
+};
+
+export const getTrainingBookingByDate = async (
+  start_date: Date | null,
+  end_date: Date | null,
+  training_id: string | null
+) => {
+  try {
+    const result = await pool.query(
+      `SELECT 
+      tb.id AS id,
+      tb.training_id,
+      tb.is_confirmed,
+      tb.is_deleted,
+      tb.created_at,
+      tb.quantity,
+      tb.price,
+      u.id AS user_id,
+      u.first_name,
+      u.last_name,
+      u.email,
+      t.id AS training_id,
+      t.name_en,
+      t.description_en,
+      t.name_ar,
+      t.description_ar,
+      t.card_image,
+      t.post_image,
+      t.header_image,
+      t.category_en,
+      t.category_ar,
+      t.capacity,
+      t.price AS training_price,
+      t.start_date,
+      t.end_date,
+      t.slug
+    FROM training_booking tb
+    JOIN users u ON tb.user_id = u.id
+    JOIN training t ON tb.training_id = t.id 
+    WHERE
+  (($1::date IS NULL AND $2::date IS NULL) 
+    OR ($1::date IS NOT NULL AND $2::date IS NOT NULL AND t.start_date <= $2::date AND t.end_date >= $1::date)
+  )
+  AND ($3::uuid IS NULL OR t.id = $3)  ORDER BY t.start_date ASC`,
+      [
+        start_date ? start_date.toISOString().split("T")[0] : null,
+        end_date ? end_date.toISOString().split("T")[0] : null,
+        training_id,
+      ]
+    );
+    return { data: result.rows, message: "Booking In This Range" };
+  } catch (error) {
+    return { data: [], message: "Error In Getting Booking In This Range" };
+  }
+};
+
+
+
+export const updateBookingStatus = async (
+  is_confirmed: boolean,
+  id: string
+) => {
+  const result = await pool.query(
+    `UPDATE training_booking
+     SET is_confirmed = COALESCE($1, is_confirmed)
+     WHERE id = $2
+     RETURNING *`,
+    [is_confirmed, id]
+  );
+
  
- return result.rows[0]
+  if (result.rows[0].is_confirmed) {
+    const bookingDetails = await pool.query<TrainingBookingWithDetails>(
+     `SELECT 
+      tb.id AS id,
+      tb.training_id,
+      tb.is_confirmed,
+      tb.is_deleted,
+      tb.created_at,
+      tb.quantity,
+      tb.price,
+      u.id AS user_id,
+      u.first_name,
+      u.last_name,
+      u.email,
+      t.id AS training_id,
+      t.name_en,
+      t.description_en,
+      t.name_ar,
+      t.description_ar,
+      t.image,
+      t.category_en,
+      t.category_ar,
+      t.capacity,
+      t.price AS training_price,
+      t.start_date,
+      t.end_date,
+      t.slug
+    FROM training_booking tb
+    JOIN users u ON tb.user_id = u.id
+    JOIN training t ON tb.training_id = t.id
+    WHERE tb.is_deleted = false AND tb.id = $1`,
+      [id]
+    );
 
+    const booking = bookingDetails.rows[0];
 
-}
+ 
+    const formatDate = (value:string | Date) =>
+      new Date(value).toLocaleString("en-GB", {
+        dateStyle: "medium",
+        timeStyle: "short",
+      });
 
+    
+    await resend.emails.send({
+      from: process.env.Email_from || "onboarding@resend.dev",
+      to: booking.email,
+      subject: "Your Booking Has Been Confirmed ✔️",
+      html: `
+        <div style="font-family: Arial; line-height: 1.6;">
+          <h2>Your Booking is Confirmed 🎉</h2>
+          <p>Hello ${booking.first_name},</p>
+
+          <p>Great news! Your booking has been <strong>confirmed</strong>.</p>
+
+          <h3>Booking Details</h3>
+          <p><b>Booking Type:</b> Training</p>
+          <p><b>Training Type:</b> ${booking.category_en}</p>
+          <p><b>Training Name:</b> ${booking.name_en}</p>
+          <p><b>Start:</b> ${formatDate(booking.start_date)}</p>
+          <p><b>End:</b> ${formatDate(booking.end_date)}</p>
+          <p><b>Total Price:</b> ${booking.price} JOD</p>
+
+          <br/>
+          <p>Thank you for choosing <b>Jordan Ranger</b>.</p>
+          <p>Best regards,<br/>Jordan Ranger Team</p>
+        </div>
+      `,
+    });
+  }
+
+  return {
+    data: result,
+    message: "Booking Has Been Updated Successfully",
+    status: 201,
+  };
+};

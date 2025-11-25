@@ -14,12 +14,7 @@ return (
 
     <div className="mt-20">{par.slug}
      <ActivityBookingPanel
-        activity={{
-          id: activity[0].id,
-          name: activity[0].name_en,
-          capacity: activity[0].capacity,
-          price: activity[0].price,
-        }}
+       activity={activity[0]}
       />
     </div>
 )

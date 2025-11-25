@@ -12,7 +12,7 @@ import {
 interface Props {
   userId: string;
   userRole: string;
-  action: (formData: FormData) => Promise<any>;
+  action: (formData: FormData) => Promise<void>;
 }
 
 export default function UpdateRoleForm({ userId, userRole, action }: Props) {
@@ -29,7 +29,8 @@ export default function UpdateRoleForm({ userId, userRole, action }: Props) {
         setToast({ message: "Role Updated Successfully!", type: "success" });
 
         setTimeout(() => setToast(null), 3000);
-      } catch (error) {
+      } catch (_error) {
+        
         setToast({ message: "Failed to update role.", type: "error" });
         setTimeout(() => setToast(null), 3000);
       }

@@ -2,6 +2,8 @@
 import { newActivitySchema } from "@/app/models/db/lib/schemas/activitySchema";
 import { newActivity } from "@/types";
 import ImageUploader from "@/components/imageUpload";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@radix-ui/react-dropdown-menu";
 import {
   Card,
   CardContent,
@@ -38,6 +40,8 @@ export default function EditActivityForm({ activity,action }: Props) {
     poster_image: activity.poster_image?? "",
     header_image: activity.header_image?? "",
     capacity: activity.capacity?? 0,
+    minimum_quantity:activity.minimum_quantity??1,
+    coming_soon:activity.coming_soon?? false
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -53,7 +57,7 @@ export default function EditActivityForm({ activity,action }: Props) {
       let updated = { ...prev, [name]: value };
 
       // convert numeric inputs to numbers
-      if (name === "price" || name === "capacity") {
+      if (name === "price" || name === "capacity" || name==="minimum_quantity") {
         updated = { ...prev, [name]: Number(value) };
       }
 
@@ -98,7 +102,7 @@ export default function EditActivityForm({ activity,action }: Props) {
         setTimeout(() => {
           setToast(null);
           router.push("/admin/dashboard/activities");
-        }, 200);
+        }, 1000);
       } catch (error) {
         console.error(error);
         setToast({ message: "Failed to Update Activity.", type: "error" });
@@ -172,6 +176,7 @@ export default function EditActivityForm({ activity,action }: Props) {
                   <select
                     name={field.name}
                     value={field.value}
+                    disabled={isPending}
                     onChange={handleInputChange}
                     className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
                   >
@@ -205,6 +210,7 @@ export default function EditActivityForm({ activity,action }: Props) {
                     type="text"
                     name={field.name}
                     value={field.value}
+                    disabled={isPending}
                     onChange={handleInputChange}
                     className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
                   />
@@ -226,6 +232,7 @@ export default function EditActivityForm({ activity,action }: Props) {
                 <input
                   type="number"
                   name="price"
+                  disabled={isPending}
                   value={form.price}
                   onChange={handleInputChange}
                   className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
@@ -236,7 +243,7 @@ export default function EditActivityForm({ activity,action }: Props) {
               </div>
             </div>
 
-            {/* Capacity */}
+            {/* Capacity And Minimum Quantity */}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="flex flex-col md:w-[90%] ">
@@ -244,6 +251,7 @@ export default function EditActivityForm({ activity,action }: Props) {
                   <span className="text-red-500">*</span> Capacity
                 </label>
                 <input
+                disabled={isPending}
                   type="number"
                   name="capacity"
                   value={form.capacity}
@@ -254,7 +262,26 @@ export default function EditActivityForm({ activity,action }: Props) {
                   <p className="text-red-500 text-sm mt-1">{errors.capacity}</p>
                 )}
               </div>
+              <div className="flex flex-col md:w-[90%] ">
+                <label className="text-sm font-medium text-gray-700 mb-1">
+                  <span className="text-red-500">*</span> Minimum Quantity
+                </label>
+                <input
+                disabled={isPending}
+                  type="number"
+                  value={form.minimum_quantity}
+                  name="minimum_quantity"
+                  onChange={handleInputChange}
+                  className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
+                />
+                {errors.minimum_quantity && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.minimum_quantity}
+                  </p>
+                )}
+              </div>
             </div>
+
 
             {/* Descriptions */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -287,6 +314,22 @@ export default function EditActivityForm({ activity,action }: Props) {
                   )}
                 </div>
               ))}
+            </div>
+
+              <div className="flex items-center gap-3  rounded-2xl border border-gray-200 p-4 bg-gray-50  w-fit">
+              <Checkbox
+                id="coming_soon"
+                name="coming_soon"
+                checked={form.coming_soon}
+                disabled={isPending}
+                onCheckedChange={(checked) => {
+                  setForm({ ...form, coming_soon: checked === true });
+                }}
+                className="shadow-black cursor-pointer"
+              />
+              <Label className="text-sm font-medium text-gray-800 cursor-pointer select-none">
+                Coming Soon
+              </Label>
             </div>
 
             {/* Card, Poster & Header Images */}
@@ -364,6 +407,7 @@ export default function EditActivityForm({ activity,action }: Props) {
             <div className="flex justify-center mt-8">
               <div className="flex gap-4">
                 <button
+                disabled={isPending}
                   type="button"
                   className="px-5 py-2 rounded-md border border-gray-400 cursor-pointer text-gray-700 hover:bg-gray-100 transition"
                   onClick={() => router.replace("/admin/dashboard/activities")}

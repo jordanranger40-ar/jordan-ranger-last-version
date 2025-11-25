@@ -1,21 +1,38 @@
 import RoomBookingWizard from "@/components/roomBooking/RoomBookingWizard";
-import {  getAllbookingsByRoomId } from "@/app/models/db/lib/services/room_booking"; // adjust paths
-import {getRoomById} from "@/app/models/db/lib/services/rooms"
-export default async function RoomBookingPage({ params }: { params: { id: string } }) {
-  const room = await getRoomById(params.id);
-  const bookingData = await getAllbookingsByRoomId(params.id); 
+import { getAllbookingsByRoomId } from "@/app/models/db/lib/services/room_booking";
+import { getRoomById } from "@/app/models/db/lib/services/rooms";
+import { getDisabledDatesByRoomId } from "@/app/models/db/lib/services/booking_disabled_dates";
+export default async function RoomBookingPage({
+  params,
+}: {
+  params:Promise < { id: string,locale:string }>;
+}) {
+  const par= await params
+  const isArabic = par.locale === "ar";
+  const room = await getRoomById(par.id);
+  const bookingData = await getAllbookingsByRoomId(par.id);
+  const disabledData = await getDisabledDatesByRoomId(par.id);
 
-  const bookedDates= bookingData.data.map((ele)=>{
+  const bookedDates = bookingData.data.map((ele) => {
     return {
-        start: ele.start_time.toISOString(),
-        end:ele.end_time.toISOString()
-    }
-  })
+      start: ele.start_time.toISOString(),
+      end: ele.end_time.toISOString(),
+    };
+  });
+
+  const disabledDates = disabledData.map((ele) => {
+    return {
+      start: ele.start_date?.toString() ?? "",
+      end: ele.end_date?.toString() ?? "",
+    };
+  });
+
+  const combinedDates = [...disabledDates, ...bookedDates];
 
   return (
     <div className=" flex flex-col items-center justify-center text-[#676e32]  py-10 mt-14">
       <h1 className="text-2xl font-semibold mb-6">Book {room.name_en}</h1>
-      <RoomBookingWizard room={room} bookedDates={bookedDates} />
+      <RoomBookingWizard room={room} bookedDates={combinedDates} locale={par.locale}  />
     </div>
   );
 }

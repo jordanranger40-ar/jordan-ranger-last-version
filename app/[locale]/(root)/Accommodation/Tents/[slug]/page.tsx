@@ -3,12 +3,13 @@ import { roomFeatures } from "@/types";
 import Link from "next/link";
 
 interface PageProps {
-  params: { locale: string; slug: string | string[] };
+  params: Promise<{ locale: string; slug: string  }>;
 }
 
 export default async function Page({ params }: PageProps) {
-  const data = await getRoomBySlug(`${params.slug}`);
-  const isArabic = params.locale === "ar"; 
+  const par= await params
+  const data = await getRoomBySlug(`${par.slug}`);
+  const isArabic = par.locale === "ar"; 
   const direction = isArabic ? "rtl" : "ltr"; 
 
   if (!data) {
@@ -37,7 +38,7 @@ export default async function Page({ params }: PageProps) {
           alt={isArabic ? data.name_ar : data.name_en}
           className="w-full h-full object-cover brightness-90"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/40 to-transparent" />
 
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white max-w-3xl mx-auto px-6">
           <h1 className="text-5xl md:text-6xl font-bold drop-shadow-lg mb-4">
@@ -74,10 +75,10 @@ export default async function Page({ params }: PageProps) {
             {isArabic ? "مرافق الخيمة" : "tent Amenities"}
           </h3>
           <div className="grid sm:grid-cols-2 md:grid-cols-2 gap-6">
-            {data.features.map((feature: roomFeatures, index: number) => (
+            {data.room_features.map((feature: roomFeatures, index: number) => (
               <div
                 key={index}
-                className="flex flex-col justify-center bg-gradient-to-br from-[#f0f8d0] to-white border border-[#d0d9a0] rounded-2xl p-6 hover:shadow-md transition"
+                className="flex flex-col justify-center bg-linear-to-br from-[#f0f8d0] to-white border border-[#d0d9a0] rounded-2xl p-6 hover:shadow-md transition"
               >
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-10 h-10 flex items-center justify-center bg-[#e1f0b3] rounded-full">
@@ -163,7 +164,7 @@ export default async function Page({ params }: PageProps) {
         </div>
       </div>
 
-      <div className="h-[150px] bg-gradient-to-t from-[#f5f5f5] to-transparent mt-20" />
+      <div className="h-[150px] bg-linear-to-t from-[#f5f5f5] to-transparent mt-20" />
     </div>
   );
 }

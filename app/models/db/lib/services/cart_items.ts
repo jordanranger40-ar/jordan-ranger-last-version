@@ -25,7 +25,7 @@ export const removeCartItemByItemId = async (item_id: string) => {
 
     if (itemDetails.rows.length === 0) {
       await client.query("ROLLBACK");
-      return { success: false, message: "Item Not Found" };
+      return { success: false, message: "Item Not Found", status:409 };
     }
 
     const bookingId = itemDetails.rows[0].booking_id;
@@ -62,12 +62,12 @@ export const removeCartItemByItemId = async (item_id: string) => {
     ]);
     await client.query("COMMIT");
 
-    return { success: true, message: "The Item Was Deleted Successfully" };
+    return { success: true, message: "The Item Was Deleted Successfully",status:200 };
   } catch (error) {
     
     console.error("Error removing cart item:", error);
     await client.query("ROLLBACK");
-    return { success: false, message: "Error In Deleteing The Item" };
+    return { success: false, message: "Error In Deleteing The Item",status:500 };
   } finally {
     client.release();
   }

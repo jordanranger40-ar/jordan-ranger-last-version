@@ -9,7 +9,7 @@ type changePassword = {
   password: string;
   confirmPassword: string;
 };
-function page() {
+function Page() {
   const router = useRouter();
   const [form, setForm] = useState<changePassword>({
     oldPassword: "",
@@ -39,6 +39,8 @@ function page() {
           }
         )
         .then((result) => {
+          console.log(result);
+          
           setMessage("Password Changed Successfully");
           setTimeout(() => {
             setMessage("");
@@ -179,4 +181,4 @@ function page() {
   );
 }
 
-export default page;
+export default Page;

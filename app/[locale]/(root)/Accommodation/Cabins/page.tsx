@@ -3,12 +3,12 @@ import CabinsSection from "@/components/accommodation/cabins/cabins-section";
 import CabinsHeaderSection from "@/components/accommodation/cabins/cabins-header-section";
 
 interface PageProps {
-  params: { locale: string };
+  params: Promise <{ locale: string }>
 }
 
 export default async function Page({ params }: PageProps) {
-  const isArabic = params.locale === "ar";
-
+  const isArabic = (await params).locale === "ar";
+  const par= await params
   
   const rooms = await getRoomsByRoomType("cabins");
 
@@ -18,7 +18,7 @@ export default async function Page({ params }: PageProps) {
     <CabinsSection 
       rooms={rooms} 
       isArabic={isArabic} 
-      locale={params.locale} 
+      locale={par.locale} 
     />
     </section>
   );
