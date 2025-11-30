@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation"; 
-
+import {toast} from "sonner"
 interface Props {
   client: newClient;
   action: (data:newClient ) => Promise<void>;
@@ -23,10 +23,7 @@ export default function EditClientForm({ client, action }: Props) {
     logo: client.logo ?? "",
     id:client.id?? ""
   });
-
   const [isPending, startTransition] = useTransition();
-  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -37,8 +34,7 @@ export default function EditClientForm({ client, action }: Props) {
 
   const handleUploadError = (error: Error) => {
     console.error(error);
-    setToast({ message: `Upload failed: ${error.message}`, type: "error" });
-    setTimeout(() => setToast(null), 3000);
+    toast.error(`Upload failed: ${error.message}`)
   };
 
   const handleImageDelete = () => {
@@ -49,17 +45,12 @@ export default function EditClientForm({ client, action }: Props) {
     startTransition(async () => {
       try {
         await action({ ...form });
-        setToast({ message: "Client updated successfully!", type: "success" });
-
-      
+        toast.success("Client updated successfully!")
         setTimeout(() => {
-          setToast(null);
           router.replace("/admin/dashboard/clients");
-        }, 1500); 
-      } catch (error) {
-        console.error(error);
-        setToast({ message: "Failed to update Client.", type: "error" });
-        setTimeout(() => setToast(null), 3000);
+        }, 1000); 
+      } catch (_error) {
+        toast.error("Failed to update Client.")
       }
     });
   };
@@ -135,16 +126,6 @@ export default function EditClientForm({ client, action }: Props) {
           </CardContent>
         </Card>
       </form>
-
-      {toast && (
-        <div
-          className={`fixed bottom-5 right-5 z-50 px-5 py-3 rounded-lg shadow-lg text-white font-medium transition-all duration-300 ${
-            toast.type === "success" ? "bg-green-600" : "bg-red-600"
-          }`}
-        >
-          {toast.message}
-        </div>
-      )}
     </main>
   );
 }

@@ -28,6 +28,7 @@ export default async function TrainingBookingTable({ searchParams }: Props) {
     [];
 
   console.log("allTrainingBookings: ", allTrainingBookings);
+  console.log(training_id);
 
   return (
     <main className="flex flex-col lg:justify-center justify-start items-center lg:ml-7 ml-2 lg:w-[75vw] w-[92vw]">

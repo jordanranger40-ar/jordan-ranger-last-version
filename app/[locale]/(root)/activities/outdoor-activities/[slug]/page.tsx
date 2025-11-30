@@ -1,18 +1,34 @@
+import { authOptions } from "@/app/models/db/authOptions";
 import { getActivityBySlug } from "@/app/models/db/lib/services/activities";
+import { getCartItemsByUserId } from "@/app/models/db/lib/services/cart";
 import ActivityBookingPanel from "@/components/activities/activityBooking/ActivityBookingPanel";
+import { getServerSession } from "next-auth";
 import Image from "next/image";
 
 interface PageProps {
-  params: Promise<{ locale: string; slug: string  }>;
+  params: Promise<{ locale: string; slug: string }>;
 }
 
 export default async function Page({ params }: PageProps) {
-  const par= await params
+  const par = await params;
   const slug = Array.isArray(par.slug) ? par.slug[0] : par.slug;
   const isArabic = par.locale === "ar";
   const direction = isArabic ? "rtl" : "ltr";
-
+  const userInfo = await getServerSession(authOptions);
+  const userId = userInfo?.user.id;
+  const uniqueTypes: string[] = [];
   const activityData = await getActivityBySlug(slug);
+  if (userId) {
+    const cartItems = await getCartItemsByUserId(userId ?? "");
+    console.log("cartItems: ", cartItems);
+
+    const bookingsTypes = cartItems.map((ele, i) => {
+      if (!uniqueTypes.includes(ele.booking_type)) {
+        uniqueTypes.push(ele.booking_type);
+      }
+      return uniqueTypes;
+    });
+  }
 
   if (!activityData || activityData.length === 0) {
     return (
@@ -65,6 +81,7 @@ export default async function Page({ params }: PageProps) {
           <div className="flex w-full">
             <div className={isArabic ? "self-end" : "self-start"}>
               <ActivityBookingPanel
+                uniqueTypes={uniqueTypes}
                 activity={activity}
               />
             </div>

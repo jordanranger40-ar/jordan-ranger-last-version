@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-
+import { toast } from "sonner";
 interface Props {
   feature: roomFeatures;
   action: (data: roomFeatures) => Promise<void>;
@@ -30,49 +30,36 @@ export default function EditfeatureForm({ feature, action }: Props) {
   });
 
   const [isPending, startTransition] = useTransition();
-  const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
-
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    
   };
 
   const handleFormSubmit = () => {
- 
-    const validation= schema.safeParse(form)
+    const validation = schema.safeParse(form);
 
-    if(!validation.success){
+    if (!validation.success) {
+      const fieldError: Record<string, string> = {};
+      validation.error.issues.forEach((err) => {
+        const fieldName = err.path[0] as string;
+        fieldError[fieldName] = err.message;
+      });
 
-      const fieldError: Record<string,string>={};
-      validation.error.issues.forEach((err)=>{
-        const fieldName= err.path[0] as string;
-        fieldError[fieldName]= err.message
-      })
-
-      setErrors(fieldError)
-      setToast({ message: "Please fix the highlighted fields.", type: "error" });
-      setTimeout(() => setToast(null), 3000);
-      return 
+      setErrors(fieldError);
+      toast.error("Please fix the highlighted fields.");
+      return;
     }
 
     startTransition(async () => {
       try {
         await action({ ...form, id: feature.id });
-        setToast({ message: "Feature updated successfully!", type: "success" });
-
+        toast.success("Feature updated successfully!");
         setTimeout(() => {
-          setToast(null);
           router.push("/admin/dashboard/room_features");
         }, 750);
-      } catch (error) {
-        console.error(error);
-        setToast({ message: "Failed to update feature.", type: "error" });
-        setTimeout(() => setToast(null), 3000);
+      } catch (_error) {
+        toast.error("Failed to update feature.");
       }
     });
   };
@@ -129,14 +116,13 @@ export default function EditfeatureForm({ feature, action }: Props) {
                   value={field.value}
                   onChange={handleInputChange}
                   className="border border-gray-300 px-3 py-2 rounded-md w-[80vw] md:w-[65vw] xl:w-[40vw] text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32] focus:border-transparent disabled:bg-gray-100"
-                  
                   disabled={isPending}
                 />
                 {errors[field.name as keyof typeof form] && (
-    <p className="text-red-500 text-sm mt-1">
-      {errors[field.name as keyof typeof form]}
-    </p>
-  )}
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors[field.name as keyof typeof form]}
+                  </p>
+                )}
               </div>
             ))}
 
@@ -164,14 +150,13 @@ export default function EditfeatureForm({ feature, action }: Props) {
                   value={field.value}
                   onChange={handleInputChange}
                   className="border border-gray-300 px-3 py-2 rounded-md w-[80vw] md:w-[65vw] xl:w-[40vw] text-gray-800 h-[15vh] resize-none focus:outline-none focus:ring-2 focus:ring-[#676e32] disabled:bg-gray-100"
-                  
                   disabled={isPending}
                 />
                 {errors[field.name as keyof typeof form] && (
-    <p className="text-red-500 text-sm mt-1">
-      {errors[field.name as keyof typeof form]}
-    </p>
-  )}
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors[field.name as keyof typeof form]}
+                  </p>
+                )}
               </div>
             ))}
 
@@ -199,17 +184,6 @@ export default function EditfeatureForm({ feature, action }: Props) {
           </CardContent>
         </Card>
       </form>
-
-      {/* Toast */}
-      {toast && (
-        <div
-          className={`fixed bottom-5 right-5 z-50 px-5 py-3 rounded-lg shadow-lg text-white font-medium transition-all duration-500 transform ${
-            toast ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"
-          } ${toast.type === "success" ? "bg-[#676e32]" : "bg-red-600"}`}
-        >
-          {toast.message}
-        </div>
-      )}
     </main>
   );
 }

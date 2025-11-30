@@ -33,7 +33,7 @@ export default function TrainingFilterSAndD({
         />
       </div>
 
-      <div className="flex gap-3 lg:ml-auto ml-0 mt-2 lg:mt-0">
+      <div className="flex gap-3 items-end lg:ml-auto ml-0 mt-2 lg:mt-0">
         {" "}
         <Button
           type="submit"

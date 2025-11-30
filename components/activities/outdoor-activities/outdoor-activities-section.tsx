@@ -1,16 +1,14 @@
 import React from "react";
-import ActivitiesCard from "@/components/activities-card"
+import ActivitiesCard from "@/components/activities-card";
 import Link from "next/link";
-import {getActivityByType} from "@/app/models/db/lib/services/activities"
+import { getActivityByType } from "@/app/models/db/lib/services/activities";
 
 interface Props {
   isArabic: boolean;
 }
 
-
-export default async function outdoorAvtivitiesSection({ isArabic }:Props){
-
-  const data=await getActivityByType("outdoor")
+export default async function outdoorAvtivitiesSection({ isArabic }: Props) {
+  const data = await getActivityByType("outdoor");
   return (
     <section
       dir={isArabic ? "rtl" : "ltr"}
@@ -27,15 +25,14 @@ export default async function outdoorAvtivitiesSection({ isArabic }:Props){
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 px-6 w-full max-w-7xl">
         {data.map((data, idx) => (
-               <Link  key={idx} href={`/outdoor-activities/${data.name_en ?? ""}`}>
-     <ActivitiesCard      isArabic={isArabic} data={data} />
-     </Link>
+          <Link
+            key={idx}
+            href={`/activities/outdoor-activities/${data.name_en ?? ""}`}
+          >
+            <ActivitiesCard isArabic={isArabic} data={data} />
+          </Link>
         ))}
       </div>
-
-    
     </section>
   );
-};
-
-
+}

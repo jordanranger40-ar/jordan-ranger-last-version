@@ -4,31 +4,8 @@ export type newClient = {
   logo: string;
 };
 
-export type newCategory = {
-  id?: string;
-  slug?: string;
-  category_name_en: string;
-  category_name_ar: string;
-  description_en: string;
-  description_ar: string;
-  image: string | null;
-};
 
-export type newCourse = {
-  id?: string;
-  title_en: string;
-  title_ar: string;
-  description_en: string;
-  description_ar: string;
-  target_audience_en: string[];
-  target_audience_ar: string[];
-  delivery_method_en: string[];
-  delivery_method_ar: string[];
-  duration_en: string;
-  duration_ar: string;
-  training_id: string;
-  image: string;
-};
+
 
 export type user = {
   id: string;
@@ -37,31 +14,6 @@ export type user = {
   email: string;
   password: string;
   role: string;
-};
-export type newMember = {
-  id?: string;
-  name_en: string;
-  name_ar: string;
-  description_en: string;
-  description_ar: string;
-  position_en: string;
-  position_ar: string;
-  image: string;
-  display_order?: number;
-  main: boolean;
-};
-
-export type newMemberDragAndDrop = {
-  id: string;
-  name_en: string;
-  name_ar: string;
-  description_en: string;
-  description_ar: string;
-  position_en: string;
-  position_ar: string;
-  image: string;
-  display_order?: number;
-  main: boolean;
 };
 
 export type resetToken = {
@@ -79,15 +31,7 @@ export type users = {
   email: string;
   password: string;
 };
-export type newService = {
-  id?: string;
-  name_en: string;
-  name_ar: string;
-  description_en: string;
-  description_ar: string;
-  category_id: string;
-  image: string;
-};
+
 export type newTraining = {
   id?: string;
   name_en: string;
@@ -154,66 +98,6 @@ export type newBanner = {
   created_at?: Date;
 };
 
-export type getService = {
-  id: string;
-  name_en: string;
-  name_ar: string;
-  description_en: string;
-  description_ar: string;
-  category_id: string;
-  category_name_en: string;
-  category_name_ar: string;
-  image: string;
-  slug: string;
-};
-
-export interface editService {
-  id?: string;
-  name_en: string;
-  name_ar: string;
-  category_name_en: string;
-  category_id: string;
-  description_en: string;
-  description_ar: string;
-  image: string;
-}
-
-export interface editCourse {
-  id?: string;
-  title_en: string;
-  title_ar: string;
-  description_en: string;
-  description_ar: string;
-  target_audience_en: string[];
-  target_audience_ar: string[];
-  delivery_method_en: string[];
-  delivery_method_ar: string[];
-  duration_en: string;
-  duration_ar: string;
-  training_id: string;
-  training_name_en: string;
-  image: string;
-}
-
-export interface getCourses {
-  id?: string;
-  title_en: string;
-  title_ar: string;
-  description_en: string;
-  description_ar: string;
-  target_audience_en: string[];
-  target_audience_ar: string[];
-  delivery_method_en: string[];
-  delivery_method_ar: string[];
-  duration_en: string;
-  duration_ar: string;
-  training_id: string;
-  training_name_en: string;
-  training_name_ar: string;
-  training_description_en: string;
-  training_description_ar: string;
-  image: string;
-}
 
 export type getClients = {
   id?: string;
@@ -222,10 +106,6 @@ export type getClients = {
   created_at: Date;
 };
 
-export type memeberOrder = {
-  id: string;
-  display_order: number;
-};
 
 export type newSetting = {
   id?: string;
@@ -235,16 +115,7 @@ export type newSetting = {
   value_ar?: string;
   created_at?: Date;
 };
-export type newCareer = {
-  id?: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  city: string;
-  phone_number: string | null;
-  cv: string;
-  created_at?: Date;
-};
+
 
 export type RoomBookingWithDetails = {
   id?: string;
@@ -353,7 +224,7 @@ export type newRoom = {
   price: number;
   room_images: string[];
   is_deleted?: boolean;
-  room_features: roomFeatures[];
+  features: roomFeatures[];
   room_type_en: string;
   room_type_ar: string;
   slug: string;
@@ -456,6 +327,7 @@ export type newCart = {
   total_amount: number;
   created_at?: Date;
   checked_out_at?: Date;
+  expires_at?:Date;
   is_paid?: boolean;
 };
 

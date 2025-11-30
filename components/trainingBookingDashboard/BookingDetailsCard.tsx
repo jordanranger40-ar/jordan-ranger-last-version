@@ -8,7 +8,6 @@ import { toast } from "sonner";
 interface Props {
   data: TrainingBookingWithDetails;
 }
-
 export default function BookingDetailsCard({ data }: Props) {
   const booking = data;
   const [isPending, startTransition] = useTransition();

@@ -13,26 +13,48 @@ export default function TrainingBookingForm({
   capacity,
   numberOfBooked,
   onBooked,
+  locale
 }: {
   training_id: string;
   price: number;
   capacity: number;
   numberOfBooked: number;
   onBooked: (success: boolean, quantity: number) => void;
+  locale: string;
 }) {
   const { data: session } = useSession();
   const router = useRouter();
-  
+
+  const isArabic = locale === "ar";
 
   const available = Math.max(0, capacity - numberOfBooked);
-  console.log("numberOfBooked: ",numberOfBooked);
-  console.log("capacity: ",capacity);
-    console.log("available: ",available);
 
-  
   const [quantity, setQuantity] = useState<number>(1);
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+
+  const t = {
+    availableSpots: isArabic ? "المقاعد المتاحة" : "Available Spots",
+    fullyBooked: isArabic ? "مكتمل الحجز" : "Fully Booked",
+    participants: isArabic ? "عدد المشاركين" : "Number of Participants",
+    price: isArabic ? "السعر" : "Price",
+    total: isArabic ? "المجموع" : "Total",
+    book: isArabic ? "احجز" : "Book",
+    booking: isArabic ? "جارٍ الحجز..." : "Booking...",
+    loginMsg: isArabic ? "يرجى تسجيل الدخول لإتمام الحجز" : "Please login to book the training",
+    success: isArabic ? "تم تأكيد الحجز بنجاح!" : "Booking confirmed!",
+    failed: isArabic ? "فشل الحجز" : "Booking failed.",
+    qtyError: isArabic
+      ? `❌ يجب أن يكون العدد بين 1 و ${available}.`
+      : `❌ Quantity must be between 1 and ${available}.`,
+    fullyBookedMsg: isArabic
+      ? "❌ هذا التدريب مكتمل الحجز."
+      : "❌ This training is fully booked.",
+    networkError: isArabic
+      ? "⚠️ خطأ في الشبكة. يرجى المحاولة مرة أخرى."
+      : "⚠️ Network error. Please try again.",
+    currency: isArabic ? "دينار" : "JOD"
+  };
 
   const handleBook = async () => {
     if (!session) {
@@ -41,12 +63,12 @@ export default function TrainingBookingForm({
     }
 
     if (available <= 0) {
-      setMsg("❌ This training is fully booked.");
+      setMsg(t.fullyBookedMsg);
       return;
     }
 
     if (quantity < 1 || quantity > available) {
-      setMsg(`❌ Quantity must be between 1 and ${available}.`);
+      setMsg(t.qtyError);
       return;
     }
 
@@ -59,20 +81,19 @@ export default function TrainingBookingForm({
         quantity,
       });
 
-
       if (result.success) {
-        setMsg("✅ Booking confirmed!");
+        setMsg("✅ " + t.success);
         onBooked(true, quantity);
       } else {
-        setMsg(result.message || "Booking failed.");
-        if(result.message==="Please login to book the Training"){}
+        setMsg(result.message || t.failed);
+        if (result.message === "Please login to book the Training") {
+          router.push("/login");
+        }
         onBooked(false, quantity);
-        router.push("/login")
       }
-      onBooked(false, quantity)
     } catch (err) {
       console.error(err);
-      setMsg("⚠️ Network error. Please try again.");
+      setMsg(t.networkError);
       onBooked(false, quantity);
     } finally {
       setLoading(false);
@@ -80,7 +101,10 @@ export default function TrainingBookingForm({
   };
 
   return (
-    <div className="border-t pt-6 mt-6 space-y-5 p-4 rounded-lg shadow-md bg-white">
+    <div
+      className="border-t pt-6 mt-6 space-y-5 p-4 rounded-lg shadow-md bg-white"
+      dir={isArabic ? "rtl" : "ltr"}
+    >
       {/* User Info */}
       {session && (
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
@@ -97,19 +121,20 @@ export default function TrainingBookingForm({
 
       {/* Availability */}
       <div className="text-sm text-gray-700 mb-2">
-        🧍‍♂️ <strong>Available Spots:</strong>{" "}
+        🧍‍♂️ <strong>{t.availableSpots}:</strong>{" "}
         {available > 0 ? (
           <span className="text-green-600">{available}</span>
         ) : (
-          <span className="text-red-600">Fully Booked</span>
+          <span className="text-red-600">{t.fullyBooked}</span>
         )}
       </div>
 
-      {/* Quantity Input */}
+      {/* Quantity */}
       {available > 0 && (
         <div className="space-y-2">
-          <label className=" text-sm font-medium text-gray-700 flex items-center gap-2">
-            <Users className="w-4 h-4 text-gray-500" /> Number of Participants
+          <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+            <Users className="w-4 h-4 text-gray-500" />
+            {t.participants}
           </label>
           <input
             type="number"
@@ -122,15 +147,16 @@ export default function TrainingBookingForm({
         </div>
       )}
 
-      {/* Price Display */}
+      {/* Price */}
       <div className="text-sm text-gray-700">
-        💰 <strong>Price:</strong> {price} JOD / person
+        💰 <strong>{t.price}:</strong> {price} {t.currency} /{" "}
+        {isArabic ? "للفرد" : "person"}
       </div>
 
-      {/* Total Price */}
+      {/* Total */}
       {available > 0 && (
         <div className="text-sm text-gray-700">
-          🧾 <strong>Total:</strong> {price * quantity} JOD
+          🧾 <strong>{t.total}:</strong> {price * quantity} {t.currency}
         </div>
       )}
 
@@ -142,10 +168,10 @@ export default function TrainingBookingForm({
           className="bg-[#676e32] text-white px-6 py-2 rounded-md hover:bg-[#7c863a] disabled:opacity-60 transition"
         >
           {available <= 0
-            ? "Fully Booked"
+            ? t.fullyBooked
             : loading
-            ? "Booking..."
-            : `Book (${quantity})`}
+            ? t.booking
+            : `${t.book} (${quantity})`}
         </DarkButton>
       </div>
 

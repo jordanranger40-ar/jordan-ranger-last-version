@@ -1,5 +1,5 @@
 "use client";
-import React, { useTransition, useState } from "react";
+import React, { useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -8,31 +8,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
+import {toast} from "sonner"
+import { useRouter } from "next/navigation";
 interface Props {
   userId: string;
   userRole: string;
   action: (formData: FormData) => Promise<void>;
 }
 
+
 export default function UpdateRoleForm({ userId, userRole, action }: Props) {
   const [isPending, startTransition] = useTransition();
-  const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
+  const router= useRouter()
 
   const handleFormSubmit = (formData: FormData) => {
     startTransition(async () => {
       try {
         await action(formData);
-        setToast({ message: "Role Updated Successfully!", type: "success" });
-
-        setTimeout(() => setToast(null), 3000);
+        toast.success("Role Updated Successfully!")
+         router.push("/admin/dashboard/users")
       } catch (_error) {
-        
-        setToast({ message: "Failed to update role.", type: "error" });
-        setTimeout(() => setToast(null), 3000);
+           toast.error("Failed to update role.")
       }
     });
   };
@@ -71,15 +67,6 @@ export default function UpdateRoleForm({ userId, userRole, action }: Props) {
           {isPending ? "Updating..." : "Update Role"}
         </Button>
       </div>
-      {toast && (
-        <div
-          className={`fixed bottom-5 right-5 z-50 px-5 py-3 rounded-lg shadow-lg text-white font-medium transition-all duration-300 ${
-            toast.type === "success" ? "bg-green-600" : "bg-red-600"
-          }`}
-        >
-          {toast.message}
-        </div>
-      )}
     </form>
   );
 }

@@ -15,6 +15,8 @@ export async function bookRoom(bookingDetails: bookingType) {
     return { success: false, message: "Please login to book the Room" };
 
   try {
+    console.log("bookingDetails: ",bookingDetails);
+    
     const result = await bookARoom({
       user_id: userDetails.user.id,
       room_id: bookingDetails.room_id,
@@ -22,13 +24,19 @@ export async function bookRoom(bookingDetails: bookingType) {
       end_time: bookingDetails.end_time,
     });
 
+    console.log("result vbd: ",result);
+    
+
     if (result?.status === 201) {
-      return { success: true, message: result.message };
+      console.log("result in booking room: ",result);
+      
+      return { success: true, message: result.message,status: result.status };
     } else {
-      return { success: false, message: result?.message || "Booking failed" };
+      return { success: false, message: result?.message || "Booking failed" ,status: result?.status};
     }
   } catch (error) {
+    console.log("error in booking room: ",error);
     console.error("Error booking Room:", error);
-    return { success: false, message: "Error in booking the Room" };
+    return { success: false, message: "Error in booking the Room",status: 500 };
   }
 }

@@ -27,6 +27,7 @@ export const disableBookingRange = async (data: DisableBookingData) => {
         message: `${
           data.type === "activity" ? "Activity" : "Room"
         } is already booked in this range`,
+        status:409
       };
     }
 

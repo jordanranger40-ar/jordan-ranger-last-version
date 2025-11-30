@@ -36,7 +36,7 @@ export default function TrainingSelector({ initialTrainingId, trainings }: Train
           ))}
         </SelectContent>
       </Select>
-       <input type="hidden" name="training_id" value={selectedTraining ?? ""} />
+      
     </div>
   );
 }

@@ -3,8 +3,6 @@
 import React from "react";
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
-
-import { newCategory, newTraining } from "@/types";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -15,12 +13,8 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
-type Props = {
-  categories: newCategory[];
-  trainingData: newTraining[];
-};
 
-export default function Navbar({ categories, trainingData }: Props) {
+export default function Navbar() {
   const t = useTranslations("Navbar");
   const locale = useLocale();
   const isArabic = locale === "ar";

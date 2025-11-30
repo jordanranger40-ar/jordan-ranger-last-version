@@ -7,16 +7,22 @@ import { useSession } from "next-auth/react";
 import BookingProgressBar from "./BookingProgressBar";
 import { newTraining } from "@/types";
 import DarkButton from "../ui/dark-button";
+import { useLocale } from "next-intl";
 
 export default function TrainingBookingPanel({
   training,
-  numberOfBooked
+  numberOfBooked,
+  uniqueTypes
 }: {
   training: newTraining;
-  numberOfBooked:number
+  numberOfBooked: number;
+  uniqueTypes:string[]
 }) {
   const { data: session } = useSession();
   const userDetails = session?.user;
+
+  const locale = useLocale();
+  const isArabic = locale === "ar";
 
   const [open, setOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -24,16 +30,14 @@ export default function TrainingBookingPanel({
 
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Current booking step
   const currentStep = bookingDone ? 2 : 1;
 
-  // Close modal when clicking outside
+  
+  // Close modal on outside click
+  
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        modalRef.current &&
-        !modalRef.current.contains(event.target as Node)
-      ) {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
         setOpen(false);
         setBookingDone(false);
         setQuantity(1);
@@ -43,7 +47,9 @@ export default function TrainingBookingPanel({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
-  // Close modal on Escape key
+  
+  // Close on Escape key
+
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -55,20 +61,16 @@ export default function TrainingBookingPanel({
     return () => document.removeEventListener("keydown", handleEsc);
   }, [open]);
 
-
-  console.log("training.start_date: ",training.start_date);
-  
   return (
-    <div className="mt-6">
+    <div className="mt-6" dir={isArabic ? "rtl" : "ltr"}>
       <DarkButton
         onClick={() => {
           setOpen(true);
           setBookingDone(false);
           setQuantity(1);
         }}
-       
       >
-        Book this Training
+        {isArabic ? "احجز هذا التدريب" : "Book this training"}
       </DarkButton>
 
       {open && (
@@ -77,8 +79,14 @@ export default function TrainingBookingPanel({
             ref={modalRef}
             className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative"
           >
+            {/* Header */}
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Book {training.name_en}</h3>
+              <h3 className="text-lg font-semibold">
+                {isArabic
+                  ? `احجز ${training.name_ar ?? training.name_en}`
+                  : `Book ${training.name_en}`}
+              </h3>
+
               <button
                 onClick={() => setOpen(false)}
                 className="text-gray-600 cursor-pointer"
@@ -87,32 +95,34 @@ export default function TrainingBookingPanel({
               </button>
             </div>
 
-            {/* Progress Bar */}
-            <BookingProgressBar currentStep={currentStep} />
+            {/* Progress bar */}
+            <BookingProgressBar currentStep={currentStep} locale={locale} />
 
-            {/* ✅ Step 2: Confirmation */}
+            {/* Confirmation */}
             {bookingDone && (
               <BookingConfirmation
-                activityName={training.name_en}
+                activityName={
+                  isArabic ? training.name_ar ?? training.name_en : training.name_en
+                }
                 start={training.start_date.toISOString() ?? ""}
                 end={training.end_date.toISOString() ?? ""}
                 quantity={quantity}
                 price={training.price ?? 1}
                 user={{
-                  name: `${userDetails?.firstName ?? ""} ${
-                    userDetails?.lastName ?? ""
-                  }`,
-                  email: userDetails?.email ?? "",
+                  name: `${userDetails?.firstName ?? ""} ${userDetails?.lastName ?? ""}`,
+                  email: userDetails?.email ?? ""
                 }}
                 onGoToCart={() => {
                   setOpen(false);
                   window.location.href = "/my-cart";
                 }}
                 continueButton={() => setOpen(false)}
+                locale={locale}
+                uniqueTypes={uniqueTypes}
               />
             )}
 
-            {/* ✅ Step 1: Booking Form (quantity only) */}
+            {/*  Training Booking Form */}
             {!bookingDone && (
               <TrainingBookingForm
                 training_id={training.id ?? ""}
@@ -125,6 +135,7 @@ export default function TrainingBookingPanel({
                     setBookingDone(true);
                   }
                 }}
+                locale={locale}
               />
             )}
           </div>

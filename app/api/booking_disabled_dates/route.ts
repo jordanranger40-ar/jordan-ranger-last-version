@@ -21,7 +21,7 @@ export const POST = async (request: Request) => {
 
         const result = await disableBookingRange(body);
         return NextResponse.json(
-          { data: result.data, message: result.message },
+          { data: result.data, message: result.message,status: result.status  },
           { status: result.status }
         );
       }
@@ -30,7 +30,7 @@ export const POST = async (request: Request) => {
     console.log("error: ",error);
     
     return NextResponse.json(
-      { data: error, message: "Error in adding the new training" },
+      { data: error, message: "Error in adding the new training" ,status: 500 },
       { status: 500 }
     );
   }

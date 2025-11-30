@@ -53,11 +53,11 @@ export default function AddBannerForm({ action }: Props) {
         await action({ ...form });
         toast.success("Banner added successfully!")
         setTimeout(() => {
-          router.replace("/admin/dashboard/banners");
+          router.push("/admin/dashboard/banners");
         }, 1500);
       } catch (error) {
         console.error(error);
-        toast.success("Failed to add banner.")
+        toast.error("Failed to add banner.")
       }
     });
   };

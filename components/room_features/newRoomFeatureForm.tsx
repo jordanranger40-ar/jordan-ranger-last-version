@@ -1,6 +1,6 @@
 "use client";
 import { getRoomFeaturesSchema } from "@/app/models/db/lib/schemas/roomFeaturesSchema";
-
+import {toast} from "sonner"
 import { roomFeatures } from "@/types";
 import {
   Card,
@@ -30,10 +30,10 @@ export default function CreateNewFeature({ action }: Props) {
   });
 
   const [isPending, startTransition] = useTransition();
-  const [toast, setToast] = useState<{
+ /* const [toast, setToast] = useState<{
     message: string;
     type: "success" | "error";
-  } | null>(null);
+  } | null>(null);*/
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -48,26 +48,19 @@ export default function CreateNewFeature({ action }: Props) {
         fieldError[fieldName] = err.message;
       });
       setErrors(fieldError);
-      setToast({
-        message: "Please fix the highlighted fields.",
-        type: "error",
-      });
-      setTimeout(() => setToast(null), 3000);
+      toast.error("Please fix the highlighted fields.")
       return;
     }
 
     startTransition(async () => {
       try {
         await action({ ...form });
-        setToast({ message: "Feature added successfully!", type: "success" });
+        toast.success("Feature added successfully!")
         setTimeout(() => {
-          setToast(null);
           router.replace("/admin/dashboard/room_features");
         }, 1500);
-      } catch (error) {
-        console.error(error);
-        setToast({ message: "Failed to add Feature.", type: "error" });
-        setTimeout(() => setToast(null), 3000);
+      } catch (_error) {
+        toast.error("Failed to add Feature.")
       }
     });
   };
@@ -189,15 +182,6 @@ export default function CreateNewFeature({ action }: Props) {
           </CardContent>
         </Card>
       </form>
-      {toast && (
-        <div
-          className={`fixed bottom-5 right-5 z-50 px-5 py-3 rounded-lg shadow-lg text-white font-medium transition-all duration-300 ${
-            toast.type === "success" ? "bg-green-600" : "bg-red-600"
-          }`}
-        >
-          {toast.message}
-        </div>
-      )}
     </main>
   );
 }

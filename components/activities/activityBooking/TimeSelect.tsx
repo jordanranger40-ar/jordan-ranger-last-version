@@ -4,7 +4,7 @@ import React from "react";
 interface TimeSelectProps {
   value: string;
   onChange: (val: string) => void;
-  locale: string; // add locale prop
+  locale?: string; // add locale prop
 }
 
 const TimeSelect: React.FC<TimeSelectProps> = ({ value, onChange, locale }) => {

@@ -19,46 +19,85 @@ export const bookARoom = async (data: newBooking) => {
   try {
     await client.query("BEGIN");
 
-    // Check availability
+    // normalize incoming times to Date (ensure valid)
+    const start = new Date(data.start_time);
+    const end = new Date(data.end_time);
+
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      await client.query("ROLLBACK");
+      return { result: null, message: "Invalid start_time or end_time", status: 400 };
+    }
+
+    if (end.getTime() <= start.getTime()) {
+      await client.query("ROLLBACK");
+      return { result: null, message: "end_time must be after start_time", status: 400 };
+    }
+
+    // --------------------------
+    // EXPLICIT OVERLAP CHECK
+    // Treat end_time as exclusive: a booking [S1, E1) does NOT conflict with [E1, X)
+    // Overlap condition: NOT (existing.end_time <= new.start OR existing.start_time >= new.end)
+    // --------------------------
+    const overlapQuery = `
+      SELECT 1
+      FROM room_booking
+      WHERE room_id = $1
+        AND NOT (end_time <= $2 OR start_time >= $3)
+      LIMIT 1;
+    `;
+
+    const overlapRes = await client.query(overlapQuery, [
+      data.room_id,
+      start, // new.start_time
+      end,   // new.end_time
+    ]);
+
+    if (overlapRes.rowCount > 0) {
+      await client.query("ROLLBACK");
+      return { result: null, message: "Room is not available", status: 409 };
+    }
+
+    // Check that the room exists (and get price)
     const availableRoom = await client.query<newRoom>(
-      `SELECT * FROM rooms 
-     WHERE id = $1 AND id NOT IN (
-       SELECT room_id FROM room_booking 
-       WHERE (start_time, end_time) OVERLAPS ($2, $3)
-     )`,
-      [data.room_id, data.start_time, data.end_time]
+      `SELECT * FROM rooms WHERE id = $1`,
+      [data.room_id]
     );
 
     if (availableRoom.rows.length === 0) {
       await client.query("ROLLBACK");
-      return { result: null, message: "Room is not available", status: 409 };
+      return { result: null, message: "Room not found", status: 404 };
     }
+
     // Calculate number of days (difference between start and end)
-    const startDate = new Date(data.start_time);
-    const endDate = new Date(data.end_time);
-    // calculate the difference
-    const diffInMs = endDate.getTime() - startDate.getTime();
-    // convert to days
-    const days = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
-    // find Price per days
-    const pricePerDay = Number(availableRoom.rows[0].price);
-    // find the total price
+    // We treat booking nights as whole day differences (end exclusive).
+    const msPerDay = 1000 * 60 * 60 * 24;
+    // Use the difference in millis and divide; round up to count partial days as full nights if needed.
+    const diffInMs = end.getTime() - start.getTime();
+    const days = Math.max(1, Math.ceil(diffInMs / msPerDay));
+
+    const pricePerDay = Number(availableRoom.rows[0].price ?? 0);
     const totalPrice = pricePerDay * days;
+    console.log("days: ",days, typeof days);
+    console.log("pricePerDay: ",pricePerDay);
+    
+    console.log("totalPrice: ",totalPrice);
+    
 
     // Insert booking
-    const result = await client.query<newBooking>(
-      `INSERT INTO room_booking (user_id, room_id, start_time, end_time, price) 
-     VALUES ($1, $2, $3, $4,$5) RETURNING *`,
-      [
-        data.user_id,
-        data.room_id,
-        data.start_time,
-        data.end_time,
-        Number(totalPrice),
-      ]
-    );
+    const insertQuery = `
+      INSERT INTO room_booking (user_id, room_id, start_time, end_time, price)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *;
+    `;
+    const result = await client.query<newBooking>(insertQuery, [
+      data.user_id,
+      data.room_id,
+      start,
+      end,
+      Number(totalPrice),
+    ]);
 
-    // Add to cart
+    // If your cart functions require the transaction client, keep using it
     const cart = await createCart(data.user_id, client);
     await addNewItem(
       {
@@ -69,11 +108,15 @@ export const bookARoom = async (data: newBooking) => {
       },
       client
     );
-    // update total cart total amount
+
+    console.log("Number((cart.total_amount ?? 0) + Number(totalPrice)): ",Number((cart.total_amount ?? 0) + Number(totalPrice)), typeof Number((cart.total_amount ?? 0) + Number(totalPrice)));
+    
+
+    // update total cart total amount (handle NaN gracefully)
     await updateCartTotalAmount(
       {
         id: cart.id,
-        total_amount: Number(cart.total_amount) + Number(totalPrice),
+        total_amount: (Number(cart.total_amount ?? 0) + Number(totalPrice)),
       },
       client
     );
@@ -87,13 +130,14 @@ export const bookARoom = async (data: newBooking) => {
     };
   } catch (error) {
     await client.query("ROLLBACK");
-    console.log(error);
-
-    console.log("Error In Booking The Room ");
+    console.error("Error In Booking The Room:", error);
+    // return structured error so frontend can handle it
+    return { result: null, message: "Server error while booking", status: 500 };
   } finally {
     client.release();
   }
 };
+
 
 export const getAllRoomsBookings = async () => {
   const result = await pool.query(`

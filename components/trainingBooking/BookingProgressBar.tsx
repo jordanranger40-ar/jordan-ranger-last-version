@@ -3,11 +3,17 @@ import React from "react";
 
 type Props = {
   currentStep: 1 | 2;
+  locale: string;
 };
 
-export default function BookingProgressBar({ currentStep }: Props) {
+export default function BookingProgressBar({ currentStep, locale }: Props) {
+  const isArabic = locale === "ar";
+
   return (
-    <div className="w-full flex justify-between items-center px-8 relative mb-8">
+    <div
+      className="w-full flex justify-between items-center px-8 relative mb-8"
+      dir={isArabic ? "rtl" : "ltr"}
+    >
       {/* Step 1 */}
       <div className="flex flex-col items-center z-10">
         <div
@@ -19,7 +25,9 @@ export default function BookingProgressBar({ currentStep }: Props) {
         >
           1
         </div>
-        <span className="mt-2 text-sm text-gray-700">Select Dates</span>
+        <span className="mt-2 text-sm text-gray-700">
+          {isArabic ? "اختيار التاريخ" : "Select Dates"}
+        </span>
       </div>
 
       {/* Step 2 */}
@@ -33,7 +41,9 @@ export default function BookingProgressBar({ currentStep }: Props) {
         >
           2
         </div>
-        <span className="mt-2 text-sm text-gray-700">Booking Confirmed</span>
+        <span className="mt-2 text-sm text-gray-700">
+          {isArabic ? "تم التأكيد" : "Booking Confirmed"}
+        </span>
       </div>
 
       {/* Connector line */}

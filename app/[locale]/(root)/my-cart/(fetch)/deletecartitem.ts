@@ -16,7 +16,7 @@ export async function deletecartitem(id: string) {
     return "please login"
   }
   const result = await removeCartItemByItemId(id)
-  if (!result) throw new Error("Failed To Delete The Activity");
+  if (!result) throw new Error("Failed To Delete The Cart Item");
   revalidatePath(`/my-cart`);
   return result;
 }

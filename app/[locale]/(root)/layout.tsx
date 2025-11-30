@@ -5,8 +5,6 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { setRequestLocale } from "next-intl/server";
 
-import { getAllcategories } from "@/app/models/db/lib/services/Accommodation";
-import { getAllTraining } from "@/app/models/db/lib/services/training";
 
 import FontSwitcher from "@/components/fontswitcher/FontSwitcher";
 import { Toaster } from "sonner";

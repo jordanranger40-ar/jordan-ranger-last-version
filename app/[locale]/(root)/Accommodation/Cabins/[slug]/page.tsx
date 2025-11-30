@@ -75,7 +75,7 @@ export default async function Page({ params }: PageProps) {
             {isArabic ? "مرافق الغرفة" : "Room Amenities"}
           </h3>
           <div className="grid sm:grid-cols-2 md:grid-cols-2 gap-6">
-            {data.room_features.map((feature: roomFeatures, index: number) => (
+            {data.features.map((feature: roomFeatures, index: number) => (
               <div
                 key={index}
                 className="flex flex-col justify-center bg-linear-to-br from-[#f0f8d0] to-white border border-[#d0d9a0] rounded-2xl p-6 hover:shadow-md transition"

@@ -12,8 +12,10 @@ import { useLocale } from "next-intl";
 
 type Activity = newActivity;
 
-export default function ActivityBookingPanel({ activity }: { activity: Activity }) {
+export default function ActivityBookingPanel({ activity,uniqueTypes }: { activity: Activity,uniqueTypes:string[] }) {
   const { data: session } = useSession();
+  console.log("session: ",session);
+  
   const userDetails = session?.user;
   const locale = useLocale();
   const isArabic = locale === "ar";
@@ -28,11 +30,8 @@ export default function ActivityBookingPanel({ activity }: { activity: Activity 
 
   const currentStep = bookingDone ? 3 : selectedRange ? 2 : 1;
 
-  // -----------------------------
   // Handlers for modal behavior
-  // -----------------------------
   const openModal = () => {
-    // Reset booking state but keep open true
     setSelectedRange(null);
     setAvailable(null);
     setBookingDone(false);
@@ -68,18 +67,15 @@ export default function ActivityBookingPanel({ activity }: { activity: Activity 
     return () => document.removeEventListener("keydown", handleEsc);
   }, [open]);
 
-  // -----------------------------
-  // Render
-  // -----------------------------
   return (
-    <div className="mt-6">
+    <div className="mt-3">
       <DarkButton onClick={openModal}>
         {isArabic ? "احجز هذا النشاط" : "Book this activity"}
       </DarkButton>
 
       {open && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center   bg-black/40 p-4"
           dir={isArabic ? "rtl" : "ltr"}
         >
           <div
@@ -118,6 +114,7 @@ export default function ActivityBookingPanel({ activity }: { activity: Activity 
                 }}
                 continueButton={closeModal}
                 locale={locale}
+                uniqueTypes={uniqueTypes}
               />
             )}
 

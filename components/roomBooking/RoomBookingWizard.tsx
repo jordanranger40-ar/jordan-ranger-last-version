@@ -10,12 +10,14 @@ type RoomBookingWizardProps = {
   room: newRoom;
   bookedDates: { start: string; end: string }[];
   locale: string; // "ar" or "en"
+  uniqueTypes:string[]
 };
 
 export default function RoomBookingWizard({
   room,
   bookedDates,
   locale,
+  uniqueTypes
 }: RoomBookingWizardProps) {
   const isArabic = locale === "ar";
   const { data: session } = useSession();
@@ -64,6 +66,7 @@ export default function RoomBookingWizard({
             (window.location.href = "/Accommodation/Cabins")
           }
           locale={locale}
+          uniqueTypes={uniqueTypes}
         />
       )}
     </div>

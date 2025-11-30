@@ -6,6 +6,8 @@ import { getServerSession } from "next-auth";
 import { revalidatePath } from "next/cache";
 
 export async function editDisabledBooking(data: DisableBookingData) {
+  console.log("data in edit: ",data);
+  
   if (!data.id) throw new Error("Missing disabled booking ID");
 
   const session = await getServerSession(authOptions);

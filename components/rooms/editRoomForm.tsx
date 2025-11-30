@@ -17,17 +17,13 @@ interface Props {
   room: newRoom;
   action: (data: newRoom) => Promise<void>;
 }
+import {toast} from "sonner"
 
 export default function EditRoomForm({ room, action }: Props) {
   console.log("room bfhidaiadijadi: ",room);
 
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
-
   const [form, setForm] = useState<newRoom>({
     slug: room.slug ?? "",
     name_en: room.name_en ?? "",
@@ -82,28 +78,19 @@ export default function EditRoomForm({ room, action }: Props) {
         fieldErrors[err.path[0] as string] = err.message;
       });
       setErrors(fieldErrors);
-      setToast({
-        message: "Please fix the highlighted fields.",
-        type: "error",
-      });
-      setTimeout(() => setToast(null), 3000);
+      toast.error("Please fix the highlighted fields.")
       return;
     }
-    console.log("form.roomFeatures: ", form.room_features);
-
     setErrors({});
     startTransition(async () => {
       try {
         await action({ ...form, id: room.id });
-        setToast({ message: "Room updated successfully!", type: "success" });
+        toast.success("Room updated successfully!")
         setTimeout(() => {
-          setToast(null);
           router.push("/admin/dashboard/rooms");
-        }, 1500);
+        }, 1000);
       } catch (error) {
-        console.error(error);
-        setToast({ message: "Failed to update Room.", type: "error" });
-        setTimeout(() => setToast(null), 3000);
+        toast.error("Failed to update Room.")
       }
     });
   };
@@ -323,7 +310,7 @@ export default function EditRoomForm({ room, action }: Props) {
                   initialImageUrl={form.cover_image ?? ""}
                   onUploadComplete={handleUploadComplete}
                   onUploadError={(e) =>
-                    setToast({ message: e.message, type: "error" })
+                    toast.error(e.message)
                   }
                   onDelete={handleImageDelete}
                 />
@@ -344,7 +331,7 @@ export default function EditRoomForm({ room, action }: Props) {
                   maxImages={5}
                   onUploadComplete={handleRoomImagesUploadComplete}
                   onUploadError={(e) =>
-                    setToast({ message: e.message, type: "error" })
+                    toast.error(e.message)
                   }
                   onDelete={handleRoomImagesDelete}
                 />
@@ -380,17 +367,6 @@ export default function EditRoomForm({ room, action }: Props) {
           </CardContent>
         </Card>
       </form>
-
-      {/* Toast */}
-      {toast && (
-        <div
-          className={`fixed bottom-5 right-5 z-50 px-5 py-3 rounded-lg shadow-lg text-white font-medium transition-all duration-500 transform ${
-            toast ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"
-          } ${toast.type === "success" ? "bg-[#676e32]" : "bg-red-600"}`}
-        >
-          {toast.message}
-        </div>
-      )}
     </main>
   );
 }

@@ -5,13 +5,24 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Session } from "next-auth";
 
-export default function CartButton({ session }: { session: Session | null }) {
+export default function CartButton({
+  session,
+  isCart,
+}: {
+  session: Session | null;
+  isCart: Boolean;
+}) {
   const router = useRouter();
 
   const handleClick = () => {
     if (!session?.user) {
       toast.error("Please Log In First");
       router.push("/login");
+      return;
+    }
+
+    if (!isCart) {
+      toast.error("Your Cart Is Empty");
       return;
     }
 

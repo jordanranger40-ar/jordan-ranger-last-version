@@ -9,7 +9,7 @@ export const addNewRoom = async (newRoom: newRoom) => {
     description_ar,
     cover_image,
     price,
-    room_features,
+    features,
     room_images,
     slug,
     room_type_en,
@@ -33,7 +33,7 @@ export const addNewRoom = async (newRoom: newRoom) => {
   );
 
   const checkFeature = await Promise.all(
-    room_features.map(async (feature) => {
+    features.map(async (feature) => {
       const existing = await pool.query<roomFeatures>(
         `SELECT id FROM room_features 
          WHERE feature_title_en = $1 AND feature_description_en = $2`,

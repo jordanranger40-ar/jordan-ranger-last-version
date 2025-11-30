@@ -9,7 +9,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import React, { useState, useTransition } from "react";
-import { useRouter } from "next/navigation"; // updated
+import { useRouter } from "next/navigation"; 
+import {toast} from "sonner"
 
 interface Props {
   banner: newBanner;
@@ -32,8 +33,6 @@ export default function EditBannerForm({ banner, action }: Props) {
   });
 
   const [isPending, startTransition] = useTransition();
-  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -44,8 +43,7 @@ export default function EditBannerForm({ banner, action }: Props) {
 
   const handleUploadError = (error: Error) => {
     console.error(error);
-    setToast({ message: `Upload failed: ${error.message}`, type: "error" });
-    setTimeout(() => setToast(null), 3000);
+    toast.error(`Upload failed: ${error.message}`)
   };
 
   const handleImageDelete = () => {
@@ -56,17 +54,13 @@ export default function EditBannerForm({ banner, action }: Props) {
     startTransition(async () => {
       try {
         await action({ ...form, bannerId: banner.id });
-        setToast({ message: "Banner updated successfully!", type: "success" });
-
-        // Redirect immediately after success
+        toast.success("Banner updated successfully!")
         setTimeout(() => {
-          setToast(null);
-          router.replace("/admin/dashboard/banners");
-        }, 1500); // small delay for toast
+          router.push("/admin/dashboard/banners");
+        }, 1500); 
       } catch (error) {
         console.error(error);
-        setToast({ message: "Failed to update banner.", type: "error" });
-        setTimeout(() => setToast(null), 3000);
+        toast.error("Failed to update banner.")
       }
     });
   };
@@ -169,15 +163,6 @@ export default function EditBannerForm({ banner, action }: Props) {
         </Card>
       </form>
 
-      {toast && (
-        <div
-          className={`fixed bottom-5 right-5 z-50 px-5 py-3 rounded-lg shadow-lg text-white font-medium transition-all duration-300 ${
-            toast.type === "success" ? "bg-green-600" : "bg-red-600"
-          }`}
-        >
-          {toast.message}
-        </div>
-      )}
     </main>
   );
 }

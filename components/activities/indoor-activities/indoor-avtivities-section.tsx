@@ -27,7 +27,7 @@ export default async function IndoorAvtivitiesSection({ isArabic }:Props){
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 px-6 w-full max-w-7xl">
         {data.map((data, idx) => (
-               <Link  key={idx} href={`/indoor-activities/${data.name_en ?? ""}`}>
+               <Link  key={idx} href={`/activities/indoor-activities/${data.slug ?? ""}`}>
      <ActivitiesCard      isArabic={isArabic} data={data} />
      </Link>
         ))}

@@ -6,9 +6,7 @@ import { revalidatePath } from "next/cache";
 
 export async function disableBookingRange(data: DisableBookingData) {
   const session = await getServerSession(authOptions);
-  const token = session?.user.token;
-  console.log("token: ",token);
-  
+  const token = session?.user.token;  
   const result = await fetch(
     `${process.env.NEXT_PUBLIC_APP_URL}/api/booking_disabled_dates`,
     {
@@ -20,7 +18,8 @@ export async function disableBookingRange(data: DisableBookingData) {
       body: JSON.stringify(data),
     }
   );
-  if (!result.ok) throw new Error("Failed To Disable Bookings");
+  
+  
   revalidatePath(`/dashboard/disableBooking`);
   return result.json();
 }

@@ -13,18 +13,13 @@ import {
 } from "@/components/ui/card";
 import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-
+import {toast} from "sonner"
 interface Props {
   action: (data: newActivity) => Promise<void>;
 }
 export default function CreateActivityForm({ action }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
-
   const [form, setForm] = useState<newActivity>({
     slug: "",
     name_en: "",
@@ -85,11 +80,7 @@ export default function CreateActivityForm({ action }: Props) {
         fieldErrors[err.path[0] as string] = err.message;
       });
       setErrors(fieldErrors);
-      setToast({
-        message: "Please fill the highlighted fields.",
-        type: "error",
-      });
-      setTimeout(() => setToast(null), 3000);
+      toast.error("Please fill the highlighted fields.")
       return;
     }
 
@@ -97,18 +88,12 @@ export default function CreateActivityForm({ action }: Props) {
     startTransition(async () => {
       try {
         await action({ ...form });
-        setToast({
-          message: "Activity Created successfully!",
-          type: "success",
-        });
+        toast.success("Activity Created successfully!")
         setTimeout(() => {
-          setToast(null);
           router.push("/admin/dashboard/activities");
-        }, 700);
-      } catch (error) {
-        console.error(error);
-        setToast({ message: "Failed to Create Activity.", type: "error" });
-        setTimeout(() => setToast(null), 3000);
+        }, 1000);
+      } catch (_error) {
+        toast.error("Failed to Create Activity.")
       }
     });
   };
@@ -344,7 +329,8 @@ export default function CreateActivityForm({ action }: Props) {
                     setForm({ ...form, card_image: url })
                   }
                   onUploadError={(e) =>
-                    setToast({ message: e.message, type: "error" })
+                    toast.error(e.message)
+                    
                   }
                   onDelete={() => setForm({ ...form, card_image: "" })}
                 />
@@ -367,7 +353,7 @@ export default function CreateActivityForm({ action }: Props) {
                     setForm({ ...form, poster_image: url })
                   }
                   onUploadError={(e) =>
-                    setToast({ message: e.message, type: "error" })
+                    toast.error(e.message)
                   }
                   onDelete={() => setForm({ ...form, poster_image: "" })}
                 />
@@ -390,7 +376,7 @@ export default function CreateActivityForm({ action }: Props) {
                     setForm({ ...form, header_image: url })
                   }
                   onUploadError={(e) =>
-                    setToast({ message: e.message, type: "error" })
+                    toast.error(e.message)
                   }
                   onDelete={() => setForm({ ...form, header_image: "" })}
                 />
@@ -424,17 +410,6 @@ export default function CreateActivityForm({ action }: Props) {
           </CardContent>
         </Card>
       </form>
-
-      {/* Toast */}
-      {toast && (
-        <div
-          className={`fixed bottom-5 right-5 z-50 px-5 py-3 rounded-lg shadow-lg text-white font-medium transition-all duration-500 transform ${
-            toast ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"
-          } ${toast.type === "success" ? "bg-[#676e32]" : "bg-red-600"}`}
-        >
-          {toast.message}
-        </div>
-      )}
     </main>
   );
 }

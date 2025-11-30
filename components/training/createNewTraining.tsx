@@ -12,7 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
+import {toast} from "sonner"
 interface Props {
   action: (data: newTraining) => Promise<void>;
 }
@@ -20,10 +20,6 @@ interface Props {
 export default function CreateEventForm({ action }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
 
   const [form, setForm] = useState<newTraining>({
     slug: "",
@@ -76,11 +72,7 @@ export default function CreateEventForm({ action }: Props) {
         fieldErrors[err.path[0] as string] = err.message;
       });
       setErrors(fieldErrors);
-      setToast({
-        message: "Please fill the highlighted fields.",
-        type: "error",
-      });
-      setTimeout(() => setToast(null), 3000);
+      toast.error("Please fill the highlighted fields.")
       return;
     }
 
@@ -88,15 +80,12 @@ export default function CreateEventForm({ action }: Props) {
     startTransition(async () => {
       try {
         await action({ ...form });
-        setToast({ message: "Event created successfully!", type: "success" });
+        toast.success("Training created successfully!")
         setTimeout(() => {
-          setToast(null);
           router.push("/admin/dashboard/training");
-        }, 200);
-      } catch (error) {
-        console.error(error);
-        setToast({ message: "Failed to create event.", type: "error" });
-        setTimeout(() => setToast(null), 3000);
+        }, 1000);
+      } catch (_error) {
+        toast.error("Failed to create training.")
       }
     });
   };
@@ -337,7 +326,7 @@ export default function CreateEventForm({ action }: Props) {
                                setForm({ ...form, card_image: url })
                              }
                              onUploadError={(e) =>
-                               setToast({ message: e.message, type: "error" })
+                              toast.error(e.message)
                              }
                              onDelete={() => setForm({ ...form, card_image: "" })}
                            />
@@ -360,7 +349,7 @@ export default function CreateEventForm({ action }: Props) {
                                setForm({ ...form, post_image: url })
                              }
                              onUploadError={(e) =>
-                               setToast({ message: e.message, type: "error" })
+                               toast.error(e.message)
                              }
                              onDelete={() => setForm({ ...form, post_image: "" })}
                            />
@@ -383,7 +372,7 @@ export default function CreateEventForm({ action }: Props) {
                                setForm({ ...form, header_image: url })
                              }
                              onUploadError={(e) =>
-                               setToast({ message: e.message, type: "error" })
+                               toast.error(e.message)
                              }
                              onDelete={() => setForm({ ...form, header_image: "" })}
                            />
@@ -418,17 +407,6 @@ export default function CreateEventForm({ action }: Props) {
           </CardContent>
         </Card>
       </form>
-
-      {/* Toast */}
-      {toast && (
-        <div
-          className={`fixed bottom-5 right-5 z-50 px-5 py-3 rounded-lg shadow-lg text-white font-medium transition-all duration-500 transform ${
-            toast ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"
-          } ${toast.type === "success" ? "bg-[#676e32]" : "bg-red-600"}`}
-        >
-          {toast.message}
-        </div>
-      )}
     </main>
   );
 }

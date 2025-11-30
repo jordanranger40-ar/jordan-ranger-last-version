@@ -14,64 +14,59 @@ export const addNewItem = async (data: newCartItem, client?: PoolClient) => {
   return result.rows[0];
 };
 
-export const removeCartItemByItemId = async (item_id: string) => {
-  const client = await pool.connect();
+export const removeCartItemByItemId = async (item_id: string, client?: PoolClient) => {
+  const db = client ?? await pool.connect();
+  const isStandalone = !client; // true if no client passed
   try {
-    await client.query("BEGIN");
-    const itemDetails = await client.query<newCartItem>(
-      "select * from cart_items where id=$1",
+    if (isStandalone) await db.query("BEGIN");
+
+    const itemDetails = await db.query<newCartItem>(
+      "SELECT * FROM cart_items WHERE id=$1",
       [item_id]
     );
 
     if (itemDetails.rows.length === 0) {
-      await client.query("ROLLBACK");
-      return { success: false, message: "Item Not Found", status:409 };
+      if (isStandalone) await db.query("ROLLBACK");
+      return { success: false, message: "Item Not Found", status: 409 };
     }
 
     const bookingId = itemDetails.rows[0].booking_id;
     const bookingType = itemDetails.rows[0].booking_type;
     const cartId = itemDetails.rows[0].cart_id;
 
+    // Delete or restore booking availability
     if (bookingType === "activity") {
-      // if item type= activity, then clear the activity booking
-      await client.query("delete from activities_booking where id=$1", [
-        bookingId,
-      ]);
+      await db.query("DELETE FROM activities_booking WHERE id=$1", [bookingId]);
     } else if (bookingType === "training") {
-      // if item type= training, then clear the training booking
-      await client.query("delete from training_booking where id=$1", [
-        bookingId,
-      ]);
+      await db.query("DELETE FROM training_booking WHERE id=$1", [bookingId]);
     } else if (bookingType === "room") {
-      // if item type= room, then clear the room booking
-      await client.query("delete from room_booking where id=$1", [bookingId]);
+      await db.query("DELETE FROM room_booking WHERE id=$1", [bookingId]);
     }
 
-    await client.query("DELETE FROM cart_items WHERE id = $1", [item_id]); // get the total amount of the items that in the cart_items table
-    const totalResult = await client.query<{ total: number }>(
-      "SELECT COALESCE(SUM(price), 0) AS total FROM cart_items WHERE cart_id = $1",
+    await db.query("DELETE FROM cart_items WHERE id=$1", [item_id]);
+
+    const totalResult = await db.query<{ total: number }>(
+      "SELECT COALESCE(SUM(price),0) AS total FROM cart_items WHERE cart_id=$1",
       [cartId]
     );
 
-    const newTotal = totalResult.rows[0].total;
-
-    await client.query("UPDATE cart SET total_amount = $1 WHERE id = $2", [
-      //update the total amount
-      newTotal,
+    await db.query("UPDATE cart SET total_amount=$1 WHERE id=$2", [
+      totalResult.rows[0].total,
       cartId,
     ]);
-    await client.query("COMMIT");
 
-    return { success: true, message: "The Item Was Deleted Successfully",status:200 };
+    if (isStandalone) await db.query("COMMIT");
+
+    return { success: true, message: "Item deleted successfully", status: 200 };
   } catch (error) {
-    
     console.error("Error removing cart item:", error);
-    await client.query("ROLLBACK");
-    return { success: false, message: "Error In Deleteing The Item",status:500 };
+    if (isStandalone) await db.query("ROLLBACK");
+    return { success: false, message: "Error deleting item", status: 500 };
   } finally {
-    client.release();
+    if (isStandalone) db.release();
   }
-}; // remove one item from the cart
+};
+ // remove one item from the cart
 
 export const clearCart = async (cart_id: string) => {
   await pool.query("DELETE FROM cart_items WHERE cart_id = $1", [cart_id]);

@@ -66,11 +66,11 @@ export default function Navbar({ categories, trainingData }: Props) {
 
   const activityItems = [
     {
-      href: "/indoor-activities",
+      href: "/activities/indoor-activities",
       label: t("indooractivities"),
     },
     {
-      href: "/outdoor-activities",
+      href: "/activities/outdoor-activities",
       label: t("outdooractivities"),
     },
   ];

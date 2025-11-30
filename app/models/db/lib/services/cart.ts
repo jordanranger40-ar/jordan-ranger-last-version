@@ -1,6 +1,8 @@
-import { type newCart, type cartWithItems } from "@/types/index";
+import { type newCart, type cartWithItems, newCartItem } from "@/types/index";
 import pool from "..";
 import { PoolClient } from "pg";
+import cron from "node-cron";
+import { removeCartItemByItemId } from "./cart_items";
 
 export const createCart = async (user_id: string, client?: PoolClient) => {
   const db = client ?? pool;
@@ -23,10 +25,32 @@ export const createCart = async (user_id: string, client?: PoolClient) => {
 
 export const getCartByUserId = async (userId: string) => {
   const result = await pool.query<cartWithItems>(
-    "SELECT * FROM cart INNER JOIN cart_items ON cart.id = cart_items.cart_id where user_id= $1 ",
+    "SELECT * FROM cart  where user_id= $1 ",
     [userId]
   );
   return { data: result.rows, message: "All Cart Details", status: 200 };
+};
+
+export const getCartItemsByUserId = async (userId: string) => {
+  const cartDetials = await pool.query<newCart>(
+    "SELECT * FROM cart WHERE user_id= $1",
+    [userId]
+  );
+  if (cartDetials.rowCount === 0) {
+    return {
+      data: null,
+      message: "There is no cart for this user",
+      status: 409,
+    };
+  } else {
+    const cartId = cartDetials.rows[0].id;
+
+    const result = await pool.query<newCartItem>(
+      "SELECT * FROM cart_items where cart_id=$1 ",
+      [cartId]
+    );
+    return { data: result.rows, message: "All Cart Items", status: 200 };
+  }
 };
 
 export const updateCartTotalAmount = async (
@@ -41,7 +65,64 @@ export const updateCartTotalAmount = async (
   return { data: result, message: "Cart Updated Successfully", status: 201 };
 };
 
-export const getCartById= async (cart_id:string)=>{
-  const result= await pool.query<newCart>("select * from cart where id= $1 ",[cart_id])
-  return result.rows[0]
-}
+export const getCartById = async (cart_id: string) => {
+  const result = await pool.query<newCart>("select * from cart where id= $1 ", [
+    cart_id,
+  ]);
+  return result.rows[0];
+};
+
+export const clearExpiredCart = () => {
+  cron.schedule("*/1 * * * *", async () => {
+    const client = await pool.connect();
+    try {
+      console.log("Cron triggered at:", new Date());
+
+      await client.query("BEGIN");
+
+      console.log("gdhjswko test test test");
+      
+      const expiredCarts = await client.query<newCart>(
+        "SELECT * FROM cart WHERE expires_at < NOW()"
+      );
+
+      console.log("expiredCartvbhdjnks: ",expiredCarts);
+      
+
+      // ✅ Nothing expired → skip
+      if (expiredCarts.rows.length === 0) {
+        console.log("No expired carts found.");
+        await client.query("ROLLBACK"); // nothing to commit
+        return;
+      }
+
+      console.log(`Found ${expiredCarts.rows.length} expired cart(s).`);
+
+      for (const cart of expiredCarts.rows) {
+        console.log("Clearing cart:", cart.id);
+
+        const cartItems = await client.query<newCartItem>(
+          "SELECT * FROM cart_items WHERE cart_id=$1",
+          [cart.id]
+        );
+
+        for (const item of cartItems.rows) {
+          if (item.id) {
+            await removeCartItemByItemId(item.id, client);
+          }
+        }
+
+        // Delete the cart itself
+        await client.query("DELETE FROM cart WHERE id=$1", [cart.id]);
+      }
+
+      await client.query("COMMIT");
+      console.log("Expired carts cleared successfully");
+    } catch (error) {
+      await client.query("ROLLBACK");
+      console.error("Error clearing expired carts:", error);
+    } finally {
+      client.release();
+    }
+  });
+};
