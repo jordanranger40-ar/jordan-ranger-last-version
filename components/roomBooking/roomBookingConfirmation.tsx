@@ -172,7 +172,7 @@ const totalPrice = price ? price * days : undefined;
           onClick={continueButton}
         >
           {" "}
-          {isArabic ? "استمر" : "Continue"}
+          {isArabic ? "حجوزاتي" : "By Bookings"}
         </LightButton>
       </div>
 
@@ -182,7 +182,7 @@ const totalPrice = price ? price * days : undefined;
           ? "ملاحظة: مواعيد الإقامة مضبوطة تلقائياً من 3:00 مساءً وصول إلى 12:00 مساءً مغادرة."
           : "Tip: Room stays are automatically set from 3:00 PM check-in to 12:00 PM check-out."}
       </div>
-      <UpSellingComponent uniqueTypes={uniqueTypes} locale={locale} />
+      <UpSellingComponent uniqueTypes={uniqueTypes} locale={locale}  currentType="room"/>
     </div>
   );
 }

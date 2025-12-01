@@ -5,6 +5,15 @@ export type newClient = {
 };
 
 
+export type newCategory = {
+  id?: string;
+  slug?: string;
+  category_name_en: string;
+  category_name_ar: string;
+  description_en: string;
+  description_ar: string;
+  image: string | null;
+};
 
 
 export type user = {

@@ -10,7 +10,7 @@ export default function CartButton({
   isCart,
 }: {
   session: Session | null;
-  isCart: Boolean;
+  isCart: boolean;
 }) {
   const router = useRouter();
 

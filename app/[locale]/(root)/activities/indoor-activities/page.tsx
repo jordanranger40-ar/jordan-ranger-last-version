@@ -10,8 +10,6 @@ export default async function page({ params }: PageProps) {
   const { locale } = await params;
   const isArabic = locale === "ar";
 
-
-
   return (
     <main className="flex flex-col items-center mt-12 w-full">
       <IndoorActivitiesHeader isArabic={isArabic} />

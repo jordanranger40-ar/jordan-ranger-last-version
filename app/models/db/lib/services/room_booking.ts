@@ -19,7 +19,7 @@ export const bookARoom = async (data: newBooking) => {
   try {
     await client.query("BEGIN");
 
-    // normalize incoming times to Date (ensure valid)
+
     const start = new Date(data.start_time);
     const end = new Date(data.end_time);
 
@@ -33,11 +33,6 @@ export const bookARoom = async (data: newBooking) => {
       return { result: null, message: "end_time must be after start_time", status: 400 };
     }
 
-    // --------------------------
-    // EXPLICIT OVERLAP CHECK
-    // Treat end_time as exclusive: a booking [S1, E1) does NOT conflict with [E1, X)
-    // Overlap condition: NOT (existing.end_time <= new.start OR existing.start_time >= new.end)
-    // --------------------------
     const overlapQuery = `
       SELECT 1
       FROM room_booking
@@ -52,7 +47,7 @@ export const bookARoom = async (data: newBooking) => {
       end,   // new.end_time
     ]);
 
-    if (overlapRes.rowCount > 0) {
+    if (overlapRes.rowCount! > 0) {
       await client.query("ROLLBACK");
       return { result: null, message: "Room is not available", status: 409 };
     }
@@ -509,5 +504,48 @@ export const updateBookingStatus = async (
     data: result,
     message: "Booking Has Been Updated Successfully",
     status: 201,
+  };
+};
+
+
+export const getUserUpcomingRoomBookings = async (user_id: string) => {
+  const now = new Date();
+
+  const result = await pool.query<RoomBookingWithDetails>(`
+    SELECT 
+      rb.id AS id,
+      rb.start_time,
+      rb.end_time,
+      rb.created_at,
+      rb.is_confirmed,
+      rb.is_deleted,
+      u.id AS user_id,
+      u.first_name,
+      u.last_name,
+      u.email,
+      r.id AS room_id,
+      r.name_en,
+      r.description_en,
+      r.name_ar,
+      r.description_ar,
+      r.cover_image,
+      r.price,
+      r.room_images,
+      r.room_type_en,
+      r.room_type_ar,
+      r.slug
+    FROM room_booking rb
+    JOIN users u ON rb.user_id = u.id
+    JOIN rooms r ON rb.room_id = r.id
+    WHERE rb.is_deleted = false
+      AND rb.user_id = $1
+      AND rb.start_time > $2
+    ORDER BY rb.start_time ASC
+  `, [user_id, now]);
+
+  return {
+    data: result.rows,
+    message: "Upcoming bookings for the user",
+    status: 200,
   };
 };

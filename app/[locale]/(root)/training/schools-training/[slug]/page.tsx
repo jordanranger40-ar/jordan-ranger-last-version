@@ -25,16 +25,17 @@ export default async function Page({ params }: Props) {
   const trainingData = await getTrainingBySlug(slug);
   if (userId) {
     const cartItems = await getCartItemsByUserId(userId ?? "");
-    console.log("cartItems: ", cartItems);
-
-    const bookingsTypes = cartItems.map((ele, i) => {
-      if (!uniqueTypes.includes(ele.booking_type)) {
-        uniqueTypes.push(ele.booking_type);
-      }
-      return uniqueTypes;
-    });
+    if (cartItems.data !== null) {
+      const bookingsTypes = cartItems.data.map((ele, i) => {
+        if (!uniqueTypes.includes(ele.booking_type)) {
+          uniqueTypes.push(ele.booking_type);
+        }
+        return uniqueTypes;
+      });
+    } else {
+      console.log("User has no cart");
+    }
   }
-
   if (!trainingData || trainingData.data.length === 0) {
     return (
       <p className="text-center mt-20 text-gray-500" dir={direction}>

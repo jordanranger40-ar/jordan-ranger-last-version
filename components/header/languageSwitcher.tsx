@@ -11,17 +11,15 @@ export default function LanguageSwitcher() {
   const toggleLocale = () => {
     const newLocale = locale === "en" ? "ar" : "en";
 
-
     const pathWithoutLocale = pathname.replace(/^\/(en|ar)/, "");
 
- 
     router.push(`/${newLocale}${pathWithoutLocale}`);
   };
 
   return (
     <button
       onClick={toggleLocale}
-      className="px-3 py-1 rounded-lg border text-white hover:bg-gray-100"
+      className="px-3 py-1 rounded-lg border text-gray-800 md:text-white hover:bg-gray-100 hover:text-gray-800 "
     >
       {locale === "en" ? "العربية" : "English"}
     </button>

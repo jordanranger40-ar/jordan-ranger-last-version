@@ -8,7 +8,7 @@ interface PageProps {
   }>;
 }
 
-export default async function page({ params }: PageProps) {
+export default async function Page({ params }: PageProps) {
   const { locale } = await params;
 
   const isArabic = locale === "ar";

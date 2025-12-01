@@ -31,7 +31,7 @@ export default function CreateRoomForm({ action }: Props) {
     price: 0,
     cover_image: "",
     room_images: [],
-    room_features: [],
+    features: [],
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -279,7 +279,7 @@ export default function CreateRoomForm({ action }: Props) {
                 <span className="text-red-500">*</span> Room Features
               </label>
               <RoomFeaturesMultiSelect
-                selectedFeatures={form.room_features}
+                selectedFeatures={form.features}
                 onChange={(features) =>
                   setForm((prev) => ({ ...prev, room_features: features }))
                 }

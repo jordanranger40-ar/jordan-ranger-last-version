@@ -10,7 +10,8 @@ import { newRoom } from "@/types";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { format } from "date-fns";
-
+import DarkButton from "@/components/ui/dark-button";
+import LightButton from "@/components/ui/light-button";
 type Props = {
   room: newRoom;
   bookedDates: { start: string; end: string }[];
@@ -26,6 +27,10 @@ export default function RoomBookingPage({
 }: Props) {
   const isArabic = locale === "ar";
   const router = useRouter();
+
+  const today = new Date();
+  const minSelectableDate = new Date(today);
+  minSelectableDate.setDate(today.getDate() + 3);
 
   // Generate all disabled dates
   const disabledDates = bookedDates.flatMap((d) => {
@@ -80,7 +85,8 @@ export default function RoomBookingPage({
   const handleConfirmBooking = async () => {
     closeConfirmation();
 
-    let { startDate, endDate } = range[0];
+    const {startDate}=range[0];
+    let {  endDate } = range[0];
     if (!startDate || !endDate) return;
 
     if (toDateOnly(startDate).getTime() === toDateOnly(endDate).getTime()) {
@@ -121,11 +127,9 @@ export default function RoomBookingPage({
         );
         setTimeout(() => router.push("/login"), 1000);
       } else {
-       
-         console.log("error in room booking jreiow");
-        console.log("result: d;lkfjkdldffg: ",result);
+        console.log("error in room booking jreiow");
+        console.log("result: d;lkfjkdldffg: ", result);
         if (result.status === 201) {
-          
           setIsBooked(true);
           onBooked({
             start: startDate.toISOString(),
@@ -229,7 +233,7 @@ export default function RoomBookingPage({
             <DateRange
               ranges={range}
               onChange={handleSelect}
-              minDate={new Date()}
+              minDate={minSelectableDate}
               disabledDates={disabledDates}
               rangeColors={rangeColorsProp}
               moveRangeOnFirstSelection={false}
@@ -238,8 +242,37 @@ export default function RoomBookingPage({
             />
           </div>
 
-          <div className="flex flex-row gap-2 w-full">
-            <button
+          {/* Buttons */}
+          <div className="flex flex-col gap-3 sm:flex-row mb-1 w-full">
+            <DarkButton
+              aria-label={isArabic ? "تأكيد الحجز" : "Confirm Booking"}
+              onClick={openConfirmation}
+              className=" font-medium w-full sm:w-1/2 inline-flex items-center justify-center gap-2"
+            >
+              {isLoading
+                ? isArabic
+                  ? "جارٍ الحجز..."
+                  : "Booking..."
+                : isBooked
+                ? isArabic
+                  ? "تم الحجز!"
+                  : "Booked!"
+                : isArabic
+                ? "تأكيد الحجز"
+                : "Confirm Booking"}
+            </DarkButton>
+            <LightButton
+              aria-label={isArabic ? "إلغاء" : "Cancel"}
+              className=" font-medium w-full sm:w-1/2 bg-gray-300 inline-flex items-center justify-center gap-2"
+              onClick={() => {
+                router.back();
+              }}
+            >
+              {" "}
+              {isArabic ? "إلغاء" : "Cancel"}
+            </LightButton>
+          </div>
+          {/*<button
               onClick={openConfirmation}
               disabled={isLoading || isBooked}
               className={`mt-4 px-6 py-3 rounded-lg font-medium text-white w-full transition-all duration-300 ${
@@ -268,8 +301,7 @@ export default function RoomBookingPage({
               className="mt-4 px-6 py-3 rounded-lg font-medium w-full border border-gray-400 text-gray-700 hover:bg-gray-100 transition"
             >
               {isArabic ? "إلغاء" : "Cancel"}
-            </button>
-          </div>
+            </button>*/}
 
           {isBooked && (
             <div className="flex items-center gap-2 text-green-600 mt-3">

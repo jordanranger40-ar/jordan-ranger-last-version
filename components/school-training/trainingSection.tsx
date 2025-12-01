@@ -26,7 +26,7 @@ export default async function TrainingSection({ isArabic }: Props) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 px-6 w-full max-w-7xl">
         {data.data.map((data, idx) => (
-          <Link key={idx} href={`/training/school-training/${data.slug ?? ""}`}>
+          <Link key={idx} href={`/training/schools-training/${data.slug ?? ""}`}>
             <TrainingsCard isArabic={isArabic} data={data} />
           </Link>
         ))}

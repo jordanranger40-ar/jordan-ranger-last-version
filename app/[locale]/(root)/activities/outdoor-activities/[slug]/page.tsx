@@ -19,10 +19,10 @@ export default async function Page({ params }: PageProps) {
   const uniqueTypes: string[] = [];
   const activityData = await getActivityBySlug(slug);
   if (userId) {
-    const cartItems = await getCartItemsByUserId(userId ?? "");
+    const cartItems = (await getCartItemsByUserId(userId ?? "")).data;
     console.log("cartItems: ", cartItems);
 
-    const bookingsTypes = cartItems.map((ele, i) => {
+    const bookingsTypes = cartItems!.map((ele, i) => {
       if (!uniqueTypes.includes(ele.booking_type)) {
         uniqueTypes.push(ele.booking_type);
       }

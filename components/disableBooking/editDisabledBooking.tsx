@@ -22,7 +22,6 @@ interface Props {
   initialData: DisableBookingData;
   activities: { id: string; name_en: string }[];
   rooms: { id: string; name_en: string }[];
-  locale: string;
 }
 
 export default function EditDisableBookingForm({
@@ -30,12 +29,10 @@ export default function EditDisableBookingForm({
   initialData,
   activities,
   rooms,
-  locale,
 }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  const isArabic = locale === "ar";
 
   // form state including the ID
   const [form, setForm] = useState<DisableBookingData>({ ...initialData });
@@ -95,7 +92,7 @@ useEffect(() => {
     // append times if activity
     if (form.type === "activity") {
       if (!timeStart || !timeEnd) {
-        toast.error(isArabic ? "اختر وقت البداية والنهاية" : "Choose start and end hours");
+        toast.error( "Choose start and end hours");
         return;
       }
       finalStart = `${form.start_date} ${timeStart}:00`;
@@ -116,7 +113,7 @@ useEffect(() => {
         fieldErrors[err.path[0] as string] = err.message;
       });
       setErrors(fieldErrors);
-      toast.error(isArabic ? "يرجى ملء جميع الحقول المطلوبة" : "Please fill all required fields");
+      toast.error( "Please fill all required fields");
       return;
     }
 
@@ -133,7 +130,7 @@ useEffect(() => {
           toast.error(result.message);
         }
       } catch (_error) {
-        toast.error(isArabic ? "فشل في تحديث الحجز المعطل" : "Failed to update disabled booking.");
+        toast.error( "Failed to update disabled booking.");
       }
     });
   };
@@ -147,7 +144,7 @@ useEffect(() => {
     <main className="ml-3 xl:ml-7 mb-10 text-gray-800">
       <div className="flex flex-col border-b border-gray-300 pb-3 w-[65vw] mb-8">
         <h1 className="text-2xl font-semibold text-[#676e32]">
-          {isArabic ? "تعديل الحجز المعطل" : "Edit Disabled Booking"}
+          Edit Disabled Booking
         </h1>
       </div>
 
@@ -160,20 +157,20 @@ useEffect(() => {
       >
         <Card className="w-full shadow-md hover:shadow-lg transition-all duration-300">
           <CardHeader>
-            <CardTitle className="text-[#676e32]">{isArabic ? "تعديل الحجز المعطل" : "Edit Disabled Booking"}</CardTitle>
-            <CardDescription>{isArabic ? "قم بتحديث التواريخ للحجز المعطل." : "Update the date range of the disabled booking."}</CardDescription>
+            <CardTitle className="text-[#676e32]"> Edit Disabled Booking</CardTitle>
+            <CardDescription>Update the date range of the disabled booking.</CardDescription>
           </CardHeader>
 
           <CardContent className="flex flex-col gap-6 mb-7">
             {/* Type & item (disabled) */}
             <div className="flex flex-col md:w-[90%]">
               <Label className="text-sm font-medium text-gray-700 mb-1">
-                {isArabic ? "النوع والعنصر" : "Type & Item"}
+                Type & Item
               </Label>
               <input
                 type="text"
                 disabled
-                value={`${form.type === "activity" ? (isArabic ? "نشاط" : "Activity") : (isArabic ? "إقامة" : "Room")}: ${currentItem?.name_en || "Unknown"}`}
+                value={`${form.type === "activity" ? "Activity" :  "Room"}: ${currentItem?.name_en || "Unknown"}`}
                 className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 bg-gray-100"
               />
             </div>
@@ -182,7 +179,7 @@ useEffect(() => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="flex flex-col md:w-[90%]">
                 <Label className="text-sm font-medium text-gray-700 mb-1">
-                  <span className="text-red-500">*</span> {isArabic ? "تاريخ البداية" : "Start Date"}
+                  <span className="text-red-500">*</span> Start Date
                 </Label>
                 <input
                   type="date"
@@ -197,7 +194,7 @@ useEffect(() => {
 
               <div className="flex flex-col md:w-[90%]">
                 <Label className="text-sm font-medium text-gray-700 mb-1">
-                  <span className="text-red-500">*</span> {isArabic ? "تاريخ النهاية" : "End Date"}
+                  <span className="text-red-500">*</span> End Date
                 </Label>
                 <input
                   type="date"
@@ -215,12 +212,12 @@ useEffect(() => {
             {form.type === "activity" && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <Label>{isArabic ? "وقت البداية" : "Start Time"}</Label>
-                  <TimeSelect value={timeStart} onChange={setTimeStart} locale={locale} />
+                  <Label>Start Time</Label>
+                  <TimeSelect value={timeStart} onChange={setTimeStart} />
                 </div>
                 <div>
-                  <Label>{isArabic ? "وقت النهاية" : "End Time"}</Label>
-                  <TimeSelect value={timeEnd} onChange={setTimeEnd} locale={locale} />
+                  <Label>End Time</Label>
+                  <TimeSelect value={timeEnd} onChange={setTimeEnd} />
                 </div>
               </div>
             )}
@@ -233,7 +230,7 @@ useEffect(() => {
                 className="px-5 py-2 rounded-md border border-gray-400 text-gray-700 hover:bg-gray-100"
                 onClick={() => router.replace("/admin/dashboard/disable_booking")}
               >
-                {isArabic ? "إلغاء" : "Cancel"}
+                Cancel
               </button>
 
               <button
@@ -241,7 +238,7 @@ useEffect(() => {
                 disabled={isPending}
                 className="px-5 py-2 rounded-md bg-[#676e32] text-white hover:bg-[#7b8444]"
               >
-                {isPending ? (isArabic ? "جاري الحفظ..." : "Saving...") : (isArabic ? "تحديث" : "Update")}
+                {isPending ? "Saving..." :  "Update"}
               </button>
             </div>
           </CardContent>

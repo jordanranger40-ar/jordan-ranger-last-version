@@ -35,7 +35,7 @@ export default function EditRoomForm({ room, action }: Props) {
     price: room.price,
     cover_image: room.cover_image ?? "",
     room_images: room.room_images ?? [],
-   room_features: (room.room_features ?? []).filter(
+   features: (room.features ?? []).filter(
   (f: roomFeatures) => f && f.id
 ),
   });
@@ -111,7 +111,7 @@ export default function EditRoomForm({ room, action }: Props) {
     setForm((prev) => ({ ...prev, room_images: [] }));
   };
 
-  console.log("FORM FEATURES:", form.room_features);
+  console.log("FORM FEATURES:", form.features);
 
 
   return (
@@ -287,9 +287,9 @@ export default function EditRoomForm({ room, action }: Props) {
                 <span className="text-red-500">*</span> Room Features
               </label>
               <RoomFeaturesMultiSelect
-                selectedFeatures={form.room_features}
+                selectedFeatures={form.features}
                 onChange={(features) =>
-                  setForm((prev) => ({ ...prev, room_features: features }))
+                  setForm((prev) => ({ ...prev, features: features }))
                 }
               />
               {errors.roomFeatures && (

@@ -73,26 +73,20 @@ export const getCartById = async (cart_id: string) => {
 };
 
 export const clearExpiredCart = () => {
-  cron.schedule("*/1 * * * *", async () => {
+  cron.schedule("0 */3 * * *", async () => {
     const client = await pool.connect();
     try {
       console.log("Cron triggered at:", new Date());
 
       await client.query("BEGIN");
 
-      console.log("gdhjswko test test test");
-      
       const expiredCarts = await client.query<newCart>(
         "SELECT * FROM cart WHERE expires_at < NOW()"
       );
 
-      console.log("expiredCartvbhdjnks: ",expiredCarts);
-      
-
-      // ✅ Nothing expired → skip
       if (expiredCarts.rows.length === 0) {
         console.log("No expired carts found.");
-        await client.query("ROLLBACK"); // nothing to commit
+        await client.query("ROLLBACK");
         return;
       }
 
@@ -112,7 +106,6 @@ export const clearExpiredCart = () => {
           }
         }
 
-        // Delete the cart itself
         await client.query("DELETE FROM cart WHERE id=$1", [cart.id]);
       }
 

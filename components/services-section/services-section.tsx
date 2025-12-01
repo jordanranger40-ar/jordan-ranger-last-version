@@ -13,7 +13,7 @@ export default function ServicesSection({ isArabic }: Props) {
           { title: isArabic ? "الفعاليات الداخلية" : "Indoor Activities", icon: "🏠",link:"/indoor-activities" },          
           { title: isArabic ? "الفعاليات الخارجية" : "Outdoor Activities", icon: "🌳",link:"/outdoor-activities" },       
           { title: isArabic ? "الاقامات" : "Accommodation", icon: "🛏️",link:"/indoor-activities" },                      
-          { title: isArabic ? "التدريب المدرسي" : "School Training", icon: "📚",link:"/school-training" },               
+          { title: isArabic ? "التدريب المدرسي" : "School Training", icon: "📚",link:"/schools-training" },               
           { title: isArabic ? "تدريبات وبناء فرق" : "Corporate Team Building", icon: "🤝" ,link:"/corporate-team-building"},  
           { title: isArabic ? "المطعم" : "Restaurant", icon: "🍽️" ,link:"/restaurant"},                            
         ].map((service, i) => (
@@ -29,7 +29,7 @@ export default function ServicesSection({ isArabic }: Props) {
           >
             <div className="absolute inset-0 pointer-events-none">
               <div
-                className="absolute top-0 left-0 w-full h-full bg-gradient-to-tr from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-30 transition duration-500"
+                className="absolute top-0 left-0 w-full h-full bg-linear-to-tr from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-30 transition duration-500"
                 style={{ borderRadius: '2rem 0.5rem 2rem 0.5rem' }}
               />
             </div>

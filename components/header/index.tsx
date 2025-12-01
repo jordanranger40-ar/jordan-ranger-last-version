@@ -28,13 +28,13 @@ export default async function Header() {
       </div>
 
       <div className="hidden md:block">
-        <Navbar categories={categories} trainingData={trainingData.data} />
+        <Navbar />
       </div>
 
       {/* 👇 زر السلة الجديد */}
       <CartButton session={session} isCart={isCart} />
 
-      <Menu categories={categories} trainingData={trainingData.data} />
+      <Menu  />
     </header>
   );
 }

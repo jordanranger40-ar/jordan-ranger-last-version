@@ -112,7 +112,10 @@ export default function ActivityBookingPanel({ activity,uniqueTypes }: { activit
                   closeModal();
                   window.location.href = "/my-cart";
                 }}
-                continueButton={closeModal}
+                continueButton={() => {
+                  closeModal();
+                  window.location.href = "/my-bookings";
+                }}
                 locale={locale}
                 uniqueTypes={uniqueTypes}
               />

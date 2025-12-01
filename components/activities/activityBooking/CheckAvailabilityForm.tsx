@@ -11,15 +11,13 @@ export default function CheckAvailabilityForm({
 }: {
   locale: string;
   activityId: string;
-  onAvailable: (
-    remaining: number,
-    range: { start: string }
-  ) => void;
+  onAvailable: (remaining: number, range: { start: string }) => void;
 }) {
   const isArabic = locale === "ar";
 
-  const [startDate, setStartDate] = useState<string>(""); // YYYY-MM-DD
-  const [startHour, setStartHour] = useState<string>(""); // HH
+  const [startDate, setStartDate] = useState<string>("");
+  const [minDate, setMinDate] = useState<string>("");
+  const [startHour, setStartHour] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -30,9 +28,27 @@ export default function CheckAvailabilityForm({
     setUserTimeZone(tz);
   }, []);
 
+  useEffect(() => {
+    const now = new Date();
+    now.setDate(now.getDate() + 3);
+
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    const d = String(now.getDate()).padStart(2, "0");
+    const min = `${y}-${m}-${d}`;
+
+    setMinDate(min);
+
+    setStartDate((prev) => (prev ? prev : min));
+  }, []);
+
   const handleCheck = async () => {
     if (!startDate || !startHour) {
-      setMessage(isArabic ? "يرجى اختيار تاريخ ووقت الحجز." : "Please select booking date/time.");
+      setMessage(
+        isArabic
+          ? "يرجى اختيار تاريخ ووقت الحجز."
+          : "Please select booking date/time."
+      );
       return;
     }
 
@@ -46,7 +62,12 @@ export default function CheckAvailabilityForm({
     if (result.success && result.available) {
       onAvailable(result.available, { start });
     } else {
-      setMessage(result.message || (isArabic ? "غير متاح في الوقت المحدد" : "Unavailable for selected time"));
+      setMessage(
+        result.message ||
+          (isArabic
+            ? "غير متاح في الوقت المحدد"
+            : "Unavailable for selected time")
+      );
     }
   };
 
@@ -60,22 +81,29 @@ export default function CheckAvailabilityForm({
         </div>
         <div className="flex gap-2" dir={isArabic ? "rtl" : "ltr"}>
           <input
-  type="date"
-  value={startDate}
-  onChange={(e) => setStartDate(e.target.value)}
-  dir={isArabic ? "rtl" : "ltr"}  // ensures text direction matches language
-  className="border rounded px-3 py-2 w-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#676e32] placeholder-gray-400"
-  placeholder={isArabic ? "اختر التاريخ" : "Select date"}
-/>
+            type="date"
+            min={minDate || undefined}
+            onChange={(e) => setStartDate(e.target.value)}
+            dir={isArabic ? "rtl" : "ltr"}
+            className="border rounded px-3 py-2 w-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#676e32] placeholder-gray-400"
+            placeholder={isArabic ? "اختر التاريخ" : "Select date"}
+          />
 
-          <TimeSelect value={startHour} onChange={setStartHour} locale={locale} />
+          <TimeSelect
+            value={startHour}
+            onChange={setStartHour}
+            locale={locale}
+          />
         </div>
       </div>
 
       <div className="text-xs text-gray-400 mt-1">
-        {isArabic ? "جميع الأنشطة تحدث بتوقيت الأردن (GMT+3)." : "All activities occur in Jordan time (GMT+3)."}
+        {isArabic
+          ? "جميع الأنشطة تحدث بتوقيت الأردن (GMT+3)."
+          : "All activities occur in Jordan time (GMT+3)."}
         <br />
-        {isArabic ? "منطقتك الزمنية المحلية:" : "Your local time zone:"} <strong>{userTimeZone}</strong>
+        {isArabic ? "منطقتك الزمنية المحلية:" : "Your local time zone:"}{" "}
+        <strong>{userTimeZone}</strong>
       </div>
 
       {/* Button */}
@@ -97,7 +125,9 @@ export default function CheckAvailabilityForm({
 
       {/* Message */}
       {message && (
-        <p className="text-sm text-red-600 text-center font-medium">{message}</p>
+        <p className="text-sm text-red-600 text-center font-medium">
+          {message}
+        </p>
       )}
 
       <p className="text-xs text-gray-500 text-center">

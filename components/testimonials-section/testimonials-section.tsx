@@ -43,7 +43,7 @@ export default function TestimonialsSection({isArabic}:Props) {
               {/* shine subtle عند hover */}
               <div className="absolute inset-0 pointer-events-none">
                 <div
-                  className="absolute top-0 left-0 w-full h-full bg-gradient-to-tr from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-30 transition duration-500"
+                  className="absolute top-0 left-0 w-full h-full bg-linear-to-tr from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-30 transition duration-500"
                   style={{ borderRadius: "2rem 0.5rem 2rem 0.5rem" }}
                 />
               </div>

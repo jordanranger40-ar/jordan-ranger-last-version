@@ -6,7 +6,6 @@ import Autoplay from "embla-carousel-autoplay";
 import Logo from "@/components/Logo/Logo";
 import { newBanner } from "@/types";
 import Snavbar from "@/components/header/snavbar";
-import { Button } from "@/components/ui/button";
 import { newTraining, newCategory } from "@/types";
 import LightButton from "../ui/light-button";
 import {
@@ -33,7 +32,7 @@ export function Banner({ banners, locale, categories, trainingData }: Props) {
       <header className="absolute top-0 left-0 w-full z-30 p-4">
         <nav className="flex justify-between items-center text-white">
           <Logo />
-          <Snavbar categories={categories} trainingData={trainingData} />
+          <Snavbar  />
         </nav>
       </header>
 

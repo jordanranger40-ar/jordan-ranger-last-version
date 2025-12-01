@@ -657,3 +657,53 @@ export const updateBookingStatus = async (
     status: 201,
   };
 };
+
+
+export const getUserUpcomingActivityBookings = async (user_id: string) => {
+  const now = new Date();
+
+  const result = await pool.query<ActivityBookingWithDetails>(`
+    SELECT 
+      ab.id AS id,
+      ab.start_time,
+      ab.end_time,
+      ab.created_at,
+      ab.quantity,
+      ab.price AS booking_price,
+      ab.is_confirmed,
+      ab.is_deleted,
+
+      u.id AS user_id,
+      u.first_name,
+      u.last_name,
+      u.email,
+
+      a.id AS activity_id,
+      a.name_en,
+      a.description_en,
+      a.name_ar,
+      a.description_ar,
+      a.card_image,
+      a.header_image,
+      a.poster_image,
+      a.location_type_en,
+      a.location_type_ar,
+      a.capacity,
+      a.price AS activity_price,
+      a.slug
+    FROM activities_booking ab
+    JOIN users u ON ab.user_id = u.id
+    JOIN activities a ON ab.activity_id = a.id
+    WHERE ab.is_deleted = false
+      AND ab.user_id = $1
+      AND ab.start_time > $2
+    ORDER BY ab.start_time ASC
+  `, [user_id, now]);
+
+  return {
+    data: result.rows,
+    message: "Upcoming activity bookings for the user",
+    status: 200,
+  };
+};
+

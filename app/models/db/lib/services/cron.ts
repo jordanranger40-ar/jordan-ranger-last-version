@@ -1,3 +1,6 @@
 import { clearExpiredCart } from "../services/cart";
 
-clearExpiredCart(); 
+
+if (process.env.NODE_ENV === "development") {
+  clearExpiredCart(); 
+}

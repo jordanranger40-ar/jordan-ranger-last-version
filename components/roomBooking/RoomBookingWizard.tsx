@@ -63,7 +63,7 @@ export default function RoomBookingWizard({
           }}
           onGoToCart={() => (window.location.href = "/my-cart")}
           continueButton={() =>
-            (window.location.href = "/Accommodation/Cabins")
+            (window.location.href = "/my-bookings")
           }
           locale={locale}
           uniqueTypes={uniqueTypes}

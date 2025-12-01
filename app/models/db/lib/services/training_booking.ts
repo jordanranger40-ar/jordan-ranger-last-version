@@ -398,8 +398,6 @@ export const getTrainingBookingByDate = async (
   }
 };
 
-
-
 export const updateBookingStatus = async (
   is_confirmed: boolean,
   id: string
@@ -488,5 +486,54 @@ export const updateBookingStatus = async (
     data: result,
     message: "Booking Has Been Updated Successfully",
     status: 201,
+  };
+};
+
+export const getUserUpcomingTrainingBookings = async (user_id: string) => {
+  const now = new Date();
+
+  const result = await pool.query<TrainingBookingWithDetails>(`
+    SELECT 
+      tb.id AS id,
+      tb.training_id,
+      tb.is_confirmed,
+      tb.is_deleted,
+      tb.created_at,
+      tb.quantity,
+      tb.price AS booking_price,
+      
+      u.id AS user_id,
+      u.first_name,
+      u.last_name,
+      u.email,
+      
+      t.id AS training_id,
+      t.name_en,
+      t.description_en,
+      t.name_ar,
+      t.description_ar,
+      t.card_image,
+      t.post_image,
+      t.header_image,
+      t.category_en,
+      t.category_ar,
+      t.capacity,
+      t.price AS training_price,
+      t.start_date,
+      t.end_date,
+      t.slug
+    FROM training_booking tb
+    JOIN users u ON tb.user_id = u.id
+    JOIN training t ON tb.training_id = t.id
+    WHERE tb.is_deleted = false
+      AND tb.user_id = $1
+      AND t.start_date > $2
+    ORDER BY t.start_date ASC
+  `, [user_id, now]);
+
+  return {
+    data: result.rows,
+    message: "Upcoming training bookings for the user",
+    status: 200,
   };
 };

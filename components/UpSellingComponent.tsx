@@ -1,4 +1,3 @@
-// components/ServiceSuggestions.tsx
 "use client";
 
 import React, { useMemo, useEffect, useRef } from "react";
@@ -9,10 +8,14 @@ import gsap from "gsap";
 type ServiceKey = "room" | "activity" | "training";
 
 interface Props {
-  uniqueTypes?: string[];
+  uniqueTypes?: string[]; // booked services
   locale?: string;
   className?: string;
   routes?: Partial<Record<ServiceKey, string>>;
+  /**
+   * The current page/service type to exclude from suggestions
+   */
+  currentType?: ServiceKey;
 }
 
 const DEFAULT_ROUTES: Record<ServiceKey, string> = {
@@ -26,11 +29,13 @@ export default function UpSellingComponent({
   locale = "en",
   className = "",
   routes = {},
+  currentType,
 }: Props) {
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const animationRefs = useRef<gsap.core.Tween[]>([]);
 
+  // Normalize booked service types
   const booked = useMemo(
     () =>
       Array.from(
@@ -39,10 +44,11 @@ export default function UpSellingComponent({
             typeof t === "string" ? t.trim().toLowerCase() : ""
           )
         )
-      ),
+      ) as ServiceKey[],
     [uniqueTypes]
   );
 
+  // Priority/order of services to suggest
   const services: ServiceKey[] = ["room", "activity", "training"];
 
   const messages: Record<
@@ -72,31 +78,36 @@ export default function UpSellingComponent({
     },
   };
 
-  // Compute missing types
-  const missing = services.filter((s) => !booked.includes(s));
+  // Filter out booked services and the current page type
+  const missingServices = services.filter(
+    (s) => !booked.includes(s) && s !== currentType
+  );
 
-  // If all 3 types are booked, don't show the component
-  if (missing.length === 0) return null;
+  const missingService = missingServices.length > 0 ? missingServices[0] : null;
 
-  const handleClick = (service: ServiceKey) => {
-    const route = routes[service] ?? DEFAULT_ROUTES[service];
-    router.push(route);
-  };
-
+  // ---- ALWAYS call useEffect at top level ----
   useEffect(() => {
+    if (!missingService) return; // early exit, hook is still called
+
     const container = containerRef.current;
     if (!container) return;
 
-    const cards = Array.from(container.querySelectorAll<HTMLElement>(".upsell-card"));
+    const cards = Array.from(
+      container.querySelectorAll<HTMLElement>(".upsell-card")
+    );
 
-    // Entrance animation
+    // Kill previous animations
+    animationRefs.current.forEach((t) => t.kill());
+    animationRefs.current = [];
+
+    // Initial fade-in animation
     gsap.fromTo(
       cards,
       { opacity: 0, scale: 0.95 },
       { opacity: 1, scale: 1, duration: 0.5, stagger: 0.1, ease: "power2.out" }
     );
 
-    // Continuous pulse + color animation
+    // Looping hover-like animation
     cards.forEach((card, i) => {
       const tween = gsap.to(card, {
         scale: 1.02,
@@ -117,44 +128,48 @@ export default function UpSellingComponent({
       animationRefs.current.forEach((t) => t.kill());
       animationRefs.current = [];
     };
-  }, [missing.length, uniqueTypes]);
+  }, [missingService, uniqueTypes]);
+
+  const handleClick = (service: ServiceKey) => {
+    const route = routes[service] ?? DEFAULT_ROUTES[service];
+    router.push(route);
+  };
+
+  // If no missing service, hide component
+  if (!missingService) return null;
+
+  const m = messages[missingService];
+  const key = String(missingService);
 
   return (
     <div
       ref={containerRef}
-      className={`grid grid-cols-1 sm:grid-cols-${missing.length > 1 ? 2 : 1} gap-4 mt-4 ${className}`}
+      className={`grid grid-cols-1 gap-2.5 mt-3 ${className}`}
       dir={locale === "ar" ? "rtl" : "ltr"}
       aria-label={locale === "ar" ? "اقتراحات" : "Suggestions"}
     >
-      {missing.map((service) => {
-        const m = messages[service as ServiceKey];
-        const key = String(service);
+      <button
+        key={key}
+        type="button"
+        onClick={() => handleClick(missingService)}
+        className="upsell-card relative w-full p-2 rounded-xl border cursor-pointer text-left shadow-lg"
+        aria-label={locale === "ar" ? m.title.ar : m.title.en}
+        style={{ transformOrigin: "center center", backgroundColor: "#ffeaea" }}
+      >
+        <div className="flex flex-col gap-1">
+          <div className="text-base font-semibold text-gray-700">
+            {locale === "ar" ? m.title.ar : m.title.en}
+          </div>
+          <div className="text-sm text-[#7b4444]">
+            {locale === "ar" ? m.description.ar : m.description.en}
+          </div>
+        </div>
 
-        return (
-          <button
-            key={key}
-            type="button"
-            onClick={() => handleClick(service as ServiceKey)}
-            className="upsell-card relative w-full p-4 rounded-xl border cursor-pointer text-left shadow-lg"
-            aria-label={locale === "ar" ? m.title.ar : m.title.en}
-            style={{ transformOrigin: "center center", backgroundColor: "#ffeaea" }}
-          >
-            <div className="flex flex-col gap-1">
-              <div className="text-base font-semibold text-gray-700">
-                {locale === "ar" ? m.title.ar : m.title.en}
-              </div>
-              <div className="text-sm text-[#7b4444]">
-                {locale === "ar" ? m.description.ar : m.description.en}
-              </div>
-            </div>
-
-            <div className="mt-3 flex items-center gap-2 text-gray-700 font-medium">
-              {locale === "ar" ? "إكتشف" : "Explore"}
-              <ChevronRight className="w-4 h-4" />
-            </div>
-          </button>
-        );
-      })}
+        <div className="mt-2 flex items-center gap-2 text-gray-700 font-medium">
+          {locale === "ar" ? "إكتشف" : "Explore"}
+          <ChevronRight className="w-4 h-4" />
+        </div>
+      </button>
     </div>
   );
 }
