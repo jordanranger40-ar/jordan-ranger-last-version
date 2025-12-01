@@ -23,7 +23,14 @@
     "tents": "Tents",
     "corporateteambuilding": "Corporate Team Building",
     "schooltraining": "School Training",
-    "rangeracademy": "Ranger Academy"
+    "rangeracademy": "Ranger Academy",
+    "mycart":"My Cart",
+    "mybookings":"My Bookings",
+    "dashboard":"Dashboard",
+    "changepassword":"Change Password",
+    "logout":"Logout",
+    "login":"Login",
+    "myaccount":"My Account"
   },
 
   "Footer": {

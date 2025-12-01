@@ -8,28 +8,23 @@ import RoomsAndTents from "@/components/roomsAndTents/roomsAndTents";
 import Poster from "@/components/poster/poster";
 import ComingSoon from "@/components/coming-soon/coming-soon";
 import { getBannerData } from "@/app/models/db/lib/services/banners";
-import { newBanner, newCategory, newTraining } from "@/types";
+import { newBanner } from "@/types";
 import ServicesSection from "@/components/services-section/services-section";
 import TestimonialsSection from "@/components/testimonials-section/testimonials-section";
 
 interface PageProps {
-  params: Promise <{
+  params: Promise<{
     locale: string;
-  }> 
+  }>;
 }
 export default async function Home({ params }: PageProps) {
   const { locale } = await params;
   const isArabic = locale === "ar";
 
   let banners: newBanner[] = [];
-  let categories: newCategory[] = [];
-  let trainingData: newTraining[] = [];
 
   try {
     banners = await getBannerData();
-    categories = await getAllcategories();
-    const trainingResponse = await getAllTraining();
-    trainingData = trainingResponse.data;
   } catch (error) {
     console.error("Failed to fetch data:", error);
   }
@@ -38,20 +33,13 @@ export default async function Home({ params }: PageProps) {
     <main className="relative bg-[#f8f8f4]">
       {/* Banner */}
       <div className="mt-14">
-        <BannerSection
-          banners={banners}
-          locale={locale}
-          categories={categories}
-          trainingData={trainingData}
-        />
+        <BannerSection banners={banners} locale={locale} />
       </div>
 
-
       {/* Poster */}
-      <section className="relative z-10 w-full mt-40">
+      <section className="relative z-10 w-full mt-0 lg:mt-40 ">
         <Poster />
       </section>
-
 
       <SectionDivider text={isArabic ? "اكتشف غرفنا" : "Discover Our Rooms"} />
       <section className="relative z-10 w-full">
@@ -63,6 +51,7 @@ export default async function Home({ params }: PageProps) {
       </section>
 
       <SectionDivider text={isArabic ? "خدماتنا" : "Our Services"} />
+
       <ServicesSection isArabic={isArabic} />
 
       <TestimonialsSection isArabic={isArabic} />
@@ -71,7 +60,6 @@ export default async function Home({ params }: PageProps) {
       <ComingSoon isArabic={isArabic} />
 
       <Mapbox3D isArabic={isArabic} />
-      
     </main>
   );
 }

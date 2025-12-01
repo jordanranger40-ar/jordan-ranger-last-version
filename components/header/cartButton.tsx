@@ -32,7 +32,7 @@ export default function CartButton({
   return (
     <button
       onClick={handleClick}
-      className="hidden md:flex text-white hover:text-[#676e32]"
+      className="flex text-white hover:text-[#676e32]"
       aria-label="Go to cart"
     >
       <FaShoppingCart />

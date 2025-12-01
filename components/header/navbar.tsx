@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React from "react";
 import Link from "next/link";
@@ -12,14 +12,16 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-
-
-
+import { useSession, signOut } from "next-auth/react";
 
 export default function Navbar() {
   const t = useTranslations("Navbar");
   const locale = useLocale();
   const isArabic = locale === "ar";
+
+  const { data: session } = useSession();
+  const isLoggedIn = !!session?.user;
+  const isAdmin = session?.user?.role === "admin";
 
   const aboutItems = [
     {
@@ -44,7 +46,7 @@ export default function Navbar() {
       href: "/training/corporate-team-building",
       label: t("corporateteambuilding"),
     },
- 
+
   ];
   const accommodationItems = [
     {
@@ -55,7 +57,7 @@ export default function Navbar() {
       href: "/Accommodation/Tents",
       label: t("tents"),
     },
-   
+
   ];
 
   const activityItems = [
@@ -68,6 +70,44 @@ export default function Navbar() {
       label: t("outdooractivities"),
     },
   ];
+
+  // --- My Account dropdown content
+  const accountContent = [
+    <NavigationMenuLink asChild key="my-cart">
+      <Link href="/my-cart">{t("mycart") ?? "My Cart"}</Link>
+    </NavigationMenuLink>,
+
+    <NavigationMenuLink asChild key="my-bookings">
+      <Link href="/my-bookings">{t("mybookings") ?? "My Bookings"}</Link>
+    </NavigationMenuLink>,
+
+    isAdmin ? (
+      <NavigationMenuLink asChild key="dashboard">
+        <Link href="/dashboard">{t("dashboard") ?? "Dashboard"}</Link>
+      </NavigationMenuLink>
+    ) : null,
+
+    isLoggedIn ? (
+      <NavigationMenuLink asChild key="change-password">
+        <Link href="/change-password">{t("changepassword") ?? "Change Password"}</Link>
+      </NavigationMenuLink>
+    ) : null,
+
+    isLoggedIn ? (
+      <NavigationMenuLink asChild key="logout">
+  <button
+    onClick={() => signOut({ callbackUrl: "/" })}
+    className={`"w-full  px-2 py-1 text-sm hover:text-[#676e32] transition ${isArabic ?"text-right":"text-left"}`}
+  >
+    {t("logout") ?? "Logout"}
+  </button>
+</NavigationMenuLink>
+    ) : (
+      <NavigationMenuLink asChild key="login">
+        <Link href="/login">{t("login") ?? "Login"}</Link>
+      </NavigationMenuLink>
+    ),
+  ].filter(Boolean);
 
   const menuItems = [
     {
@@ -87,7 +127,6 @@ export default function Navbar() {
       )),
     },
 
-   
     {
       type: "dropdown",
       label: t("activities"),
@@ -126,6 +165,14 @@ export default function Navbar() {
       href: "/restaurant/",
       label: t("restaurant"),
       key: "restaurant",
+    },
+
+    // <-- ADDED My Account dropdown (no other code changed)
+    {
+      type: "dropdown",
+      label: t("myaccount") ?? "My Account",
+      key: "account",
+      content: accountContent,
     },
   ];
 

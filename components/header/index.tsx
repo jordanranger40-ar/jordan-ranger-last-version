@@ -13,8 +13,6 @@ import { getCartByUserId } from "@/app/models/db/lib/services/cart";
 
 export default async function Header() {
   const session = await getServerSession(authOptions);
-  const categories = await getAllcategories();
-  const trainingData = await getAllTraining();
   let isCart = false;
   if (session?.user.id) {
     const cartDetails = await getCartByUserId(session?.user.id);
@@ -29,12 +27,11 @@ export default async function Header() {
 
       <div className="hidden md:block">
         <Navbar />
-      </div>
-
-      {/* 👇 زر السلة الجديد */}
-      <CartButton session={session} isCart={isCart} />
-
+      </div>     
       <Menu  />
+
+       <CartButton session={session} isCart={isCart} />
+
     </header>
   );
 }

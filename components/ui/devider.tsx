@@ -5,7 +5,7 @@ interface Props {
 
 const FancyTitles = ({text}:Props) => {
   return (
-    <div className=" text-white font-sans flex flex-col items-center justify-center py-10">
+    <div className=" text-white font-sans flex flex-col items-center justify-center py-10 ">
       <h2
         className="fancy text-[1.8rem] mt-8"
         style={

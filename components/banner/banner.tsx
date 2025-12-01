@@ -6,7 +6,6 @@ import Autoplay from "embla-carousel-autoplay";
 import Logo from "@/components/Logo/Logo";
 import { newBanner } from "@/types";
 import Snavbar from "@/components/header/snavbar";
-import { newTraining, newCategory } from "@/types";
 import LightButton from "../ui/light-button";
 import {
   Carousel,
@@ -19,11 +18,9 @@ import {
 type Props = {
   banners: newBanner[];
   locale: string;
-  categories: newCategory[];
-  trainingData: newTraining[];
 };
 
-export function Banner({ banners, locale, categories, trainingData }: Props) {
+export function Banner({ banners, locale}: Props) {
   const isArabic = locale.startsWith("ar");
   const autoplay = useRef(Autoplay({ delay: 3000, stopOnInteraction: false }));
 
@@ -32,7 +29,7 @@ export function Banner({ banners, locale, categories, trainingData }: Props) {
       <header className="absolute top-0 left-0 w-full z-30 p-4">
         <nav className="flex justify-between items-center text-white">
           <Logo />
-          <Snavbar  />
+          <Snavbar />
         </nav>
       </header>
 
@@ -49,7 +46,7 @@ export function Banner({ banners, locale, categories, trainingData }: Props) {
 
             return (
               <CarouselItem key={banner.id}>
-                <article className="relative aspect-20/9 overflow-hidden rounded-b-[100px]">
+                <article className="relative aspect-20/9 overflow-hidden rounded-b-[55px] md:rounded-b-[100px]">
                   <Image
                     src={banner.image ?? "/default-image.png"}
                     alt={title}
@@ -58,10 +55,10 @@ export function Banner({ banners, locale, categories, trainingData }: Props) {
                     priority
                   />
                   <div className="absolute inset-0 bg-black/50 z-10" />
-                  <div className="absolute inset-0 z-20 flex items-center justify-center text-center text-white px-6">
+                  <div className="absolute inset-0 z-20 flex mb-3 md:mb-0 items-end md:items-center justify-center text-center text-white px-6">
                     <div>
-                      <h2 className="text-5xl font-bold">{title}</h2>
-                      <p className="text-xl mt-6 max-w-3xl mx-auto">{description}</p>
+                      <h2 className=" text-base md:text-3xl lg:text-5xl font-bold">{title}</h2>
+                      <p className=" hidden md:block text-base md:text-lg lg:text-xl mt-6 max-w-3xl mx-auto">{description}</p>
                       <LightButton>Enroll Now</LightButton>
                     </div>
                   </div>

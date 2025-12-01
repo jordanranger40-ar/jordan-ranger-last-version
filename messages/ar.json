@@ -23,7 +23,14 @@
     "tents": "الخيام",
     "corporateteambuilding": "بناء فريق الشركة",
     "schooltraining": "تدريب المدرسة",
-    "rangeracademy": "رينجر أكاديمي"
+    "rangeracademy": "رينجر أكاديمي",
+    "mycart":"السلة",
+    "mybookings":"حجوزاتي",
+    "dashboard":"واجة التحكم",
+    "changepassword":"تغير كلمة المرور",
+    "logout":"تسجيل الخروج",
+    "login":"تسجيل الدخول",
+    "myaccount":"حسابي"
   },
 
   "stats": {

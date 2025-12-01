@@ -10,11 +10,11 @@ export default function ServicesSection({ isArabic }: Props) {
     <section className="w-full mt-20 px-6 md:px-20">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-12">
         {[
-          { title: isArabic ? "الفعاليات الداخلية" : "Indoor Activities", icon: "🏠",link:"/indoor-activities" },          
-          { title: isArabic ? "الفعاليات الخارجية" : "Outdoor Activities", icon: "🌳",link:"/outdoor-activities" },       
-          { title: isArabic ? "الاقامات" : "Accommodation", icon: "🛏️",link:"/indoor-activities" },                      
-          { title: isArabic ? "التدريب المدرسي" : "School Training", icon: "📚",link:"/schools-training" },               
-          { title: isArabic ? "تدريبات وبناء فرق" : "Corporate Team Building", icon: "🤝" ,link:"/corporate-team-building"},  
+          { title: isArabic ? "الفعاليات الداخلية" : "Indoor Activities", icon: "🏠",link:"/activities/indoor-activities" },          
+          { title: isArabic ? "الفعاليات الخارجية" : "Outdoor Activities", icon: "🌳",link:"/activities/outdoor-activities" },       
+          { title: isArabic ? "الاقامات" : "Accommodation", icon: "🛏️",link:"/Accommodation/Cabins" },                      
+          { title: isArabic ? "التدريب المدرسي" : "School Training", icon: "📚",link:"/training/schools-training" },               
+          { title: isArabic ? "تدريبات وبناء فرق" : "Corporate Team Building", icon: "🤝" ,link:"/training/corporate-team-building"},  
           { title: isArabic ? "المطعم" : "Restaurant", icon: "🍽️" ,link:"/restaurant"},                            
         ].map((service, i) => (
           <Link  key={i} href={service.link} >
