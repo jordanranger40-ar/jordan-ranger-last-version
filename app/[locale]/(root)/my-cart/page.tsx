@@ -4,9 +4,10 @@ import { getCartByUserId, getCartItemsByUserId } from "@/app/models/db/lib/servi
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/models/db/authOptions";
 import { deletecartitem } from "./(fetch)/deletecartitem";
+type Locale = "en" | "ar";
 
 interface Props {
-  params: Promise <{locale:string}>
+  params: Promise <{locale:Locale}>
 }
 
 export default async function Page({ params }: Props) {

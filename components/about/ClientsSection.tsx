@@ -23,7 +23,7 @@ export default function ClientsSection({ clients, isArabic }: Props) {
         {isArabic ? "شركاؤنا" : "Our Clients"}
       </h2>
 
-      <div className="w-16 h-[2px] bg-white/50 mx-auto mb-8 rounded-full"></div>
+      <div className="w-16 h-0.5 bg-white/50 mx-auto mb-8 rounded-full"></div>
 
       <div className="max-w-6xl mx-auto">
         <ClientsCarousel clients={clients} />

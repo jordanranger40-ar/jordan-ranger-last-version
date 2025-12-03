@@ -1,121 +1,93 @@
-"use client";
+import React from "react";
 
-import React, { useState } from "react";
-import type { cartWithItems, newCart } from "@/types/index";
-import Link from "next/link";
-import { Trash2 } from "lucide-react";
-
-interface CartProps {
-  cartData: newCart | undefined;
-  cartDetails: cartWithItems[] | undefined;
-  action: (id: string) => void;
-  locale: string;
+interface Props {
+  isArabic: boolean;
 }
 
-export default function Cart({ cartData, action, cartDetails, locale }: CartProps) {
-  const [cartItems, setCartItems] = useState<cartWithItems[]>(cartDetails || []);
-  const tax = 0;
-  const isArabic = locale === "ar";
-
-  const handleRemoveItem = async (id?: string) => {
-    if (!id) return;
-    try {
-      action(id);
-      setCartItems((prev) => prev.filter((item) => item.id !== id));
-    } catch (err) {
-      console.error("Error removing item:", err);
-    }
-  };
-
-  const getTypeTranslation = (type: string) => {
-    if (type === "activity") return isArabic ? "نشاط" : "Activity";
-    if (type === "training") return isArabic ? "تدريب" : "Training";
-    if (type === "room") return isArabic ? "الإقامة" : "Accommodation";
-    return type;
-  };
-
-  const currency = isArabic ? "أ.د" : "JOD";
-
+export default function CentersSection({ isArabic }: Props) {
   return (
-    <div className={`max-w-6xl mx-auto px-4 lg:px-6 mt-20 ${isArabic ? "text-right" : ""}`} dir={isArabic ? "rtl" : "ltr"}>
-      <div className="grid lg:grid-cols-3 gap-8">
-        {/* 🛍 Cart Items */}
-        <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border">
-          <h3 className="text-xl font-semibold text-[#484d23]">{isArabic ? "سلة المشتريات" : "Your Cart"}</h3>
-          <p className="text-sm text-slate-500 mt-1">
+    <section
+      className="max-w-6xl mx-auto px-6 py-24"
+      dir={isArabic ? "rtl" : "ltr"}
+    >
+      <h2 className={`text-5xl font-extrabold text-[#515151] text-center mb-16`}>
+        {isArabic ? "قصتنا" : "Our Story"}
+      </h2>
+
+      <div
+        className={`grid grid-cols-1 md:grid-cols-2 gap-16 text-lg leading-relaxed ${
+          isArabic
+            ? "text-gray-700 dark:text-gray-300 text-right"
+            : "text-gray-700 dark:text-gray-300 text-left"
+        }`}
+      >
+        <div>
+          <h3 className="text-2xl font-bold text-[#b3c820] mb-4">
+            {isArabic ? "عن كياننا" : "About Ranger Entrepreneurial Entities"}
+          </h3>
+          <p>
             {isArabic
-              ? "راجع حجوزاتك المختارة — بما في ذلك الأنشطة والإقامة والدورات قبل إتمام الدفع."
-              : "Review your selected bookings — including Activities, Accommodations, and Trainings before checkout."}
+              ? "كيانات مسجلة في وزارة الصناعة والتجارة والتموين ومرخصة وفقاً للقانون الأردني، تعمل على تطوير المجتمعات المحلية..."
+              : "Entrepreneurial entities registered in the Ministry of Industry Trade & Supply and licensed according to Jordanian law..."}
           </p>
-
-          <hr className="border-gray-200 mt-4 mb-8" />
-
-          {cartItems.length === 0 ? (
-            <div className="py-16 text-center">
-              <p className="text-slate-500 text-lg">{isArabic ? "سلة المشتريات فارغة 🛍️" : "Your cart is empty 🛍️"}</p>
-              <Link href={`/${locale}`}>
-                <span className="inline-block mt-6 px-5 py-2.5 bg-[#484d23] text-white rounded-md text-sm hover:bg-[#5b6230] transition">
-                  {isArabic ? "العودة للتسوق" : "Return to Shop"}
-                </span>
-              </Link>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {cartItems.map((item) => (
-                <div key={item.id} className="flex justify-between items-center bg-gray-50 p-4 rounded-lg border">
-                  <div>
-                    <h4 className="text-[15px] font-semibold text-[#484d23]">
-                      {isArabic ? "حجز" : "Booking"}: {getTypeTranslation(item.booking_type)}
-                    </h4>
-                    <p className="text-sm text-slate-600 mt-1">
-                      {isArabic ? "المجموع" : "Total"}: {Number(item.price || 0).toFixed(2)} {currency}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => handleRemoveItem(item.id)}
-                    className="text-red-500 text-sm hover:underline hover:text-red-600 transition"
-                  >
-                    <Trash2 />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
-        {/* 🧾 Order Summary */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border h-max sticky top-6">
-          <h3 className="text-xl font-semibold text-[#484d23]">{isArabic ? "ملخص الطلب" : "Order Summary"}</h3>
-          <hr className="border-gray-200 mt-4 mb-8" />
+        <div>
+          <h3 className="text-2xl font-bold text-[#b3c820] mb-4">
+            {isArabic ? "مراكزنا ومخيماتنا" : "Our Centers and Camps"}
+          </h3>
+          <p>
+            {isArabic
+              ? "تضم كيان الأردن رانجر ثلاثة مكونات رئيسية: مركز المغامرة والاستكشاف الأردني، مخيم الغابة للمغامرات والتحديات، ومنتجع إيكو فيو..."
+              : "Jordan Ranger includes three main components: The Jordanian Adventure and Exploration Center, Adventure and Challenge Forest Camp, and Eco-View Resort..."}
+          </p>
+        </div>
 
-          <ul className="text-slate-600 font-medium space-y-4">
-            <li className="flex justify-between text-sm">
-              {isArabic ? "الخصم" : "Discount"}
-              <span className="text-[#484d23] font-semibold">0.00 {currency}</span>
-            </li>
-            <li className="flex justify-between text-sm">
-              {isArabic ? "الضريبة" : "Tax"}
-              <span className="text-[#484d23] font-semibold">{tax.toFixed(2)} {currency}</span>
-            </li>
-            <li className="flex justify-between text-sm text-[#484d23] mt-4 pt-4 border-t">
-              {isArabic ? "المجموع" : "Total"}
-              <span className="font-bold text-lg">{Number(cartData?.total_amount).toFixed(2)} {currency}</span>
-            </li>
-          </ul>
+        <div>
+          <h3 className="text-2xl font-bold text-[#b3c820] mb-4">
+            {isArabic
+              ? "مركز المغامرة والاستكشاف الأردني"
+              : "The Jordanian Adventure and Exploration Center"}
+          </h3>
+          <p>
+            {isArabic
+              ? "تأسس عام 2006 في عمّان، وهو مؤسسة غير حكومية للتدريب والتعليم تركز على تطوير الإنسان والتوجيه الحياتي..."
+              : "Founded in 2006 in Amman, it is a non-governmental training and educational institution emphasizing human development..."}
+          </p>
+        </div>
 
-          <div className="mt-8 space-y-3">
-            <button className="text-sm px-4 py-2.5 w-full font-medium tracking-wide bg-[#484d23] hover:bg-[#5b6230] text-white rounded-md transition">
-              {isArabic ? "إتمام الشراء" : "Checkout"}
-            </button>
+        <div>
+          <h3 className="text-2xl font-bold text-[#b3c820] mb-4">
+            {isArabic ? "مخيم الغابة للمغامرات والتحديات" : "Adventure and Challenge Forest Camp"}
+          </h3>
+          <p>
+            {isArabic
+              ? "تأسس عام 2012 في كفر خل/جرش، وهو أول مخيم دائم من نوعه في العالم العربي..."
+              : "Founded in 2012 in Kufr Khal-Jarash, it is the first permanent camp of its kind in the Arab world..."}
+          </p>
+          <p>
+            {isArabic
+              ? "في عام 2020، تم إنشاء فرع في عجلون لدعم برامج تدمج السياح مع المجتمعات المحلية..."
+              : "In 2020, a branch was established in Ajloun to support programs integrating tourists with local communities..."}
+          </p>
+        </div>
 
-            <Link href={`/${locale}`}>
-              <button className="text-sm px-4 py-2.5 w-full font-medium tracking-wide bg-white border border-gray-300 text-[#484d23] rounded-md hover:bg-gray-100 transition">
-                {isArabic ? "متابعة التسوق" : "Continue Shopping"}
-              </button>
-            </Link>
-          </div>
+        <div>
+          <h3 className="text-2xl font-bold text-[#b3c820] mb-4">
+            {isArabic ? "منتجع إيكو فيو" : "Eco-View Resort"}
+          </h3>
+          <p>
+            {isArabic
+              ? "تأسس عام 2015 في كفر خل/جرش وافتتح في ديسمبر 2019، يقدم تجربة العيش في بيوت الأشجار المصممة لتعكس جمال طبيعة جرش..."
+              : "Founded in 2015 in Kufr Khal-Jarash and opened in December 2019, it offers treehouse living experiences showcasing the beauty of Jarash nature..."}
+          </p>
+          <p>
+            {isArabic
+              ? "يعد المنتجع وجهة سياحية مثالية للعائلات والأفراد والمنظمات المحلية والدولية..."
+              : "The resort is a perfect tourist destination for families, individuals, and local and international organizations..."}
+          </p>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

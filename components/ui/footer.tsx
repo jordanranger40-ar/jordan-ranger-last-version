@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 import camp from "@/public/images/camp.webp";
@@ -46,16 +47,24 @@ const Footer: React.FC<Props> = ({ locale }) => {
           <h3 className="text-lg font-semibold text-[#dcdca8] mb-4">{t("importantLinks")}</h3>
           <ul className="space-y-2 text-sm">
             <li>
-              <a href="/" className="hover:text-white transition-colors duration-150">{t("home")}</a>
+              <Link href="/" className="hover:text-white transition-colors duration-150">
+                {t("home")}
+              </Link>
             </li>
             <li>
-              <a href="/about" className="hover:text-white transition-colors duration-150">{t("about")}</a>
+              <Link href="/about" className="hover:text-white transition-colors duration-150">
+                {t("about")}
+              </Link>
             </li>
             <li>
-              <a href="/training-rooms" className="hover:text-white transition-colors duration-150">{t("training room")}</a>
+              <Link href="/training-rooms" className="hover:text-white transition-colors duration-150">
+                {t("training room")}
+              </Link>
             </li>
             <li>
-              <a href="/tour-operators" className="hover:text-white transition-colors duration-150">{t("restaurant")}</a>
+              <Link href="/tour-operators" className="hover:text-white transition-colors duration-150">
+                {t("restaurant")}
+              </Link>
             </li>
           </ul>
         </div>
@@ -63,30 +72,40 @@ const Footer: React.FC<Props> = ({ locale }) => {
         {/* النشرة البريدية */}
         <div>
           <h3 className="text-lg font-semibold text-[#dcdca8] mb-4">{t("booking")}</h3>
- <ul className="space-y-2 text-sm">
+          <ul className="space-y-2 text-sm">
             <li>
-              <a href="/Accommodation/Cabins" className="hover:text-white transition-colors duration-150">{t("cabins")}</a>
+              <Link href="/Accommodation/Cabins" className="hover:text-white transition-colors duration-150">
+                {t("cabins")}
+              </Link>
             </li>
             <li>
-              <a href="/Accommodation/Tents" className="hover:text-white transition-colors duration-150">{t("tents")}</a>
+              <Link href="/Accommodation/Tents" className="hover:text-white transition-colors duration-150">
+                {t("tents")}
+              </Link>
             </li>
             <li>
-              <a href="/activities/indoor-activities" className="hover:text-white transition-colors duration-150">{t("indooractivities")}</a>
+              <Link href="/activities/indoor-activities" className="hover:text-white transition-colors duration-150">
+                {t("indooractivities")}
+              </Link>
             </li>
             <li>
-              <a href="/activities/outdoor-activities" className="hover:text-white transition-colors duration-150">{t("outdooractivities")}</a>
+              <Link href="/activities/outdoor-activities" className="hover:text-white transition-colors duration-150">
+                {t("outdooractivities")}
+              </Link>
             </li>
             <li>
-              <a href="/training/corporate-team-building" className="hover:text-white transition-colors duration-150">{t("corporateteambuilding")}</a>
+              <Link href="/training/corporate-team-building" className="hover:text-white transition-colors duration-150">
+                {t("corporateteambuilding")}
+              </Link>
             </li>
             <li>
-              <a href="/training/schools-training" className="hover:text-white transition-colors duration-150">{t("schooltraining")}</a>
+              <Link href="/training/schools-training" className="hover:text-white transition-colors duration-150">
+                {t("schooltraining")}
+              </Link>
             </li>
           </ul>
-      
         </div>
 
-       
         <div className="flex flex-col justify-between">
           <div>
             {/* Contact Us (added) */}
@@ -94,33 +113,35 @@ const Footer: React.FC<Props> = ({ locale }) => {
               <h3 className="text-lg font-semibold text-[#dcdca8] mb-4">{t("contactUs")}</h3>
               <p className="text-sm leading-relaxed">
                 <span className="font-medium">Email: </span>
-                <a href="mailto:info@jordanrangercamp.com" className="hover:text-white transition-colors duration-150">info@jordanrangercamp.com</a>
+                <a href="mailto:info@jordanrangercamp.com" className="hover:text-white transition-colors duration-150">
+                  info@jordanrangercamp.com
+                </a>
               </p>
               <p className="text-sm leading-relaxed mt-2">
                 <span className="font-medium">Phone: </span>
-                <a href="tel:+962777000000" className="hover:text-white transition-colors duration-150">+962 7 7700 0000</a>
+                <a href="tel:+962777000000" className="hover:text-white transition-colors duration-150">
+                  +962 7 7700 0000
+                </a>
               </p>
             </div>
 
             <h3 className="text-lg font-semibold text-[#dcdca8] mb-4">{t("followUs")}</h3>
             <div className="flex gap-3">
               {[FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn].map((Icon, idx) => (
-                <LightButton key={idx} className="px-3!"  >
+                <LightButton key={idx} className="px-3!">
                   <Icon />
                 </LightButton>
               ))}
             </div>
           </div>
-
-  
         </div>
       </div>
-<hr className="border-[#dcdca8] mt-10" />
 
-              <div className="mt-8   text-xs  md:text-base text-[#e4e4d2]/70 flex justify-self-center">
-             
-            © {new Date().getFullYear()} Jordan Ranger Camp. {t("rights")}
-          </div>
+      <hr className="border-[#dcdca8] mt-10" />
+
+      <div className="mt-8 text-xs md:text-base text-[#e4e4d2]/70 flex justify-self-center">
+        © {new Date().getFullYear()} Jordan Ranger Camp. {t("rights")}
+      </div>
     </footer>
   );
 };
