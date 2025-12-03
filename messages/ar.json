@@ -53,6 +53,17 @@
     "emailPlaceholder": "أدخل بريدك الإلكتروني",
     "subscribe": "اشترك",
     "followUs": "تابعنا",
-    "rights": "جميع الحقوق محفوظة."
+    "rights": "جميع الحقوق محفوظة.",
+     "restaurant": "المطعم",
+"tour operators": "منظمو الرحلات",
+    "training room": "غرفة التدريب",
+    "about": "من نحن",
+    "indooractivities": "الأنشطة الداخلية",
+    "outdooractivities": "الأنشطة الخارجية",
+ "cabins": "الغرف",
+    "tents": "الخيام",
+    "corporateteambuilding": "بناء فريق الشركة",
+    "schooltraining": "تدريب المدرسة",
+    "booking":"حجز"
   }
 }

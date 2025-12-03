@@ -12,7 +12,7 @@ export const newActivitySchema = z.object({
   poster_image: z.string().url("Poster image must be a valid URL"),
   header_image: z.string().url("Header image must be a valid URL"),
   capacity: z.number().int().positive("Capacity must be a positive integer"),
-  price: z.string(),
+  price: z.number(),
   minimum_quantity: z.number().min(1, "Minimum Quantity should be at least 1"),
   slug: z.string().min(1, "Slug is required"),
 }).refine(

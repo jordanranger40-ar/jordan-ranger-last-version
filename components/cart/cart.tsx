@@ -9,15 +9,50 @@ type CartProps = {
   cartData: newCart | undefined;
   cartDetails: cartWithItems[] | undefined;
   action: (id: string) => void;
+  locale: string;
 };
 
-const Cart: React.FC<CartProps> = ({ cartData, action, cartDetails }) => {
-  const [cartItems, setCartItems] = useState<cartWithItems[]>(cartDetails || []);
+
+const Cart: React.FC<CartProps> = ({
+  cartData,
+  action,
+  cartDetails,
+  locale,
+}) => {
+  const [cartItems, setCartItems] = useState<cartWithItems[]>(
+    cartDetails || []
+  );
   const tax = 0;
+
+  // 🌐 Translation Dictionary
+  const t = (key: string) => {
+    const translations: Record<string, any> = {
+      your_cart: { en: "Your Cart", ar: "سلة المشتريات" },
+      subtitle: {
+        en: "Review your selected bookings — including Activities, Accommodations, and Trainings before checkout.",
+        ar: "راجع حجوزاتك المختارة — بما في ذلك الأنشطة والإقامة والدورات قبل إتمام الدفع.",
+      },
+      empty_cart: { en: "Your cart is empty 🛍️", ar: "سلة المشتريات فارغة 🛍️" },
+      return_shop: { en: "Return to Shop", ar: "العودة للتسوق" },
+      booking: { en: "Booking", ar: "حجز" },
+      total: { en: "Total", ar: "المجموع" },
+      order_summary: { en: "Order Summary", ar: "ملخص الطلب" },
+      discount: { en: "Discount", ar: "الخصم" },
+      tax: { en: "Tax", ar: "الضريبة" },
+      checkout: { en: "Checkout", ar: "إتمام الشراء" },
+      continue_shopping: { en: "Continue Shopping", ar: "متابعة التسوق" },
+      currency: { en: "JOD", ar: "أ.د" },
+      types: {
+        activity: { en: "Activity", ar: "نشاط" },
+        training: { en: "Training", ar: "تدريب" },
+        room: { en: "Accommodation", ar: "الإقامة" },
+      },
+    };
+    return translations[key];
+  };
 
   const handleRemoveItem = async (id?: string) => {
     if (!id) return;
-
     try {
       action(id);
       setCartItems((prev) => prev.filter((item) => item.id !== id));
@@ -26,27 +61,38 @@ const Cart: React.FC<CartProps> = ({ cartData, action, cartDetails }) => {
     }
   };
 
+  const getTypeTranslation = (type: string) => {
+    const types = t("types");
+    return types[type]?.[locale === "ar" ? "ar" : "en"] || type;
+  };
+  const currency = t("currency")[locale === "ar" ? "ar" : "en"];
   return (
-    <div className="max-w-6xl mx-auto px-4 lg:px-6 mt-20">
+    <div
+      className={`max-w-6xl mx-auto px-4 lg:px-6 mt-20 ${
+        locale === "ar" ? "text-right" : ""
+      }`}
+      dir={locale === "ar" ? "rtl" : "ltr"}
+    >
       <div className="grid lg:grid-cols-3 gap-8">
         {/* 🛍 Cart Items */}
         <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border">
-          <h3 className="text-xl font-semibold text-[#484d23]">Your Cart</h3>
-
-          {/* New Header Subtitle */}
+          <h3 className="text-xl font-semibold text-[#484d23]">
+            {t("your_cart")[locale === "ar" ? "ar" : "en"]}
+          </h3>
           <p className="text-sm text-slate-500 mt-1">
-            Review your selected bookings — including Activities, Accommodations, and Trainings before checkout.
+            {t("subtitle")[locale === "ar" ? "ar" : "en"]}
           </p>
 
           <hr className="border-gray-200 mt-4 mb-8" />
 
           {cartItems.length === 0 ? (
             <div className="py-16 text-center">
-              <p className="text-slate-500 text-lg">Your cart is empty 🛍️</p>
-
-              <Link href="/" className="inline-block mt-6">
-                <span className="px-5 py-2.5 bg-[#484d23] text-white rounded-md text-sm hover:bg-[#5b6230] transition">
-                  Return to Shop
+              <p className="text-slate-500 text-lg">
+                {t("empty_cart")[locale === "ar" ? "ar" : "en"]}
+              </p>
+              <Link href={`/${locale}`}>
+                <span className="inline-block mt-6 px-5 py-2.5 bg-[#484d23] text-white rounded-md text-sm hover:bg-[#5b6230] transition">
+                  {t("return_shop")[locale === "ar" ? "ar" : "en"]}
                 </span>
               </Link>
             </div>
@@ -59,10 +105,12 @@ const Cart: React.FC<CartProps> = ({ cartData, action, cartDetails }) => {
                 >
                   <div>
                     <h4 className="text-[15px] font-semibold text-[#484d23]">
-                      Booking: {item.booking_type}
+                      {t("booking")[locale === "ar" ? "ar" : "en"]}:{" "}
+                      {getTypeTranslation(item.booking_type)}
                     </h4>
                     <p className="text-sm text-slate-600 mt-1">
-                      Total: ${Number(item.price || 0).toFixed(2)}
+                      {t("total")[locale === "ar" ? "ar" : "en"]}:{" "}
+                      {Number(item.price || 0).toFixed(2)} {currency}
                     </p>
                   </div>
 
@@ -81,36 +129,39 @@ const Cart: React.FC<CartProps> = ({ cartData, action, cartDetails }) => {
         {/* 🧾 Order Summary */}
         <div className="bg-white p-6 rounded-xl shadow-sm border h-max sticky top-6">
           <h3 className="text-xl font-semibold text-[#484d23]">
-            Order Summary
+            {t("order_summary")[locale === "ar" ? "ar" : "en"]}
           </h3>
           <hr className="border-gray-200 mt-4 mb-8" />
 
           <ul className="text-slate-600 font-medium space-y-4">
             <li className="flex justify-between text-sm">
-              Discount <span className="text-[#484d23] font-semibold">$0.00</span>
+              {t("discount")[locale === "ar" ? "ar" : "en"]}
+              <span className="text-[#484d23] font-semibold">
+                0.00 {currency}
+              </span>
             </li>
             <li className="flex justify-between text-sm">
-              Tax{" "}
+              {t("tax")[locale === "ar" ? "ar" : "en"]}
               <span className="text-[#484d23] font-semibold">
-                ${tax.toFixed(2)}
+                {tax.toFixed(2)} {currency}
               </span>
             </li>
             <li className="flex justify-between text-sm text-[#484d23] mt-4 pt-4 border-t">
-              Total{" "}
+              {t("total")[locale === "ar" ? "ar" : "en"]}
               <span className="font-bold text-lg">
-                ${Number(cartData?.total_amount).toFixed(2)}
+                {Number(cartData?.total_amount).toFixed(2)} {currency}
               </span>
             </li>
           </ul>
 
           <div className="mt-8 space-y-3">
             <button className="text-sm px-4 py-2.5 w-full font-medium tracking-wide bg-[#484d23] hover:bg-[#5b6230] text-white rounded-md transition">
-              Checkout
+              {t("checkout")[locale === "ar" ? "ar" : "en"]}
             </button>
 
-            <Link href="/">
+            <Link href={`/${locale}`}>
               <button className="text-sm px-4 py-2.5 w-full font-medium tracking-wide bg-white border border-gray-300 text-[#484d23] rounded-md hover:bg-gray-100 transition">
-                Continue Shopping
+                {t("continue_shopping")[locale === "ar" ? "ar" : "en"]}
               </button>
             </Link>
           </div>

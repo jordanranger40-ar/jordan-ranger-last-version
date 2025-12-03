@@ -34,8 +34,8 @@ const Footer: React.FC<Props> = ({ locale }) => {
       >
         {/* اللوجو والوصف */}
         <div className="flex flex-col">
-          <div className="mb-4">
-            <Logo />
+          <div className="mb-4 ">
+            <Logo width={32} height={28} />
           </div>
           <h2 className="text-xl font-bold text-[#dcdca8] mb-2">{t("discoverTitle")}</h2>
           <p className="text-sm leading-relaxed max-w-[250px]">{t("discoverDesc")}</p>
@@ -46,43 +46,62 @@ const Footer: React.FC<Props> = ({ locale }) => {
           <h3 className="text-lg font-semibold text-[#dcdca8] mb-4">{t("importantLinks")}</h3>
           <ul className="space-y-2 text-sm">
             <li>
-              <a href="#" className="hover:text-white transition-colors duration-150">{t("home")}</a>
+              <a href="/" className="hover:text-white transition-colors duration-150">{t("home")}</a>
             </li>
             <li>
-              <a href="#" className="hover:text-white transition-colors duration-150">{t("rooms")}</a>
+              <a href="/about" className="hover:text-white transition-colors duration-150">{t("about")}</a>
             </li>
             <li>
-              <a href="#" className="hover:text-white transition-colors duration-150">{t("trips")}</a>
+              <a href="/training-rooms" className="hover:text-white transition-colors duration-150">{t("training room")}</a>
             </li>
             <li>
-              <a href="#" className="hover:text-white transition-colors duration-150">{t("events")}</a>
+              <a href="/tour-operators" className="hover:text-white transition-colors duration-150">{t("restaurant")}</a>
             </li>
           </ul>
-
-<LightButton>            {t("bookNow")}
-          </LightButton>
         </div>
 
         {/* النشرة البريدية */}
         <div>
-          <h3 className="text-lg font-semibold text-[#dcdca8] mb-4">{t("newsletter")}</h3>
-          <p className="text-sm mb-4">{t("newsletterDesc")}</p>
-
-          <form className="flex flex-col sm:flex-row gap-3">
-            <input
-              type="email"
-              placeholder={t("emailPlaceholder")}
-              className="px-4 py-2 text-[#484d23] focus:outline-none rounded-full"
-            />
-           <LightButton>
-              {t("subscribe")}
-            </LightButton>
-          </form>
+          <h3 className="text-lg font-semibold text-[#dcdca8] mb-4">{t("booking")}</h3>
+ <ul className="space-y-2 text-sm">
+            <li>
+              <a href="/Accommodation/Cabins" className="hover:text-white transition-colors duration-150">{t("cabins")}</a>
+            </li>
+            <li>
+              <a href="/Accommodation/Tents" className="hover:text-white transition-colors duration-150">{t("tents")}</a>
+            </li>
+            <li>
+              <a href="/activities/indoor-activities" className="hover:text-white transition-colors duration-150">{t("indooractivities")}</a>
+            </li>
+            <li>
+              <a href="/activities/outdoor-activities" className="hover:text-white transition-colors duration-150">{t("outdooractivities")}</a>
+            </li>
+            <li>
+              <a href="/training/corporate-team-building" className="hover:text-white transition-colors duration-150">{t("corporateteambuilding")}</a>
+            </li>
+            <li>
+              <a href="/training/schools-training" className="hover:text-white transition-colors duration-150">{t("schooltraining")}</a>
+            </li>
+          </ul>
+      
         </div>
 
        
         <div className="flex flex-col justify-between">
           <div>
+            {/* Contact Us (added) */}
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-[#dcdca8] mb-4">{t("contactUs")}</h3>
+              <p className="text-sm leading-relaxed">
+                <span className="font-medium">Email: </span>
+                <a href="mailto:info@jordanrangercamp.com" className="hover:text-white transition-colors duration-150">info@jordanrangercamp.com</a>
+              </p>
+              <p className="text-sm leading-relaxed mt-2">
+                <span className="font-medium">Phone: </span>
+                <a href="tel:+962777000000" className="hover:text-white transition-colors duration-150">+962 7 7700 0000</a>
+              </p>
+            </div>
+
             <h3 className="text-lg font-semibold text-[#dcdca8] mb-4">{t("followUs")}</h3>
             <div className="flex gap-3">
               {[FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn].map((Icon, idx) => (

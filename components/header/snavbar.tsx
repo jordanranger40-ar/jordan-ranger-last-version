@@ -22,7 +22,7 @@ export default function Navbar() {
   
   const facilitiesItems = [
     {
-      href: "/training-room",
+      href: "/training-rooms",
       label: t("training room"),
     },
     {

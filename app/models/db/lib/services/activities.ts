@@ -111,3 +111,15 @@ export const getActivitiesNameAndId= async ()=>{
     
   }
 }
+
+export const getComingSoonActivities= async ()=>{
+
+  try {
+    const result= await pool.query<newActivity>("select * from activities where coming_soon=true")
+    return result.rows
+  } catch (error) {
+    console.log(error);
+    return "Error In Getting Coming Soon Activities"
+    
+  }
+}

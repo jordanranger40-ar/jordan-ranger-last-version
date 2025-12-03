@@ -28,7 +28,7 @@ export default function TourOperatorsSection({ isArabic }: Props) {
         <h2 className="text-5xl font-bold mb-4 text-[#676e32]">
           {isArabic ? "مشغلي الرحلات السياحية" : "Tour Operators"}
         </h2>
-        <p className={`mb-6 text-gray-700 ${isArabic ? 'text-right' : 'text-left'} break-words`}>
+        <p className={`mb-6 text-gray-700 ${isArabic ? 'text-right' : 'text-left'} wrap-break-word`}>
           {isArabic
             ? "هنا يمكنك العثور على أفضل مشغلي الرحلات السياحية لدينا لتجربة لا تُنسى."
             : "Here you can find the best tour operators for an unforgettable experience. Our operators ensure high-quality tours with exceptional service and unique experiences tailored to your needs."}

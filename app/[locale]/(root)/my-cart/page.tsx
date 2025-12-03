@@ -5,7 +5,12 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/models/db/authOptions";
 import { deletecartitem } from "./(fetch)/deletecartitem";
 
-export default async function Page() {
+interface Props {
+  params: Promise <{locale:string}>
+}
+
+export default async function Page({ params }: Props) {
+  const locale=(await params).locale
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
@@ -36,6 +41,7 @@ export default async function Page() {
         cartData={safeCartData}
         action={deletecartitem}
         cartDetails={safeCartDetails}
+        locale= {locale}
       />
     </div>
   );

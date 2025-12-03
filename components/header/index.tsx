@@ -1,8 +1,6 @@
 import React from "react";
 import { getServerSession } from "next-auth";
-
-import { getAllcategories } from "@/app/models/db/lib/services/Accommodation";
-import { getAllTraining } from "@/app/models/db/lib/services/training";
+import Logo from "@/components/Logo/Logo";
 import { authOptions } from "@/app/models/db/authOptions";
 
 import Menu from "./menu";
@@ -21,16 +19,19 @@ export default async function Header() {
 
   return (
     <header className="w-full h-14 flex items-center justify-between px-4 border-b">
-      <div className="hidden md:flex">
-        <LanguageSwitcher />
-      </div>
+      <Logo width={20} height={10}/>
+      
 
       <div className="hidden md:block">
         <Navbar />
       </div>     
       <Menu  />
 
-       <CartButton session={session} isCart={isCart} />
+<div className="hidden md:flex items-center gap-3">
+        <LanguageSwitcher />
+          <CartButton session={session} isCart={isCart} />
+      </div>
+     
 
     </header>
   );

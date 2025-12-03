@@ -13,7 +13,7 @@ import {
 } from "./cart_items";
 import { Resend } from "resend";
 
-const resend=  new Resend(process.env.RESEND_API_KEY)
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const bookAnActivity = async (data: newActivityBooking) => {
   const client = await pool.connect();
@@ -397,18 +397,53 @@ export const editActivityBookingById = async (
 
 export const checkAvailableActivities = async (
   id: string,
-  date: { start_time: Date }
+  date: { start_time: Date | string }
 ) => {
   const client = await pool.connect();
 
-  try {
-    const end_time = new Date(
-      new Date(date.start_time).getTime() + 60 * 60 * 1000 
-    );
+  // Ensure start_time is a real JS Date
+  const start = new Date(date.start_time);
+  if (isNaN(start.getTime())) {
+    return {
+      data: null,
+      message: "Invalid date format",
+      status: 400,
+    };
+  }
 
+  // Convert Date → local "YYYY-MM-DD HH:mm:ss"
+  const formatLocal = (d: Date) => {
+    const pad = (n: number) => n.toString().padStart(2, "0");
+    return (
+      d.getFullYear() +
+      "-" +
+      pad(d.getMonth() + 1) +
+      "-" +
+      pad(d.getDate()) +
+      " " +
+      pad(d.getHours()) +
+      ":" +
+      pad(d.getMinutes()) +
+      ":" +
+      pad(d.getSeconds())
+    );
+  };
+
+  // 1-hour duration
+  const end = new Date(start.getTime() + 60 * 60 * 1000);
+
+  const startLocal = formatLocal(start);
+  const endLocal = formatLocal(end);
+
+  console.log("🚀 start_time sent to SQL:", startLocal);
+  console.log("🚀 end_time   sent to SQL:", endLocal);
+
+  try {
     await client.query("BEGIN");
 
-    // CHECK IF ACTIVITY IS DISABLED
+    // -------------------------
+    // DISABLED DATE CHECK
+    // -------------------------
     const checkDisabled = await client.query(
       `SELECT *
        FROM booking_disabled_dates
@@ -416,7 +451,7 @@ export const checkAvailableActivities = async (
          AND ref_id = $1
          AND start_date <= $3
          AND end_date >= $2`,
-      [id, date.start_time, end_time]
+      [id, startLocal, endLocal]
     );
 
     if (checkDisabled.rows.length > 0) {
@@ -428,7 +463,9 @@ export const checkAvailableActivities = async (
       };
     }
 
-    //  CHECK ACTIVITY CAPACITY
+    // -------------------------
+    // CAPACITY
+    // -------------------------
     const activityCapacity = await client.query<{ capacity: number }>(
       "SELECT capacity FROM activities WHERE id = $1",
       [id]
@@ -436,14 +473,12 @@ export const checkAvailableActivities = async (
 
     if (!activityCapacity.rows.length) {
       await client.query("ROLLBACK");
-      return {
-        data: null,
-        message: "Activity not found",
-        status: 404,
-      };
+      return { data: null, message: "Activity not found", status: 404 };
     }
 
-    if (activityCapacity.rows[0].capacity === 0) {
+    const capacity = activityCapacity.rows[0].capacity;
+
+    if (capacity === 0) {
       await client.query("ROLLBACK");
       return {
         data: null,
@@ -452,19 +487,20 @@ export const checkAvailableActivities = async (
       };
     }
 
-    //  CHECK BOOKINGS OVERLAP
-    const numberOfBooking = await client.query<{
-      total_booked: number;
-    }>(
+    // -------------------------
+    // OVERLAP CHECK (FIXED)
+    // -------------------------
+    const numberOfBooking = await client.query<{ total_booked: number }>(
       `SELECT COALESCE(SUM(quantity), 0) AS total_booked
        FROM activities_booking
        WHERE activity_id = $1
-         AND (start_time, end_time) OVERLAPS ($2, $3)`,
-      [id, date.start_time, end_time]
+         AND start_time < $3
+         AND end_time   > $2`,
+      [id, startLocal, endLocal]
     );
 
-    const totalBooking = numberOfBooking.rows[0].total_booked;
-    const remaining = activityCapacity.rows[0].capacity - totalBooking;
+    const totalBooked = numberOfBooking.rows[0].total_booked;
+    const remaining = capacity - totalBooked;
 
     if (remaining <= 0) {
       await client.query("ROLLBACK");
@@ -475,7 +511,6 @@ export const checkAvailableActivities = async (
       };
     }
 
-    // SUCCESS
     await client.query("COMMIT");
 
     return {
@@ -484,7 +519,7 @@ export const checkAvailableActivities = async (
       status: 200,
     };
   } catch (error) {
-    console.error("Error checking activity availability:", error);
+    console.error("Error checking availability:", error);
     await client.query("ROLLBACK");
 
     return {
@@ -575,10 +610,9 @@ export const updateBookingStatus = async (
     [is_confirmed, id]
   );
 
- 
   if (result.rows[0].is_confirmed) {
     const bookingDetails = await pool.query<ActivityBookingWithDetails>(
-     `SELECT 
+      `SELECT 
       ab.id AS id,
       ab.start_time,
       ab.end_time,
@@ -616,14 +650,12 @@ export const updateBookingStatus = async (
 
     const booking = bookingDetails.rows[0];
 
- 
     const formatDate = (value: string | Date) =>
       new Date(value).toLocaleString("en-GB", {
         dateStyle: "medium",
         timeStyle: "short",
       });
 
-    
     await resend.emails.send({
       from: process.env.Email_from || "onboarding@resend.dev",
       to: booking.email,
@@ -658,11 +690,11 @@ export const updateBookingStatus = async (
   };
 };
 
-
 export const getUserUpcomingActivityBookings = async (user_id: string) => {
   const now = new Date();
 
-  const result = await pool.query<ActivityBookingWithDetails>(`
+  const result = await pool.query<ActivityBookingWithDetails>(
+    `
     SELECT 
       ab.id AS id,
       ab.start_time,
@@ -698,7 +730,9 @@ export const getUserUpcomingActivityBookings = async (user_id: string) => {
       AND ab.user_id = $1
       AND ab.start_time > $2
     ORDER BY ab.start_time ASC
-  `, [user_id, now]);
+  `,
+    [user_id, now]
+  );
 
   return {
     data: result.rows,
@@ -706,4 +740,3 @@ export const getUserUpcomingActivityBookings = async (user_id: string) => {
     status: 200,
   };
 };
-

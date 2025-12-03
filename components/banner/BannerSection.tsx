@@ -5,15 +5,17 @@ import Bannercards from "../banner-cards/banner-cards";
 type Props = {
   banners: newBanner[];
   locale: string;
+  isThereComingSoon:boolean
 
 };
 
-export default function BannerSection({ banners, locale,  }: Props) {
+export default function BannerSection({ banners, locale, isThereComingSoon }: Props) {
   return (
     <section className="w-full h-full relative">
       <Banner
         banners={banners}
         locale={locale}
+        isThereComingSoon={isThereComingSoon}
 
       />
 

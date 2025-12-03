@@ -2,10 +2,14 @@ import React from 'react'
 import Image from 'next/image'
 import logo1 from "@/public/images/logo1.png"
 import logo2 from "@/public/images/logo2.png"
-
-export default function Logo() {
+interface Props {
+  width: number,
+  height:number
+}
+export default function Logo({width,height}:Props) {
+  
   return (
-    <div className="relative w-24 h-16 group overflow-hidden flex items-center justify-center ml-4">
+    <div className={`relative w-${width} h-${height} group overflow-hidden flex items-center justify-center ml-4`}>
       <Image
         src={logo1}
         alt="Logo 1"

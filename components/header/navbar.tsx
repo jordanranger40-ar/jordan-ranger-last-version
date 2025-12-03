@@ -83,7 +83,7 @@ export default function Navbar() {
 
     isAdmin ? (
       <NavigationMenuLink asChild key="dashboard">
-        <Link href="/dashboard">{t("dashboard") ?? "Dashboard"}</Link>
+        <Link href="/admin/dashboard">{t("dashboard") ?? "Dashboard"}</Link>
       </NavigationMenuLink>
     ) : null,
 

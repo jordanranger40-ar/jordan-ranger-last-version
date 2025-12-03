@@ -15,7 +15,7 @@
     "expedition activities": "Expedition Activities",
     "Ranger Camp Activity": "Ranger Camp Activity",
     "tour operators": "Tour Operators",
-    "training room": "Training Room",
+    "training room": "Training Rooms",
     "activities": "Activities",
     "indooractivities": "Indoor Activities",
     "outdooractivities": "Outdoor Activities",
@@ -47,7 +47,18 @@
     "emailPlaceholder": "Enter your email",
     "subscribe": "Subscribe",
     "followUs": "Follow Us",
-    "rights": "All rights reserved."
+    "rights": "All rights reserved.",
+    "tour operators": "Tour Operators",
+    "training room": "Training Rooms",
+    "restaurant": "Restaurant",
+    "about": "About",
+    "indooractivities": "Indoor Activities",
+    "outdooractivities": "Outdoor Activities",
+    "cabins": "Cabins",
+    "tents": "Tents",
+    "corporateteambuilding": "Corporate Team Building",
+    "schooltraining": "School Training",
+    "booking":"Bookings"
   },
 
   "stats": {

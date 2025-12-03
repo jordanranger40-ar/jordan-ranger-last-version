@@ -80,9 +80,7 @@ export default function Menu({
       {/* Sheet controlled via open/onOpenChange so we can programmatically close */}
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger className="p-2">
-          <button aria-label={t("menu")} className="text-3xl">
             ☰
-          </button>
         </SheetTrigger>
 
         {/* max-h + overflow-y-auto ensures vertical scrolling inside the sheet */}
@@ -90,6 +88,7 @@ export default function Menu({
           className="p-6 bg-white shadow-xl max-h-[calc(100vh-4rem)] overflow-y-auto"
           style={{ direction: isArabic ? "rtl" : "ltr" }}
         >
+          
           {/* Language Switcher Row */}
           <div
             className={`w-full  flex ${
@@ -252,7 +251,7 @@ export default function Menu({
                 {isAdmin && (
                   <Link
                     onClick={closeMenu}
-                    href="/dashboard"
+                    href="/admin/dashboard"
                     className={blackSub}
                   >
                     {t("dashboard") ?? "Dashboard"}

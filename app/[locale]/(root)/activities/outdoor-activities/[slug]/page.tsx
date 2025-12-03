@@ -4,6 +4,7 @@ import { getCartItemsByUserId } from "@/app/models/db/lib/services/cart";
 import ActivityBookingPanel from "@/components/activities/activityBooking/ActivityBookingPanel";
 import { getServerSession } from "next-auth";
 import Image from "next/image";
+import DarkButton from "@/components/ui/dark-button";
 
 interface PageProps {
   params: Promise<{ locale: string; slug: string }>;
@@ -18,16 +19,22 @@ export default async function Page({ params }: PageProps) {
   const userId = userInfo?.user.id;
   const uniqueTypes: string[] = [];
   const activityData = await getActivityBySlug(slug);
-  if (userId) {
-    const cartItems = (await getCartItemsByUserId(userId ?? "")).data;
-    console.log("cartItems: ", cartItems);
+  
+  const isComingSoon = activityData[0].coming_soon;
+console.log("isComingSoon: ",isComingSoon);
 
-    const bookingsTypes = cartItems!.map((ele, i) => {
-      if (!uniqueTypes.includes(ele.booking_type)) {
-        uniqueTypes.push(ele.booking_type);
-      }
-      return uniqueTypes;
-    });
+  if (userId) {
+    const cartItems = await getCartItemsByUserId(userId ?? "");
+    if (cartItems.data !== null) {
+      const bookingsTypes = cartItems.data.map((ele, i) => {
+        if (!uniqueTypes.includes(ele.booking_type)) {
+          uniqueTypes.push(ele.booking_type);
+        }
+        return uniqueTypes;
+      });
+    } else {
+      console.log("User has no cart");
+    }
   }
 
   if (!activityData || activityData.length === 0) {
@@ -77,7 +84,13 @@ export default async function Page({ params }: PageProps) {
           {isArabic ? activity.description_ar : activity.description_en}
         </p>
 
-        {activity.id && (
+        {isComingSoon ? (
+          <div className="flex w-full">
+            <div className={isArabic ? "self-end" : "self-start"}>
+              <DarkButton>{isArabic ? "قريباً" : "Coming Soon"}</DarkButton>
+            </div>
+          </div>
+        ): (
           <div className="flex w-full">
             <div className={isArabic ? "self-end" : "self-start"}>
               <ActivityBookingPanel
@@ -86,7 +99,7 @@ export default async function Page({ params }: PageProps) {
               />
             </div>
           </div>
-        )}
+        ) }
       </div>
     </div>
   );

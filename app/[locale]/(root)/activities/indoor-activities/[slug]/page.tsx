@@ -2,6 +2,7 @@ import { authOptions } from "@/app/models/db/authOptions";
 import { getActivityBySlug } from "@/app/models/db/lib/services/activities";
 import { getCartItemsByUserId } from "@/app/models/db/lib/services/cart";
 import ActivityBookingPanel from "@/components/activities/activityBooking/ActivityBookingPanel";
+import DarkButton from "@/components/ui/dark-button";
 import { getServerSession } from "next-auth";
 import Image from "next/image";
 
@@ -18,6 +19,7 @@ export default async function Page({ params }: PageProps) {
   const userId = userInfo?.user.id;
   const uniqueTypes: string[] = [];
   const activityData = await getActivityBySlug(slug);
+  const isComingSoon = activityData[0].coming_soon;
   if (userId) {
     const cartItems = await getCartItemsByUserId(userId ?? "");
     if (cartItems.data !== null) {
@@ -79,7 +81,13 @@ export default async function Page({ params }: PageProps) {
           {isArabic ? activity.description_ar : activity.description_en}
         </p>
 
-        {activity.id && (
+        {isComingSoon ? (
+          <div className="flex w-full">
+            <div className={isArabic ? "self-end" : "self-start"}>
+              <DarkButton>{isArabic ? "قريباً" : "Coming Soon"}</DarkButton>
+            </div>
+          </div>
+        ) : (
           <div className="flex w-full">
             <div className={isArabic ? "self-end" : "self-start"}>
               <ActivityBookingPanel
