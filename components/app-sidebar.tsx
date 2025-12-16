@@ -59,6 +59,7 @@ const items = [
     icon: CalendarClock,
   },
   { title: "Disable Dates", url: "/admin/dashboard/disable_booking", icon: Activity },
+  { title: "All Bookings ", url: "/admin/dashboard/bookingConfirmation", icon: Warehouse },
 
   { title: "Clients", url: "/admin/dashboard/clients", icon: Crown },
 ];

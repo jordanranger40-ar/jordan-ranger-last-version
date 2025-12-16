@@ -8,7 +8,7 @@ const handleI18nRouting = createMiddleware(routing);
 
 const protectedRoutes = ["/admin/dashboard",  "/change-password"];
 const adminRoutes = ["/admin/dashboard"];
-const authRoutes = ["/admin/login", "/admin/register", "/forgot-password"];
+const authRoutes = ["/login", "/register", "/forgot-password"];
 
 
 export async function middleware(req: NextRequest) {
@@ -43,6 +43,8 @@ const isOnAuthRoute = authRoutes.some(route => pathWithoutLocale.startsWith(rout
   if (isOnAuthRoute && isLoggedIn) {
     return NextResponse.redirect(new URL("/", req.url));
   }
+
+  
 
   if (isAdminRoutes && isLoggedIn && role !== "admin") {
     return NextResponse.redirect(new URL("/", req.url));

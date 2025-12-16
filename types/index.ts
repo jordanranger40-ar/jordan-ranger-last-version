@@ -4,7 +4,6 @@ export type newClient = {
   logo: string;
 };
 
-
 export type newCategory = {
   id?: string;
   slug?: string;
@@ -14,7 +13,6 @@ export type newCategory = {
   description_ar: string;
   image: string | null;
 };
-
 
 export type user = {
   id: string;
@@ -107,14 +105,12 @@ export type newBanner = {
   created_at?: Date;
 };
 
-
 export type getClients = {
   id?: string;
   name: string;
   logo: string;
   created_at: Date;
 };
-
 
 export type newSetting = {
   id?: string;
@@ -124,7 +120,6 @@ export type newSetting = {
   value_ar?: string;
   created_at?: Date;
 };
-
 
 export type RoomBookingWithDetails = {
   id?: string;
@@ -152,7 +147,7 @@ export type RoomBookingWithDetails = {
 };
 
 export type ActivityBookingWithDetails = {
-  id: string; 
+  id: string;
   is_confirmed: boolean;
   is_deleted: boolean;
   created_at: Date;
@@ -293,8 +288,8 @@ export type newActivity = {
   capacity: number;
   price: number;
   slug: string;
-  minimum_quantity:number,
-  coming_soon:boolean
+  minimum_quantity: number;
+  coming_soon: boolean;
 };
 
 export type newActivityBooking = {
@@ -336,7 +331,7 @@ export type newCart = {
   total_amount: number;
   created_at?: Date;
   checked_out_at?: Date;
-  expires_at?:Date;
+  expires_at?: Date;
   is_paid?: boolean;
 };
 
@@ -348,7 +343,7 @@ export type cartWithItems = {
   checked_out_at: Date;
   booking_type: string;
   booking_id: string;
-  price:number;
+  price: number;
 };
 
 export type newCartItem = {
@@ -361,15 +356,43 @@ export type newCartItem = {
 };
 
 export interface DisableBookingData {
-  id?:string;
+  id?: string;
   type: "activity" | "room";
-  ref_id: string; 
-  start_date: string | null; 
-  end_date: string | null; 
+  ref_id: string;
+  start_date: string | null;
+  end_date: string | null;
 }
 
 export interface GetDisabledDatesParams {
   type: "activity" | "room";
-  ref_id: string; 
+  ref_id: string;
 }
 
+export type EmailData = {
+  accountName: string;
+  note?: string;
+  email: string;
+  userId: string;
+  amount: number;
+  expireAt: string;
+};
+
+export type UnifiedBooking = {
+  id: string;
+  type: "activity" | "room" | "training";
+
+  user_id: string;
+  first_name: string;
+  last_name?: string;
+
+  start: Date;
+  end: Date;
+
+  created_at: Date;
+  price: number;
+  training_price?: number;
+  booking_price?: number;
+  name_en: string;
+  slug: string;
+  is_confirmed: boolean;
+};

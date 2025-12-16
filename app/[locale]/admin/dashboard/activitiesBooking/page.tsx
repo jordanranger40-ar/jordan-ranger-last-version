@@ -23,7 +23,7 @@ const params = searchParams ? await searchParams : {};
   console.log("response: ", response.data);
 
   return (
-    <main className="flex flex-col lg:justify-center justify-start items-center lg:ml-7 ml-2 lg:w-[75vw] w-[92vw]">
+    <main className="flex flex-col lg:justify-center justify-start items-center lg:ml-7 ml-2 lg:w-[75vw]  w-[88vw] md:w-[60vw] xl:w-[80vw]">
       {/* Header */}
       <div className="flex flex-col justify-start items-start mb-6 border-b border-gray-300 w-full">
         <h1 className="text-lg md:text-2xl font-bold">Activities Booking</h1>

@@ -24,14 +24,8 @@ export default async function Page({ params }: Props) {
     );
   }
 
-  const cartDataResponse = await getCartByUserId(session.user.id);
-  const cartItemsResponse = await getCartItemsByUserId(session.user.id);
-
-  const cartData = cartDataResponse.data[0];
-  const cartDetails = cartItemsResponse.data;
-
-  console.log("data:", cartData);
-  console.log("cartDetails:", cartDetails);
+  const cartData = (await getCartByUserId(session.user.id)).data[0];
+  const cartDetails = (await getCartItemsByUserId(session.user.id)).data;
 
   const safeCartData = JSON.parse(JSON.stringify(cartData || []));
   const safeCartDetails = JSON.parse(JSON.stringify(cartDetails || []));

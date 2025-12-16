@@ -24,7 +24,7 @@ export const createCart = async (user_id: string, client?: PoolClient) => {
 };
 
 export const getCartByUserId = async (userId: string) => {
-  const result = await pool.query<cartWithItems>(
+  const result = await pool.query<newCart>(
     "SELECT * FROM cart  where user_id= $1 ",
     [userId]
   );

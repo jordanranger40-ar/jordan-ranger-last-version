@@ -4,7 +4,6 @@ import { deleteTrainingBooking } from "./(fetch)/deleteTrainingBooking";
 import { getTrainingBookingByDate } from "@/app/models/db/lib/services/training_booking";
 import { Card, CardContent } from "@/components/ui/card";
 import { FolderOpen } from "lucide-react";
-import DateRangeFilter from "@/components/DateRangeFilter";
 import TrainingFilterSAndD from "@/components/training/TrainingFilterSAndD";
 import { getAllTraining } from "@/app/models/db/lib/services/training";
 
@@ -31,7 +30,7 @@ export default async function TrainingBookingTable({ searchParams }: Props) {
   console.log(training_id);
 
   return (
-    <main className="flex flex-col lg:justify-center justify-start items-center lg:ml-7 ml-2 lg:w-[75vw] w-[92vw]">
+    <main className="flex flex-col lg:justify-center justify-start items-center lg:ml-7 ml-2 lg:w-[75vw]  w-[88vw] md:w-[60vw] xl:w-[80vw]">
       {/* Header */}
       <div className="flex flex-col justify-start items-start mb-6 border-b border-gray-300 w-full">
         <h1 className="text-lg md:text-2xl font-bold">Training Booking</h1>
