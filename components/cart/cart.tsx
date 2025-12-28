@@ -110,7 +110,7 @@ const Cart: React.FC<CartProps> = ({
   // Parse expiry time safely and convert to Jordan time (UTC+3)
   const expiryDate: Date | null = useMemo(() => {
     if (!cartData?.expires_at) return null;
-    const d = new Date(cartData.expires_at as any);
+    const d = new Date(cartData.expires_at as Date);
     if (Number.isNaN(d.getTime())) return null;
 
     // Convert to Jordan timezone (UTC+3)
