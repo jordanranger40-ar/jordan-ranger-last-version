@@ -5,36 +5,6 @@ import {  TrainingBookingWithDetails } from "@/types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowUpDown } from "lucide-react";
 
-/* 
-export type TrainingBookingWithDetails = {
-  id: string; // training_booking id
-  training_id: string;
-  is_confirmed: boolean;
-  is_deleted: boolean;
-  created_at: Date;
-  quantity: number;
-  price: number;
-
-  user_id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-
-  // Training details
-  name_en: string;
-  description_en: string;
-  name_ar: string;
-  description_ar: string;
-  image: string;
-  category_en: string;
-  category_ar: string;
-  capacity: number;
-  training_price: number;
-  start_date: Date;
-  end_date: Date;
-  slug: string;
-};
-*/
 
 export const trainingBookingsColumns: ColumnDef<TrainingBookingWithDetails>[] = [
   {

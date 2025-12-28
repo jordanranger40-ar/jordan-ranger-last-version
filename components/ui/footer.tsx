@@ -206,27 +206,36 @@ const Footer: React.FC<Props> = ({ locale }) => {
 
       <hr className="border-[#dcdca8] mt-10" />
 
-       <div className="text-center pt-5 pb-10 border-t border-white/20">
-          <p className="text-sm text-white wrap-break-word">
-            {isArabic ? (
-              <>
-                © 2025 Jordar Ranger. جميع الحقوق محفوظة. تم الإنشاء بواسطة{" "}
-                <a href={nurembergUrl} target="_blank" className="underline hover:text-gray-300">
-                  Nuremberg Group
-                </a>
-                .
-              </>
-            ) : (
-              <>
-                © 2025 Jordan Ranger. All rights reserved. Powered by{" "}
-                <a href={nurembergUrl} target="_blank" className="underline  hover:text-black">
-                  Nuremberg Group
-                </a>
-                .
-              </>
-            )}
-          </p>
-        </div>
+      <div className="text-center pt-5 pb-10 border-t border-white/20">
+  <p className="text-sm text-white wrap-break-word">
+    {isArabic ? (
+      <>
+        © 2025 Jordan Ranger. جميع الحقوق محفوظة. مملوك لمنتجع إيكو فيو. تم الإنشاء بواسطة{" "}
+        <a
+          href={nurembergUrl}
+          target="_blank"
+          className="underline hover:text-gray-300"
+        >
+          Nuremberg Group
+        </a>
+        .
+      </>
+    ) : (
+      <>
+        © 2025 Jordan Ranger. All rights reserved. Owned by Eco View Resort. Powered by{" "}
+        <a
+          href={nurembergUrl}
+          target="_blank"
+          className="underline hover:text-black"
+        >
+          Nuremberg Group
+        </a>
+        .
+      </>
+    )}
+  </p>
+</div>
+
     </footer>
   );
 };
