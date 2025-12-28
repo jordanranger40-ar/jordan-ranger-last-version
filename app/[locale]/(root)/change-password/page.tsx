@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useLocale } from "next-intl";
@@ -49,52 +49,57 @@ function Page() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError("");
-    setMessage("");
+ const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  setError("");
+  setMessage("");
 
-    if (!user_id) {
-      setError(t.notLoggedIn);
-      return;
+  if (!user_id) {
+    setError(t.notLoggedIn);
+    return;
+  }
+
+  if (form.password !== form.confirmPassword) {
+    setError(t.passwordsDontMatch);
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const url = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/change-password/${user_id}`;
+    const res = await axios.put<{ message: string }>(url, {
+      oldPassword: form.oldPassword,
+      newPassword: form.password,
+    });
+
+    if (res.status === 200 || res.status === 201) {
+      setMessage(t.success);
+      setTimeout(() => {
+        setMessage("");
+        router.push("/");
+      }, 1500);
+    } else {
+      setError(res.data.message ?? t.serverError);
     }
+  } catch (err: unknown) {
+    // Type guard for AxiosError
+    const isAxiosError = (e: unknown): e is AxiosError<{ message: string }> =>
+      typeof e === "object" &&
+      e !== null &&
+      "isAxiosError" in e &&
+      (e as AxiosError).isAxiosError === true;
 
-    if (form.password !== form.confirmPassword) {
-      setError(t.passwordsDontMatch);
-      return;
+    if (isAxiosError(err)) {
+      setError(err.response?.data?.message ?? t.serverError);
+    } else if (err instanceof Error) {
+      setError(err.message);
+    } else {
+      setError(t.serverError);
     }
-
-    setLoading(true);
-    try {
-      const url = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/change-password/${user_id}`;
-      const res = await axios.put(url, {
-        oldPassword: form.oldPassword,
-        newPassword: form.password,
-      });
-
-      // assume API returns { message, status } — handle common success codes
-      const status = res?.status ?? res?.data?.status;
-      const messageFromServer = res?.data?.message ?? "";
-
-      if (status === 200 || status === 201) {
-        setMessage(t.success);
-        setTimeout(() => {
-          setMessage("");
-          router.push("/");
-        }, 1500);
-      } else {
-        setError(messageFromServer || t.serverError);
-      }
-    } catch (err: any) {
-      // safe error extraction
-      const serverMessage =
-        err?.response?.data?.message ?? err?.message ?? t.serverError;
-      setError(serverMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <main dir={isArabic ? "rtl" : "ltr"}>
       <form

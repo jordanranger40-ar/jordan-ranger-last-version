@@ -43,7 +43,7 @@ async function Page({ searchParams }: Props) {
     // Upcoming Activity Bookings
     ...upCommingActivitiesBookings.map((b) => ({
       id: b.id,
-      type: "activity" as "activity",
+      type: "activity" as const,
       user_id: b.user_id,
       first_name: b.first_name,
       last_name: b.last_name,
@@ -59,7 +59,7 @@ async function Page({ searchParams }: Props) {
     // Upcoming Room Bookings
     ...upCommingAccomodationBookings.map((b) => ({
       id: b.id!,
-      type: "room" as "room",
+      type: "room" as const,
       user_id: b.user_id,
       first_name: b.first_name,
       last_name: b.last_name,
@@ -75,7 +75,7 @@ async function Page({ searchParams }: Props) {
     // Upcoming Training Bookings
     ...upCommingTrainingBookings.map((b) => ({
       id: b.id,
-      type: "training" as "training",
+      type: "training" as const,
       user_id: b.user_id,
       first_name: b.first_name,
       last_name: b.last_name,
