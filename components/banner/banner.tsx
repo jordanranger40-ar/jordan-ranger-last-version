@@ -30,11 +30,8 @@ export function Banner({ banners, locale, isThereComingSoon }: Props) {
       <header className="absolute top-0 left-0 w-full z-30 p-4">
         <nav className="flex justify-between items-center text-white">
           {/*<Logo />*/}
-<<<<<<< HEAD
          {/* {isThereComingSoon&&<FlashPulse locale={locale} />}*/}
-=======
-          {/*{isThereComingSoon&&<FlashPulse locale={locale} />}*/}
->>>>>>> 269210da533ab8b8dc71d17c391273aaf2f5432e
+
           <Snavbar />
         </nav>
       </header>
