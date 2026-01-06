@@ -30,7 +30,7 @@ export function Banner({ banners, locale, isThereComingSoon }: Props) {
       <header className="absolute top-0 left-0 w-full z-30 p-4">
         <nav className="flex justify-between items-center text-white">
           {/*<Logo />*/}
-          {isThereComingSoon&&<FlashPulse locale={locale} />}
+          {/*{isThereComingSoon&&<FlashPulse locale={locale} />}*/}
           <Snavbar />
         </nav>
       </header>
@@ -66,7 +66,7 @@ export function Banner({ banners, locale, isThereComingSoon }: Props) {
                       <p className=" hidden md:block text-base md:text-lg lg:text-xl mt-6 max-w-3xl mx-auto">
                         {description}
                       </p>
-                      <LightButton>Enroll Now</LightButton>
+                      <LightButton>Explore Now</LightButton>
                     </div>
                   </div>
                 </article>

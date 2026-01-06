@@ -112,7 +112,9 @@ export default function EditRoomForm({ room, action }: Props) {
   };
 
   console.log("FORM FEATURES:", form.features);
-
+ 
+  console.log("error zod: ",errors);
+  
 
   return (
     <main className="ml-3 xl:ml-7 mb-10 text-gray-800">
