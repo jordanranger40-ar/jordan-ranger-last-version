@@ -119,3 +119,93 @@ export const clearExpiredCart = () => {
     }
   });
 };
+
+
+export const getCartForPayment = async (cartId: string, userId: string) => {
+  const result = await pool.query(
+    `
+    SELECT id, total_amount, currency
+    FROM cart
+    WHERE id = $1 AND user_id = $2 AND is_paid = false
+    `,
+    [cartId, userId]
+  );
+
+  return result.rows[0];
+};
+
+
+// updating all bookings to confirmed 
+
+export const confirmBookingsForCart = async (cartId: string) => {
+  // Transactional: mark related bookings as confirmed
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    // Get cart items
+    const itemsRes = await client.query(
+      `SELECT booking_type, booking_id FROM cart_items WHERE cart_id = $1`,
+      [cartId]
+    );
+    const rows = itemsRes.rows;
+    if (!rows.length) {
+      await client.query("COMMIT");
+      return { ok: true, updated: 0 };
+    }
+
+    const roomIds: string[] = [];
+    const activityIds: string[] = [];
+    const trainingIds: string[] = [];
+
+    for (const r of rows) {
+      const t = r.booking_type;
+      const id = r.booking_id;
+      if (t === "room") roomIds.push(id);
+      else if (t === "activity") activityIds.push(id);
+      else if (t === "training") trainingIds.push(id);
+    }
+
+    let totalUpdated = 0;
+
+    if (roomIds.length) {
+      const qr = await client.query(
+        `UPDATE room_booking SET is_confirmed = true WHERE id = ANY($1::uuid[]) RETURNING id`,
+        [roomIds]
+      );
+      totalUpdated += qr.rowCount!;
+    }
+
+    if (activityIds.length) {
+      const qr = await client.query(
+        `UPDATE activities_booking SET is_confirmed = true WHERE id = ANY($1::uuid[]) RETURNING id`,
+        [activityIds]
+      );
+      totalUpdated += qr.rowCount!;
+    }
+
+    if (trainingIds.length) {
+      const qr = await client.query(
+        `UPDATE training_booking SET is_confirmed = true WHERE id = ANY($1::uuid[]) RETURNING id`,
+        [trainingIds]
+      );
+      totalUpdated += qr.rowCount!;
+    }
+
+    // Mark cart as paid & checked_out_at if not already done (defensive)
+    await client.query(
+      `UPDATE cart SET is_paid = true, checked_out_at = now() WHERE id = $1`,
+      [cartId]
+    );
+
+    await client.query("COMMIT");
+    return { ok: true, updated: totalUpdated };
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
+  }
+};
+
+

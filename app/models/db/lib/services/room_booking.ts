@@ -19,18 +19,25 @@ export const bookARoom = async (data: newBooking) => {
   try {
     await client.query("BEGIN");
 
-
     const start = new Date(data.start_time);
     const end = new Date(data.end_time);
 
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
       await client.query("ROLLBACK");
-      return { result: null, message: "Invalid start_time or end_time", status: 400 };
+      return {
+        result: null,
+        message: "Invalid start_time or end_time",
+        status: 400,
+      };
     }
 
     if (end.getTime() <= start.getTime()) {
       await client.query("ROLLBACK");
-      return { result: null, message: "end_time must be after start_time", status: 400 };
+      return {
+        result: null,
+        message: "end_time must be after start_time",
+        status: 400,
+      };
     }
 
     const overlapQuery = `
@@ -44,7 +51,7 @@ export const bookARoom = async (data: newBooking) => {
     const overlapRes = await client.query(overlapQuery, [
       data.room_id,
       start, // new.start_time
-      end,   // new.end_time
+      end, // new.end_time
     ]);
 
     if (overlapRes.rowCount! > 0) {
@@ -72,11 +79,10 @@ export const bookARoom = async (data: newBooking) => {
 
     const pricePerDay = Number(availableRoom.rows[0].price ?? 0);
     const totalPrice = pricePerDay * days;
-    console.log("days: ",days, typeof days);
-    console.log("pricePerDay: ",pricePerDay);
-    
-    console.log("totalPrice: ",totalPrice);
-    
+    console.log("days: ", days, typeof days);
+    console.log("pricePerDay: ", pricePerDay);
+
+    console.log("totalPrice: ", totalPrice);
 
     // Insert booking
     const insertQuery = `
@@ -104,14 +110,17 @@ export const bookARoom = async (data: newBooking) => {
       client
     );
 
-    console.log("Number((cart.total_amount ?? 0) + Number(totalPrice)): ",Number((cart.total_amount ?? 0) + Number(totalPrice)), typeof Number((cart.total_amount ?? 0) + Number(totalPrice)));
-    
+    console.log(
+      "Number((cart.total_amount ?? 0) + Number(totalPrice)): ",
+      Number((cart.total_amount ?? 0) + Number(totalPrice)),
+      typeof Number((cart.total_amount ?? 0) + Number(totalPrice))
+    );
 
     // update total cart total amount (handle NaN gracefully)
     await updateCartTotalAmount(
       {
         id: cart.id,
-        total_amount: (Number(cart.total_amount ?? 0) + Number(totalPrice)),
+        total_amount: Number(cart.total_amount ?? 0) + Number(totalPrice),
       },
       client
     );
@@ -132,7 +141,6 @@ export const bookARoom = async (data: newBooking) => {
     client.release();
   }
 };
-
 
 export const getAllRoomsBookings = async () => {
   const result = await pool.query(`
@@ -365,11 +373,28 @@ export const editBookingById = async (data: newBooking, bookingId: string) => {
 
 export const getRoomBookingByDate = async (
   start_date: Date | null,
-  end_date: Date | null
-): Promise<{ data: RoomBookingWithDetails[]; message: string }> => {
+  end_date: Date | null,
+  roomId: string | null = null,
+  page: number | string = 1
+): Promise<{
+  data: RoomBookingWithDetails[];
+  meta: { total: number; totalPages: number; page: number; pageSize: number };
+  message: string;
+}> => {
+  const PAGE_SIZE = 15;
+  const pageNum = Number(page) > 0 ? Number(page) : 1;
+  const offset = (pageNum - 1) * PAGE_SIZE;
+
+  // convert dates to yyyy-mm-dd strings or null
+  const startDateParam = start_date ? start_date.toISOString().split("T")[0] : null;
+  const endDateParam = end_date ? end_date.toISOString().split("T")[0] : null;
+
   try {
-    const result = await pool.query<RoomBookingWithDetails>(
-      `SELECT 
+    const result = await pool.query<
+      RoomBookingWithDetails & { total_count?: number }
+    >(
+      `
+      SELECT
         rb.id AS id,
         rb.start_time,
         rb.end_time,
@@ -390,31 +415,64 @@ export const getRoomBookingByDate = async (
         r.room_images,
         r.room_type_en,
         r.room_type_ar,
-        r.slug
+        r.slug,
+        COUNT(*) OVER() AS total_count
       FROM room_booking rb
       JOIN users u ON rb.user_id = u.id
       JOIN rooms r ON rb.room_id = r.id
-      WHERE rb.is_deleted = false
-      AND (
-        $1::date IS NULL AND $2::date IS NULL 
-        AND rb.start_time >= CURRENT_DATE
-      )
-      OR (
-        ($1::date IS NOT NULL AND $2::date IS NOT NULL)
-        AND rb.start_time <= $2::date
-        AND rb.end_time >= $1::date
-      )
-      ORDER BY rb.start_time ASC;`,
-      [
-        start_date ? start_date.toISOString().split("T")[0] : null,
-        end_date ? end_date.toISOString().split("T")[0] : null,
-      ]
+      WHERE
+        rb.is_deleted = false
+        AND (
+          (
+            $1::date IS NULL
+            AND $2::date IS NULL
+            AND rb.start_time >= CURRENT_DATE
+          )
+          OR (
+            ($1::date IS NOT NULL AND $2::date IS NOT NULL)
+            -- overlap: booking start before (end_date + 1 day) AND booking end on/after start_date
+            AND rb.start_time < ($2::date + INTERVAL '1 day')
+            AND rb.end_time >= $1::date
+          )
+        )
+        AND ($3::uuid IS NULL OR r.id = $3::uuid)
+      ORDER BY rb.start_time ASC
+      LIMIT $4::int
+      OFFSET $5::int;
+      `,
+      [startDateParam, endDateParam, roomId, PAGE_SIZE, offset]
     );
 
-    return { data: result.rows, message: "Booking In This Range" };
+    // total rows that match the filter (not only the page)
+    const total = result.rows.length ? Number(result.rows[0].total_count ?? 0) : 0;
+    const totalPages = Math.ceil(total / PAGE_SIZE);
+
+    console.log("ghghfghghf: ",result.rows);
+    
+
+    // strip internal total_count column and return typed rows
+    const data: RoomBookingWithDetails[] = result.rows.map((r) => {
+      const { total_count, ...rest } = r;
+      return rest as RoomBookingWithDetails;
+    });
+
+    return {
+      data,
+      meta: {
+        total,
+        totalPages,
+        page: pageNum,
+        pageSize: PAGE_SIZE,
+      },
+      message: "Booking In This Range",
+    };
   } catch (error) {
     console.log("getting error: ", error);
-    return { data: [], message: "Error In Getting Booking In This Range" };
+    return {
+      data: [],
+      meta: { total: 0, totalPages: 0, page: pageNum, pageSize: PAGE_SIZE },
+      message: "Error In Getting Booking In This Range",
+    };
   }
 };
 
@@ -431,7 +489,6 @@ export const updateBookingStatus = async (
     [is_confirmed, id]
   );
 
- 
   if (result.rows[0].is_confirmed) {
     const bookingDetails = await pool.query<RoomBookingWithDetails>(
       `SELECT 
@@ -466,14 +523,12 @@ export const updateBookingStatus = async (
 
     const booking = bookingDetails.rows[0];
 
- 
     const formatDate = (value: string | Date) =>
       new Date(value).toLocaleString("en-GB", {
         dateStyle: "medium",
         timeStyle: "short",
       });
 
-    
     await resend.emails.send({
       from: process.env.Email_from || "onboarding@resend.dev",
       to: booking.email,
@@ -507,11 +562,11 @@ export const updateBookingStatus = async (
   };
 };
 
-
 export const getUserUpcomingRoomBookings = async (user_id: string) => {
   const now = new Date();
 
-  const result = await pool.query<RoomBookingWithDetails>(`
+  const result = await pool.query<RoomBookingWithDetails>(
+    `
     SELECT 
       rb.id AS id,
       rb.start_time,
@@ -541,7 +596,9 @@ export const getUserUpcomingRoomBookings = async (user_id: string) => {
       AND rb.user_id = $1
       AND rb.start_time > $2
     ORDER BY rb.start_time ASC
-  `, [user_id, now]);
+  `,
+    [user_id, now]
+  );
 
   return {
     data: result.rows,

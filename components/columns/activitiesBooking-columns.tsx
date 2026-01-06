@@ -36,6 +36,10 @@ export const activitiesBookingsColumns: ColumnDef<ActivityBookingWithDetails>[] 
         Activity Name <ArrowUpDown className="h-4 w-4" />
       </button>
     ),
+     cell: ({ row }) => {
+      const desc = row.original.name_en ?? "";
+      return <div className="text-gray-800 font-medium">{desc.slice(0, 20) + (desc.length > 20 ? "..." : "")}</div>;
+    },
     enableSorting: true,
   },
   {

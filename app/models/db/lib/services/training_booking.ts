@@ -347,56 +347,101 @@ export const getQuantityOfATraining = async (id: string) => {
 export const getTrainingBookingByDate = async (
   start_date: Date | null,
   end_date: Date | null,
-  training_id: string | null
-) => {
+  training_id: string | null = null,
+  page: number | string = 1
+): Promise<{
+  data: TrainingBookingWithDetails[];
+  meta: { total: number; totalPages: number; page: number; pageSize: number };
+  message: string;
+}> => {
+  const PAGE_SIZE = 15;
+  const pageNum = Number(page) > 0 ? Number(page) : 1;
+  const offset = (pageNum - 1) * PAGE_SIZE;
+
+  const startDateParam = start_date ? start_date.toISOString().split("T")[0] : null;
+  const endDateParam = end_date ? end_date.toISOString().split("T")[0] : null;
+
   try {
-    const result = await pool.query(
-      `SELECT 
-      tb.id AS id,
-      tb.training_id,
-      tb.is_confirmed,
-      tb.is_deleted,
-      tb.created_at,
-      tb.quantity,
-      tb.price,
-      u.id AS user_id,
-      u.first_name,
-      u.last_name,
-      u.email,
-      t.id AS training_id,
-      t.name_en,
-      t.description_en,
-      t.name_ar,
-      t.description_ar,
-      t.card_image,
-      t.post_image,
-      t.header_image,
-      t.category_en,
-      t.category_ar,
-      t.capacity,
-      t.price AS training_price,
-      t.start_date,
-      t.end_date,
-      t.slug
-    FROM training_booking tb
-    JOIN users u ON tb.user_id = u.id
-    JOIN training t ON tb.training_id = t.id 
-    WHERE
-  (($1::date IS NULL AND $2::date IS NULL) 
-    OR ($1::date IS NOT NULL AND $2::date IS NOT NULL AND t.start_date <= $2::date AND t.end_date >= $1::date)
-  )
-  AND ($3::uuid IS NULL OR t.id = $3)  ORDER BY t.start_date ASC`,
-      [
-        start_date ? start_date.toISOString().split("T")[0] : null,
-        end_date ? end_date.toISOString().split("T")[0] : null,
-        training_id,
-      ]
+    const result = await pool.query<
+      TrainingBookingWithDetails & { total_count?: number }
+    >(
+      `
+      SELECT 
+        tb.id AS id,
+        tb.training_id,
+        tb.is_confirmed,
+        tb.is_deleted,
+        tb.created_at,
+        tb.quantity,
+        tb.price,
+        u.id AS user_id,
+        u.first_name,
+        u.last_name,
+        u.email,
+        t.id AS training_id,
+        t.name_en,
+        t.description_en,
+        t.name_ar,
+        t.description_ar,
+        t.card_image,
+        t.post_image,
+        t.header_image,
+        t.category_en,
+        t.category_ar,
+        t.capacity,
+        t.price AS training_price,
+        t.start_date,
+        t.end_date,
+        t.slug,
+        COUNT(*) OVER() AS total_count
+      FROM training_booking tb
+      JOIN users u ON tb.user_id = u.id
+      JOIN training t ON tb.training_id = t.id 
+      WHERE
+        (
+          ($1::date IS NULL AND $2::date IS NULL)
+          OR (
+            ($1::date IS NOT NULL AND $2::date IS NOT NULL)
+            AND t.start_date < ($2::date + INTERVAL '1 day')
+            AND t.end_date >= $1::date
+          )
+        )
+        AND ($3::uuid IS NULL OR t.id = $3::uuid)
+      ORDER BY t.start_date ASC
+      LIMIT $4::int
+      OFFSET $5::int;
+      `,
+      [startDateParam, endDateParam, training_id, PAGE_SIZE, offset]
     );
-    return { data: result.rows, message: "Booking In This Range" };
+
+    const total = result.rows.length ? Number(result.rows[0].total_count ?? 0) : 0;
+    const totalPages = Math.ceil(total / PAGE_SIZE);
+
+    const data: TrainingBookingWithDetails[] = result.rows.map((r) => {
+      const { total_count, ...rest } = r;
+      return rest as TrainingBookingWithDetails;
+    });
+
+    return {
+      data,
+      meta: {
+        total,
+        totalPages,
+        page: pageNum,
+        pageSize: PAGE_SIZE,
+      },
+      message: "Booking In This Range",
+    };
   } catch (error) {
-    return { data: [], message: "Error In Getting Booking In This Range" };
+    console.error("getTrainingBookingByDate error:", error);
+    return {
+      data: [],
+      meta: { total: 0, totalPages: 0, page: pageNum, pageSize: PAGE_SIZE },
+      message: "Error In Getting Booking In This Range",
+    };
   }
 };
+
 
 export const updateBookingStatus = async (
   is_confirmed: boolean,
@@ -537,3 +582,23 @@ export const getUserUpcomingTrainingBookings = async (user_id: string) => {
     status: 200,
   };
 };
+
+
+export const getTrainingsByType= async (type:string)=>{
+
+  try {
+    const result= await pool.query<newTraining>("select * from training where category_en=$1",[type])
+    return {
+      data: result.rows,
+      message:"All Traingins By type",
+      status:200
+    }
+  } catch (error) {
+    return {
+      data: [],
+      message:"All Traingins By type",
+      status:200
+    }
+  }
+
+}

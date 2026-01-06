@@ -112,6 +112,31 @@
   --sidebar-ring: oklch(0.551 0.027 264.364);
 }
 
+
+/* Pay Now button */
+.wpwl-button {
+  background-color: #484d23 !important; /* emerald */
+  color: #ffffff !important;
+  border-radius: 14px !important;
+  font-weight: 600 !important;
+  padding: 14px 20px !important;
+  font-size: 16px !important;
+  transition: background-color 0.2s ease;
+  border:  #484d23 !important;
+}
+
+/* Hover */
+.wpwl-button:hover {
+  background-color: #484d23 !important;
+}
+
+/* Disabled */
+.wpwl-button[disabled] {
+  background-color: #484d23 !important;
+  cursor: not-allowed;
+}
+
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

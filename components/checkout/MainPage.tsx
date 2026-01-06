@@ -122,7 +122,7 @@ export default function MainCheckoutPage({
   return (
     <section
       dir={locale === "ar" ? "rtl" : "ltr"}
-      className="w-[90%] mx-auto p-6 my-20"
+      className="w-[90%] mx-auto p-6 my-20 "
     >
       <h2 className="text-2xl font-semibold mb-2">{t.title}</h2>
       <p className="text-sm text-gray-600 mb-6">{t.description}</p>

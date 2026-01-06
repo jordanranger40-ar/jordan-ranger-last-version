@@ -532,71 +532,121 @@ export const checkAvailableActivities = async (
   }
 };
 
-
 export const getActivityBookingByDate = async (
   start_date: Date | null,
-  end_date: Date | null
-) => {
+  end_date: Date | null,
+  activityId: string | null = null,
+  page: number = 1
+): Promise<{
+  data: ActivityBookingWithDetails[];
+  meta: {
+    total: number;
+    totalPages: number;
+    page: number;
+    pageSize: number;
+  };
+  message: string;
+}> => {
+  const PAGE_SIZE = 15;
+  const pageNum = Number.isInteger(page) && page > 0 ? page : 1;
+  const offset = (pageNum - 1) * PAGE_SIZE;
+
   try {
-    const result = await pool.query<ActivityBookingWithDetails>(
-      `SELECT 
-  ab.id AS id,
-  ab.start_time,
-  ab.end_time,
-  ab.created_at,
-  ab.quantity,
-  ab.price AS booking_price,
-  ab.is_confirmed,
-  ab.is_deleted,
+    const result = await pool.query<
+      ActivityBookingWithDetails & { total_count: number }
+    >(
+      `
+      SELECT 
+        ab.id AS id,
+        ab.start_time,
+        ab.end_time,
+        ab.created_at,
+        ab.quantity,
+        ab.price AS booking_price,
+        ab.is_confirmed,
+        ab.is_deleted,
 
-  u.id AS user_id,
-  u.first_name,
-  u.last_name,
-  u.email,
+        u.id AS user_id,
+        u.first_name,
+        u.last_name,
+        u.email,
 
-  a.id AS activity_id,
-  a.name_en,
-  a.description_en,
-  a.name_ar,
-  a.description_ar,
-  a.card_image,
-  a.header_image,
-  a.poster_image,
-  a.location_type_en,
-  a.location_type_ar,
-  a.capacity,
-  a.price AS activity_price,
-  a.slug
+        a.id AS activity_id,
+        a.name_en,
+        a.description_en,
+        a.name_ar,
+        a.description_ar,
+        a.card_image,
+        a.header_image,
+        a.poster_image,
+        a.location_type_en,
+        a.location_type_ar,
+        a.capacity,
+        a.price AS activity_price,
+        a.slug,
 
-FROM activities_booking ab
-JOIN users u ON ab.user_id = u.id
-JOIN activities a ON ab.activity_id = a.id
-
-WHERE
-  (
-    $1::date IS NULL AND $2::date IS NULL 
-    AND ab.start_time >= CURRENT_DATE
-  )
-  OR
-  (
-    ($1::date IS NOT NULL AND $2::date IS NOT NULL)
-    AND ab.start_time <= $2::date
-    AND ab.end_time >= $1::date
-  )
-ORDER BY ab.start_time ASC;
-`,
+        COUNT(*) OVER() AS total_count
+      FROM activities_booking ab
+      JOIN users u ON ab.user_id = u.id
+      JOIN activities a ON ab.activity_id = a.id
+      WHERE
+        (
+          ($1::date IS NULL AND $2::date IS NULL AND ab.start_time >= CURRENT_DATE)
+          OR
+          (
+            $1::date IS NOT NULL
+            AND $2::date IS NOT NULL
+            AND ab.start_time <= $2::date
+            AND ab.end_time >= $1::date
+          )
+        )
+        AND ($3::uuid IS NULL OR a.id = $3::uuid)
+      ORDER BY ab.start_time ASC
+      LIMIT $4::int
+      OFFSET $5::int;
+      `,
       [
         start_date ? start_date.toISOString().split("T")[0] : null,
         end_date ? end_date.toISOString().split("T")[0] : null,
+        activityId,
+        PAGE_SIZE,
+        offset,
       ]
     );
-    return { data: result.rows, message: "Booking In This Range" };
-  } catch (error) {
-    console.log("getting error: ", error);
 
-    return { data: [], message: "Error In Getting Booking In This Range" };
+    const total =
+      result.rows.length > 0 ? result.rows[0].total_count : 0;
+    const totalPages = Math.ceil(total / PAGE_SIZE);
+
+    const data: ActivityBookingWithDetails[] = result.rows.map(
+      ({ total_count, ...rest }) => rest
+    );
+
+    return {
+      data,
+      meta: {
+        total,
+        totalPages,
+        page: pageNum,
+        pageSize: PAGE_SIZE,
+      },
+      message: "Booking In This Range",
+    };
+  } catch (error) {
+    console.error("getting error:", error);
+    return {
+      data: [],
+      meta: {
+        total: 0,
+        totalPages: 0,
+        page: pageNum,
+        pageSize: PAGE_SIZE,
+      },
+      message: "Error In Getting Booking In This Range",
+    };
   }
 };
+
 
 export const updateBookingStatus = async (
   is_confirmed: boolean,

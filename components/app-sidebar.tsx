@@ -41,20 +41,20 @@ const items = [
   },
   { title: "Rooms ", url: "/admin/dashboard/rooms", icon: Warehouse },
   {
-    title: "Room Booking ",
+    title: "Room Bookings ",
     url: "/admin/dashboard/roomsBooking",
     icon: CalendarClock,
   },
 
   { title: "Training", url: "/admin/dashboard/training", icon: PenLine },
   {
-    title: "TrainingBooking",
+    title: "Training Bookings",
     url: "/admin/dashboard/trainingsBooking",
     icon: CalendarClock,
   },
   { title: "Activities", url: "/admin/dashboard/activities", icon: Activity },
   {
-    title: "ActivitiesBooking",
+    title: "Activities Bookings",
     url: "/admin/dashboard/activitiesBooking",
     icon: CalendarClock,
   },
@@ -69,7 +69,7 @@ export function AppSidebar() {
   const pathname = usePathname();
 
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="flex items-center  text-[#676e32]  rounded ">

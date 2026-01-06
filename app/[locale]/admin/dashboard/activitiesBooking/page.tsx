@@ -1,60 +1,79 @@
-import { activitiesBookingsColumns } from "@/components/columns/activitiesBooking-columns";
-import { DataTable } from "@/components/data-table";
-import { deleteActivityBooking } from "./(fetch)/deleteActivityBooking";
-import { getActivityBookingByDate } from "@/app/models/db/lib/services/activity_booking";
-import DateRangeFilter from "@/components/DateRangeFilter";
-import { Card, CardContent } from "@/components/ui/card";
-import { FolderOpen } from "lucide-react";
+import { getActivityByType } from "@/app/models/db/lib/services/activities";
+import Link from "next/link";
+import Image from "next/image";
 
-interface Props {
-  searchParams?: Promise <{ start?: string; end?: string }>;
-}
-
-export default async function ActivitiesBookingTable({ searchParams }: Props) {
-const params = searchParams ? await searchParams : {};
-  const startDate = params?.start ? new Date(params.start) : null;
-  const endDate = params?.end ? new Date(params.end) : null;
-
-  console.log("params: ", params);
-
-  const response = await getActivityBookingByDate(startDate, endDate);
-  const allActivitiesBookings = response.data || [];
-
-  console.log("response: ", response.data);
+export default async function ActivitiesBooking() {
+  const indoorActivities = await getActivityByType("indoor");
+  const outdoorActivities = await getActivityByType("outdoor");
 
   return (
-    <main className="flex flex-col lg:justify-center justify-start items-center lg:ml-7 ml-2 lg:w-[75vw]  w-[88vw] md:w-[60vw] xl:w-[80vw]">
-      {/* Header */}
-      <div className="flex flex-col justify-start items-start mb-6 border-b border-gray-300 w-full">
-        <h1 className="text-lg md:text-2xl font-bold">Activities Booking</h1>
-        <h2 className="text-sm md:text-lg text-gray-600">
-          A list of Activities Booking.
-        </h2>
-      </div>
+    <main className=" ml:0 md:ml-2.5 lg:ml-5 mt-2">
+      <header className="mb-4">
+        <h1 className=" ml-2 text-xl lg:text-3xl font-semibold">
+          All Activities by Location Type
+        </h1>
+        <p className="text-gray-600 mt-1 ml-2">
+          Browse activites grouped by location type
+        </p>
+      </header>
 
-      {/* Filter */}
-      <DateRangeFilter start={params?.start} end={params?.end} />
-
-      {/* No bookings message */}
-      {allActivitiesBookings.length === 0 ? (
-        <Card className="w-full h-64 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 bg-gray-50">
-          <CardContent className="flex flex-col items-center text-center">
-            <FolderOpen className="w-10 h-10 text-gray-400 mb-3" />
-            <h3 className="text-gray-600 text-lg font-medium">
-              No upcoming bookings found
-            </h3>
-            <p className="text-gray-500 text-sm">
-              There are no activities bookings yet.
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
-        <DataTable
-          columns={activitiesBookingsColumns}
-          data={allActivitiesBookings}
-          routeName="activitiesBooking"
-          deleteAction={deleteActivityBooking}
-        />
+      {indoorActivities && (
+        <div className="space-y-12 mt-8">
+          <h2 className="text-2xl w-[95vw] ml-1 lg:ml-0 md:w-[70vw] lg:w-[80vw] font-semibold border-b pb-2 text-center flex flex-row justify-center">
+            Inddoor Activities
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            {indoorActivities.map((activity, j) => (
+              <Link
+                key={j}
+                href={`/admin/dashboard/activitiesBooking/${activity.id}`}
+                className="group flex flex-col items-center gap-2 text-center hover:scale-105 transition-transform duration-500 ease-in-out"
+              >
+                <div className="w-44 h-44 rounded-full overflow-hidden flex items-center justify-center border shadow-md bg-gray-50 hover:shadow-lg">
+                  <Image
+                    src={activity.card_image ?? ""}
+                    alt={activity.name_en}
+                    width={50}
+                    height={50}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="text-sm font-medium truncate max-w-36 mt-2">
+                  {activity.name_en}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+      {outdoorActivities && (
+        <div className="space-y-12 mt-16 mb-16">
+          <h2 className="text-2xl w-[95vw] ml-1 lg:ml-0 md:w-[70vw] lg:w-[80vw] font-semibold border-b pb-2 text-center flex flex-row justify-center">
+            Outdoor Activities
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            {outdoorActivities.map((activity, j) => (
+              <Link
+                key={j}
+                href={`/admin/dashboard/activitiesBooking/${activity.id}`}
+                className="group flex flex-col items-center gap-2 text-center hover:scale-105 transition-transform duration-500 ease-in-out"
+              >
+                <div className="w-44 h-44 rounded-full overflow-hidden flex items-center justify-center border shadow-md bg-gray-50 hover:shadow-lg">
+                  <Image
+                    src={activity.card_image ?? "DefaultImage"}
+                    alt={activity.name_en}
+                    width={50}
+                    height={50}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="text-sm font-medium truncate max-w-36 mt-2">
+                  {activity.name_en}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
       )}
     </main>
   );

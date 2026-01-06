@@ -2,23 +2,17 @@
 "use client";
 
 import React from "react";
-import TrainingSelector from "./TrainingSelector";
 import DateRangeTrainingFilter from "./DateRangeTrainingFilter";
-import { newTraining } from "@/types";
 import { Button } from "@/components/ui/button";
 
 interface Props {
   start?: string;
   end?: string;
-  initialTrainingId?: string;
-  trainings: newTraining[];
 }
 
 export default function TrainingFilterSAndD({
   start,
   end,
-  initialTrainingId,
-  trainings,
 }: Props) {
   return (
     <form
@@ -27,10 +21,7 @@ export default function TrainingFilterSAndD({
     >
       <div className="flex flex-col lg:gap-4 gap-1 lg:flex lg:flex-row ">
         <DateRangeTrainingFilter start={start} end={end} />
-        <TrainingSelector
-          initialTrainingId={initialTrainingId}
-          trainings={trainings}
-        />
+       
       </div>
 
       <div className="flex gap-3 items-end lg:ml-auto ml-0 mt-2 lg:mt-0">

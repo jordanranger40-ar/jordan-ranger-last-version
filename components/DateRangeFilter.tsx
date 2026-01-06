@@ -24,13 +24,14 @@ export default function DateRangeFilter({ start, end }: { start?: string; end?: 
   };
 
   return (
-    <form method="GET" className="flex items-end gap-6 mb-6 w-full justify-start">
+    <form method="GET" className="flex flex-col items-start gap-6 mb-6 w-full justify-start">
       {/* Start Date */}
-      <div className="flex flex-col">
+     <div className="flex flex-row gap-3">
+       <div className="flex flex-col">
         <label className="text-sm font-medium mb-1">Start Date</label>
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="w-[180px] justify-start text-left">
+            <Button variant="outline" className="w-40 justify-start text-left">
               <CalendarIcon className=" h-4 w-4" />
               {startDate ? format(startDate, "yyyy-MM-dd") : "Select date"}
             </Button>
@@ -53,11 +54,11 @@ export default function DateRangeFilter({ start, end }: { start?: string; end?: 
       </div>
 
       {/* End Date */}
-      <div className="flex flex-col">
+      <div className="ml-1.5 flex flex-col">
         <label className="text-sm font-medium mb-1">End Date</label>
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="w-[180px] justify-start text-left">
+            <Button variant="outline" className="w-40 justify-start text-left">
               <CalendarIcon className=" h-4 w-4" />
               {endDate ? format(endDate, "yyyy-MM-dd") : "Select date"}
             </Button>
@@ -78,6 +79,7 @@ export default function DateRangeFilter({ start, end }: { start?: string; end?: 
           value={endDate ? format(endDate, "yyyy-MM-dd") : ""}
         />
       </div>
+     </div>
 
       {/* Buttons */}
       <div className="flex gap-3">

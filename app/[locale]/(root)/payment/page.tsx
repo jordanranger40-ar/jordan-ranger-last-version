@@ -1,9 +1,8 @@
 import React from "react";
-import Cart from "@/components/cart/cart";
-import { getCartByUserId, getCartItemsByUserId } from "@/app/models/db/lib/services/cart";
+import { getCartByUserId } from "@/app/models/db/lib/services/cart";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/models/db/authOptions";
-import { deletecartitem } from "./(fetch)/deletecartitem";
+import PaymentPage from "@/components/checkout/PaymentPage";
 type Locale = "en" | "ar";
 
 interface Props {
@@ -25,20 +24,12 @@ export default async function Page({ params }: Props) {
   }
 
   const cartData = (await getCartByUserId(session.user.id)).data[0];
-  const cartDetails = (await getCartItemsByUserId(session.user.id)).data;
 
   const safeCartData = JSON.parse(JSON.stringify(cartData || []));
-  const safeCartDetails = JSON.parse(JSON.stringify(cartDetails || []));
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10">
-      <Cart
-        cartData={safeCartData}
-        action={deletecartitem}
-        cartDetails={safeCartDetails}
-        locale= {locale}
-      />
-
+    <div className="h-full bg-gray-50 mt-14">
+     <PaymentPage  cartDetails={safeCartData} Locale={locale} />
     </div>
   );
 }

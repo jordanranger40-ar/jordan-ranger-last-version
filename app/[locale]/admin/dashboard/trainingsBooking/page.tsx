@@ -1,70 +1,79 @@
-import { trainingBookingsColumns } from "@/components/columns/trainingBooking-columns";
-import { DataTable } from "@/components/data-table";
-import { deleteTrainingBooking } from "./(fetch)/deleteTrainingBooking";
-import { getTrainingBookingByDate } from "@/app/models/db/lib/services/training_booking";
-import { Card, CardContent } from "@/components/ui/card";
-import { FolderOpen } from "lucide-react";
-import TrainingFilterSAndD from "@/components/training/TrainingFilterSAndD";
-import { getAllTraining } from "@/app/models/db/lib/services/training";
+import Link from "next/link";
+import Image from "next/image";
+import { getTrainingsByType } from "@/app/models/db/lib/services/training_booking";
 
-interface Props {
-  searchParams?: Promise<{
-    start?: string;
-    end?: string;
-    training_id?: string;
-  }>;
-}
-
-export default async function TrainingBookingTable({ searchParams }: Props) {
-  const params = searchParams ? await searchParams : {};
-  const startDate = params.start ? new Date(params.start) : null;
-  const endDate = params.end ? new Date(params.end) : null;
-  const training_id = params.training_id ? params.training_id : null;
-  const allTrainings = (await getAllTraining()).data;
-
-  const allTrainingBookings =
-    (await getTrainingBookingByDate(startDate, endDate, training_id))?.data ||
-    [];
-
-  console.log("allTrainingBookings: ", allTrainingBookings);
-  console.log(training_id);
+export default async function TrainingsBooking() {
+  const schoolsTrainings = (await getTrainingsByType("Schools Training")).data;
+  const corporateTeamBuilding = (await getTrainingsByType("Corporate Team Building")).data;
 
   return (
-    <main className="flex flex-col lg:justify-center justify-start items-center lg:ml-7 ml-2 lg:w-[75vw]  w-[88vw] md:w-[60vw] xl:w-[80vw]">
-      {/* Header */}
-      <div className="flex flex-col justify-start items-start mb-6 border-b border-gray-300 w-full">
-        <h1 className="text-lg md:text-2xl font-bold">Training Booking</h1>
-        <h2 className="text-sm md:text-lg text-gray-600">
-          A list of Training Booking.
-        </h2>
-      </div>
-      {/* Filters */}
-      <TrainingFilterSAndD
-        initialTrainingId={params?.training_id}
-        trainings={allTrainings}
-        start={params?.start}
-        end={params?.end}
-      />
-      {/* Conditional rendering */}
-      {allTrainingBookings.length === 0 ? (
-        <Card className="w-full h-64 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 bg-gray-50">
-          <CardContent className="flex flex-col items-center text-center">
-            <FolderOpen className="w-10 h-10 text-gray-400 mb-3" />
-            <h3 className="text-gray-600 text-lg font-medium">
-              No bookings found
-            </h3>
-            <p className="text-gray-500 text-sm">
-              There are no training bookings yet.
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
-        <DataTable
-          columns={trainingBookingsColumns}
-          data={allTrainingBookings}
-          routeName="trainingsBooking"
-          deleteAction={deleteTrainingBooking}
-        />
+    <main className=" ml:0 md:ml-2.5 lg:ml-5 mt-2">
+      <header className="mb-4">
+        <h1 className=" ml-2 text-xl lg:text-3xl font-semibold">
+          All Trainings by Type
+        </h1>
+        <p className="text-gray-600 mt-1 ml-2">
+          Browse trainings grouped by type
+        </p>
+      </header>
+
+      {schoolsTrainings && (
+        <div className="space-y-12 mt-8">
+          <h2 className="text-2xl w-[95vw] ml-1 lg:ml-0 md:w-[70vw] lg:w-[80vw] font-semibold border-b pb-2 text-center flex flex-row justify-center">
+            Shcool Training
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            {schoolsTrainings.map((shcoolTraining, j) => (
+              <Link
+                key={j}
+                href={`/admin/dashboard/trainingsBooking/${shcoolTraining.id}`}
+                className="group flex flex-col items-center gap-2 text-center hover:scale-105 transition-transform duration-500 ease-in-out"
+              >
+                <div className="w-44 h-44 rounded-full overflow-hidden flex items-center justify-center border shadow-md bg-gray-50 hover:shadow-lg">
+                  <Image
+                    src={shcoolTraining.card_image ?? ""}
+                    alt={shcoolTraining.name_en}
+                    width={50}
+                    height={50}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="text-sm font-medium truncate max-w-36 mt-2">
+                  {shcoolTraining.name_en}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+      {corporateTeamBuilding && (
+        <div className="space-y-12 mt-16 mb-16">
+          <h2 className="text-2xl w-[95vw] ml-1 lg:ml-0 md:w-[70vw] lg:w-[80vw] font-semibold border-b pb-2 text-center flex flex-row justify-center">
+            Corporate Team Building
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            {corporateTeamBuilding.map((element, j) => (
+              <Link
+                key={j}
+                href={`/admin/dashboard/trainingsBooking/${element.id}`}
+                className="group flex flex-col items-center gap-2 text-center hover:scale-105 transition-transform duration-500 ease-in-out"
+              >
+                <div className="w-44 h-44 rounded-full overflow-hidden flex items-center justify-center border shadow-md bg-gray-50 hover:shadow-lg">
+                  <Image
+                    src={element.card_image ?? "DefaultImage"}
+                    alt={element.name_en}
+                    width={50}
+                    height={50}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="text-sm font-medium truncate max-w-36 mt-2">
+                  {element.name_en}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
       )}
     </main>
   );

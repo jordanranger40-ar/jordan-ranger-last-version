@@ -1,57 +1,79 @@
-import { roomBookingsColumns } from "@/components/columns/roomBooking-columns";
-import { DataTable } from "@/components/data-table";
-import { deleteRoomBooking } from "./(fetch)/deleteRoomBooking";
-import { getRoomBookingByDate } from "@/app/models/db/lib/services/room_booking";
-import { Card, CardContent } from "@/components/ui/card";
-import { FolderOpen } from "lucide-react";
-import DateRangeFilter from "@/components/DateRangeFilter";
-import {RoomBookingWithDetails} from "@/types/index"
-interface Props {
-  searchParams?: Promise<{ start?: string; end?: string }>;
-}
+import Link from "next/link";
+import Image from "next/image";
+import { getRoomsByRoomType } from "@/app/models/db/lib/services/rooms";
 
-export default async function RoomsBookingTable({ searchParams }: Props) {
-  const params = searchParams ? await searchParams : {};
-  const startDate = params.start ? new Date(params.start) : null;
-  const endDate = params.end ? new Date(params.end) : null;
-
-  const allRoomsBookings = (await getRoomBookingByDate(startDate,endDate))?.data || [];
-  console.log("allRoomsBookings: ",allRoomsBookings);
-  
+export default async function RoomsBooking() {
+  const cabins = await getRoomsByRoomType("cabins");
+  const tents = await getRoomsByRoomType("tents");
 
   return (
-    <main className="flex flex-col justify-center items-center ml-7 w-[88vw] md:w-[60vw] xl:w-[80vw]">
-      {/* Header */}
-      <div className="flex flex-col justify-start items-start mb-6 border-b border-gray-300 w-full">
-        <h1 className="text-lg md:text-2xl font-bold">Rooms Booking</h1>
-        <h2 className="text-sm md:text-lg text-gray-600">
-          A list of Rooms Booking.
-        </h2>
-      </div>
+    <main className=" ml:0 md:ml-2.5 lg:ml-5 mt-2">
+      <header className="mb-4">
+        <h1 className=" ml-2 text-xl lg:text-3xl font-semibold">
+          All Rooms by Type
+        </h1>
+        <p className="text-gray-600 mt-1 ml-2">
+          Browse rooms grouped by type
+        </p>
+      </header>
 
-      {/* Filter */}
-      <DateRangeFilter start={params?.start} end={params?.end} />
-      {/* Conditional rendering */}
-      {allRoomsBookings.length === 0 ? (
-        <Card className="w-full h-64 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 bg-gray-50">
-          <CardContent className="flex flex-col items-center text-center">
-            <FolderOpen className="w-10 h-10 text-gray-400 mb-3" />
-            <h3 className="text-gray-600 text-lg font-medium">
-              No upcoming bookings found
-            </h3>
-            <p className="text-gray-500 text-sm">
-              There are no room bookings yet.
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
-       <DataTable<RoomBookingWithDetails>
-  columns={roomBookingsColumns}
-  data={allRoomsBookings}
-  routeName="roomsBooking"
-  deleteAction={deleteRoomBooking}
-/>
-
+      {cabins && (
+        <div className="space-y-12 mt-8">
+          <h2 className="text-2xl w-[95vw] ml-1 lg:ml-0 md:w-[70vw] lg:w-[80vw] font-semibold border-b pb-2 text-center flex flex-row justify-center">
+            Cabins
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            {cabins.map((cabin, j) => (
+              <Link
+                key={j}
+                href={`/admin/dashboard/roomsBooking/${cabin.id}`}
+                className="group flex flex-col items-center gap-2 text-center hover:scale-105 transition-transform duration-500 ease-in-out"
+              >
+                <div className="w-44 h-44 rounded-full overflow-hidden flex items-center justify-center border shadow-md bg-gray-50 hover:shadow-lg">
+                  <Image
+                    src={cabin.cover_image ?? ""}
+                    alt={cabin.name_en}
+                    width={50}
+                    height={50}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="text-sm font-medium truncate max-w-36 mt-2">
+                  {cabin.name_en}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+      {tents && (
+        <div className="space-y-12 mt-16 mb-16">
+          <h2 className="text-2xl w-[95vw] ml-1 lg:ml-0 md:w-[70vw] lg:w-[80vw] font-semibold border-b pb-2 text-center flex flex-row justify-center">
+            Tents
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            {tents.map((tent, j) => (
+              <Link
+                key={j}
+                href={`/admin/dashboard/roomsBooking/${tent.id}`}
+                className="group flex flex-col items-center gap-2 text-center hover:scale-105 transition-transform duration-500 ease-in-out"
+              >
+                <div className="w-44 h-44 rounded-full overflow-hidden flex items-center justify-center border shadow-md bg-gray-50 hover:shadow-lg">
+                  <Image
+                    src={tent.cover_image ?? "DefaultImage"}
+                    alt={tent.name_en}
+                    width={50}
+                    height={50}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="text-sm font-medium truncate max-w-36 mt-2">
+                  {tent.name_en}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
       )}
     </main>
   );

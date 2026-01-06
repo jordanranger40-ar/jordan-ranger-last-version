@@ -1,17 +1,18 @@
 import React from "react";
-import MainCheckoutPage from "@/components/checkout/MainPage";
 import {
   getCartByUserId,
   getCartItemsByUserId,
 } from "@/app/models/db/lib/services/cart";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/models/db/authOptions";
+import CheckoutWrapper from "@/components/checkout/CheckoutWrapper";
 interface Props {
   params: Promise<{ locale: "en" | "ar" }>;
 }
 async function Page({ params }: Props) {
   const session = await getServerSession(authOptions);
   const locale = (await params).locale;
+  
   if (!session?.user?.id) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center py-10">
@@ -23,12 +24,14 @@ async function Page({ params }: Props) {
   }
   const cartData = (await getCartByUserId(session.user.id)).data[0];
     const cartDetails = (await getCartItemsByUserId(session.user.id)).data;
+    console.log(" jehjjd cartData: ",cartData);
+    
   
     const safeCartData = JSON.parse(JSON.stringify(cartData || []));
     const safeCartDetails = JSON.parse(JSON.stringify(cartDetails || []));
   return (
-    <div>
-      <MainCheckoutPage locale={locale} safeCartData={safeCartData} safeCartDetails={safeCartDetails}  />
+    <div >
+      <CheckoutWrapper locale={locale} safeCartData={safeCartData} safeCartDetails={safeCartDetails}  />
     </div>
   );
 }
