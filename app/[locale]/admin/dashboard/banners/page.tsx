@@ -2,7 +2,7 @@
 import { getBannerData } from "@/app/models/db/lib/services/banners";
 import { BannerColumns } from "@/components/columns/banner-columns";
 import { DataTable } from "@/components/data-table";
-import { deleteBanner } from "./(actions)/deleteBannerAction";
+import { deleteBannerAction } from "./(actions)/deleteBannerAction";
 import NavigationButton from "@/components/NavigationButton";
 import { Card, CardContent } from "@/components/ui/card";
 import { FolderOpen } from "lucide-react";
@@ -43,7 +43,7 @@ export default async function BannerTable() {
             columns={BannerColumns}
             data={allBanners}
             routeName="banners"
-            deleteAction={deleteBanner}
+            deleteAction={deleteBannerAction}
           />
           <NavigationButton
             routeName="newBanner"

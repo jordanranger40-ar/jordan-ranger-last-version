@@ -28,7 +28,6 @@ export default async function RoomBookingPage({
         return uniqueTypes;
       });
     } else {
-      console.log("User has no cart");
     }
   }
 

@@ -1,12 +1,12 @@
 import React from "react";
-import { addActivity } from "../(fetch)/createNewActivity";
+import { addActivityAction } from "../(fetch)/createNewActivity";
 import CreateActivityForm from "@/components/activities/dashboardComponents/createNewActivityForm";
 async function page() {
   
 
   return (
    <>
-   <CreateActivityForm   action={addActivity}/>
+   <CreateActivityForm   action={addActivityAction}/>
    </>
   );
 }

@@ -36,7 +36,7 @@ export default function BookingProgressBar({
               {/* Connector line between circles */}
               {index < steps.length - 1 && (
                 <div
-                  className={`absolute top-5 ${
+                  className={`absolute top-6 ${
                     isArabic ? "left-[-50%]" : "right-[-50%]"
                   } w-full flex justify-center -translate-y-1/2 z-0`}
                 >
@@ -50,7 +50,7 @@ export default function BookingProgressBar({
 
               {/* Circle */}
               <div
-                className={`w-10 h-10 flex items-center justify-center rounded-full border-2 text-base font-semibold z-10 transition-all duration-300
+                className={`w-12 h-12 flex items-center justify-center rounded-full border-2 text-base font-semibold z-10 transition-all duration-300
                   ${
                     isActive
                       ? "bg-white border-[#676e32] text-[#676e32]"

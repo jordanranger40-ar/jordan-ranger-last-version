@@ -24,7 +24,8 @@ const Footer: React.FC<Props> = ({ locale }) => {
   const t = useTranslations("Footer");
   const isArabic= locale==="ar"
   const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL || "";
-  const phoneNumber = process.env.NEXT_PUBLIC_PHONE_NUMBER || "";
+  const phoneNumber1 = process.env.NEXT_PUBLIC_PHONE_NUMBER1 || "";
+  const phoneNumber2 = process.env.NEXT_PUBLIC_PHONE_NUMBER2 || "";
   const locationUrl = process.env.NEXT_PUBLIC_LOCATION_URL || "";
   const facebookUrl = process.env.NEXT_PUBLIC_FACEBOOK_URL || "#";
   const linkedinUrl = process.env.NEXT_PUBLIC_LINKEDIN_URL || "#";
@@ -32,6 +33,9 @@ const Footer: React.FC<Props> = ({ locale }) => {
   const youtubeUrl = process.env.NEXT_PUBLIC_YOUTUBE_URL || "#";
   const instagramUrl = process.env.NEXT_PUBLIC_INSTAGRAM_URL || "#";
   const nurembergUrl = process.env.NEXT_PUBLIC_NUREMBERG_URL || "#";
+  const arabicLocation= process.env.NEXT_PUBLIC_LOCATION_AR|| "الأردن - جرش"
+    const englishLocation= process.env.NEXT_PUBLIC_LOCATION_EN|| "Jerash - Jordan"
+
   return (
     <footer
       dir={locale === "ar" ? "rtl" : "ltr"}
@@ -161,8 +165,14 @@ const Footer: React.FC<Props> = ({ locale }) => {
               {/* Phone */}
               <p className="text-base flex items-center gap-2 leading-relaxed mt-2">
                 <Phone size={20} className="opacity-80" />
-                <a href={`tel:${phoneNumber}`} className="hover:text-white">
-                  {phoneNumber}
+                <a href={`tel:${phoneNumber1}`} className="hover:text-white">
+                  {phoneNumber1}
+                </a>
+              </p>
+                <p className="text-base flex items-center gap-2 leading-relaxed mt-2">
+                <Phone size={20} className="opacity-80" />
+                <a href={`tel:${phoneNumber2}`} className="hover:text-white">
+                  {phoneNumber2}
                 </a>
               </p>
               <p className="text-base flex items-center gap-2 leading-relaxed mt-2">
@@ -172,8 +182,8 @@ const Footer: React.FC<Props> = ({ locale }) => {
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 "
                 >
-                  <MapPinIcon />
-                  <span className="hover:text-white">Jerash, Jordan</span>
+                  <MapPinIcon size={22} className="opacity-80"/>
+                  <span className="hover:text-white">{isArabic ?arabicLocation:englishLocation}</span>
                 </a>
               </p>
             </div>

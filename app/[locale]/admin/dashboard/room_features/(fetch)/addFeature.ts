@@ -1,24 +1,72 @@
-"use server"
-import { authOptions } from "@/app/models/db/authOptions";
-import { roomFeatures } from "@/types";
+"use server";
+
 import { getServerSession } from "next-auth";
 import { revalidatePath } from "next/cache";
+import { authOptions } from "@/app/models/db/authOptions";
+import { z } from "zod";
+import { createNewFeature } from "@/app/models/db/lib/services/rooms_features";
+import { getRoomFeaturesSchema } from "@/app/models/db/lib/schemas/roomFeaturesSchema";
+const schema = getRoomFeaturesSchema();
+type RoomFeatureInput = z.infer<typeof schema>;
 
-export async function addFeature(data: roomFeatures) {
+export async function addFeatureAction(data: RoomFeatureInput) {
   const session = await getServerSession(authOptions);
-  const token = session?.user.token;
-  const result = await fetch(
-    `${process.env.NEXT_PUBLIC_APP_URL}/api/room_features`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(data),
+
+  // 1️⃣ Auth
+  if (!session) {
+    return {
+      success: false,
+      status: 401,
+      message: "Please Login To Perform This Action",
+    };
+  }
+
+  // 2️⃣ Authorization
+  if (session.user.role !== "admin") {
+    return {
+      success: false,
+      status: 403,
+      message: "You Are Not Allowed To Perform This Action",
+    };
+  }
+
+  // 3️⃣ Validation
+  const parsed = schema.safeParse(data);
+  if (!parsed.success) {
+    return {
+      success: false,
+      status: 400,
+      message: "Invalid Feature Data",
+    };
+  }
+
+  try {
+    // 4️⃣ DB insert
+    const created = await createNewFeature(parsed.data);
+
+    if (!created) {
+      return {
+        success: false,
+        status: 409,
+        message: "Feature Already Exists",
+      };
     }
-  );
-  if (!result.ok) throw new Error("Failed To Add The Feature");
-  revalidatePath(`/dashboard/room_features`);
-  return result.json();
+
+    // 5️⃣ Revalidate
+    revalidatePath(`/dashboard/room_features`);
+
+    return {
+      success: true,
+      status: 201,
+      message: "Feature Added Successfully",
+      data: created,
+    };
+  } catch (error) {
+    console.error("Add Feature Error:", error);
+    return {
+      success: false,
+      status: 500,
+      message: "Failed To Add The Feature",
+    };
+  }
 }

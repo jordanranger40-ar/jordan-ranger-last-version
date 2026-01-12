@@ -1,7 +1,7 @@
 import { getAllusers } from "@/app/models/db/lib/services/users";
 import { userColumns } from "@/components/columns/user-columns";
 import { DataTable } from "@/components/data-table";
-import { deleteUser } from "./(fetch)/deleteUser";
+import { deleteUserAction } from "./(fetch)/deleteUser";
 export default async function UsersTable() {
   const users = await getAllusers();
   return (
@@ -15,7 +15,7 @@ export default async function UsersTable() {
       </div>
 
       {/* Table container */}
-      <DataTable columns={userColumns} data={users} routeName="users" deleteAction={deleteUser}/>
+      <DataTable columns={userColumns} data={users} routeName="users" deleteAction={deleteUserAction}/>
     </main>
   );
 }

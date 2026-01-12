@@ -23,7 +23,7 @@ export default async function Page({ params }: Props) {
   const userId = userInfo?.user.id;
 
   const trainingData = await getTrainingBySlug(slug);
-   if (userId) {
+  if (userId) {
     const cartItems = await getCartItemsByUserId(userId ?? "");
     if (cartItems.data !== null) {
       const bookingsTypes = cartItems.data.map((ele, i) => {
@@ -33,7 +33,6 @@ export default async function Page({ params }: Props) {
         return uniqueTypes;
       });
     } else {
-      console.log("User has no cart");
     }
   }
   if (!trainingData || trainingData.data.length === 0) {
@@ -60,6 +59,14 @@ export default async function Page({ params }: Props) {
       day: "numeric",
     }).format(date);
   };
+
+  const startDate = new Date(training.start_date);
+  const today = new Date();
+
+  // normalize "today" to start of day to avoid time issues
+  today.setHours(0, 0, 0, 0);
+
+  const isExpired = startDate < today;
 
   return (
     <main className="w-[92%] mx-auto py-16 mt-16 mb-10" dir={direction}>
@@ -204,7 +211,7 @@ export default async function Page({ params }: Props) {
 
           {/* Booking panel placed inline (not sticky), integrated into the page flow */}
           <div className="mt-2">
-            {training.id && (
+            {training.id && !isExpired && (
               <TrainingBookingPanel
                 training={training}
                 numberOfBooked={numberOfBooked}
@@ -213,11 +220,13 @@ export default async function Page({ params }: Props) {
             )}
           </div>
 
-          <div className="pt-2 text-xs text-gray-500">
-            {isArabic
-              ? "ملاحظة: تأكد من قراءة الشروط قبل الحجز."
-              : "Note: please review terms before booking."}
-          </div>
+          {!isExpired && (
+            <div className="pt-2 text-xs text-gray-500">
+              {isArabic
+                ? "ملاحظة: تأكد من قراءة الشروط قبل الحجز."
+                : "Note: please review terms before booking."}
+            </div>
+          )}
         </aside>
       </section>
     </main>

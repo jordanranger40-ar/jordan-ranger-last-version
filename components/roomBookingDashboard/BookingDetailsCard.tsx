@@ -2,8 +2,10 @@
 
 import React, { useTransition } from "react";
 import { RoomBookingWithDetails } from "@/types";
-import { updateBookingStatus } from "./(fetch)/updateBookingStatus";
-import { toast } from "sonner"; 
+import { updateBookingStatusAction } from "./(fetch)/updateBookingStatus";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import DarkButton from "../ui/dark-button";
 
 interface Props {
   data: RoomBookingWithDetails;
@@ -12,7 +14,7 @@ interface Props {
 export default function BookingDetailsCard({ data }: Props) {
   const booking = data;
   const [isPending, startTransition] = useTransition();
-
+  const router = useRouter();
   const formatDateTime = (value?: string | Date) => {
     if (!value) return "—";
     const d = typeof value === "string" ? new Date(value) : value;
@@ -26,13 +28,25 @@ export default function BookingDetailsCard({ data }: Props) {
   const handleStatusChange = () => {
     startTransition(async () => {
       try {
-        await updateBookingStatus(!booking.is_confirmed, booking.id ?? "");
-
-        toast.success(
-          `Booking marked as ${
-            !booking.is_confirmed ? "confirmed" : "unconfirmed"
-          }.`
+        const result = await updateBookingStatusAction(
+          !booking.is_confirmed,
+          booking.id ?? ""
         );
+        if (result.status === 201) {
+          toast.success(result.message);
+          return;
+        } else if (result.status === 401) {
+          toast.error(result.message);
+          router.push("/login");
+          return;
+        } else if (result.status === 403) {
+          toast.error(result.message);
+          router.push("/");
+          return;
+        } else {
+          toast.error(result.message);
+          return;
+        }
       } catch (_error) {
         toast.error("Could not update booking status. Please try again later.");
       }
@@ -41,27 +55,26 @@ export default function BookingDetailsCard({ data }: Props) {
 
   return (
     <div className="border rounded-2xl shadow-sm p-5 bg-white">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-[#676e32]">
+      <div className="flex flex-col  mb-4">
+        <h2 className="text-lg font-semibold text-center  text-[#676e32]">
           Booking Information
         </h2>
 
         {/* Status Toggle Button */}
-        <button
-          onClick={handleStatusChange}
+        <DarkButton onClick={handleStatusChange}
           disabled={isPending}
           className={`px-4 py-1 text-sm rounded transition ${
             booking.is_confirmed
               ? "bg-red-500 hover:bg-red-600 text-white"
               : "bg-green-600 hover:bg-green-700 text-white"
-          } ${isPending ? "opacity-60 cursor-not-allowed" : ""}`}
-        >
-          {isPending
+          } ${isPending ? "opacity-60 cursor-not-allowed" : ""}`}>
+ {isPending
             ? "Updating..."
             : booking.is_confirmed
             ? "Unconfirm Booking"
             : "Confirm Booking"}
-        </button>
+        </DarkButton>
+        
       </div>
 
       <dl className="space-y-2 text-sm">

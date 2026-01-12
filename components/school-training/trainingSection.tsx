@@ -8,8 +8,6 @@ interface Props {
 
 export default async function TrainingSection({ isArabic }: Props) {
   const data = await getTrainingByType("Schools Training");
-
-  console.log(data.data);
   return (
     <section
       dir={isArabic ? "rtl" : "ltr"}

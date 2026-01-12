@@ -11,9 +11,14 @@ import {
 import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import LightButton from "../ui/light-button";
+import DarkButton from "../ui/dark-button";
 interface Props {
   feature: roomFeatures;
-  action: (data: roomFeatures) => Promise<void>;
+  action: (
+    id: string,
+    data: roomFeatures
+  ) => Promise<{ status: number; message: string; success: boolean }>;
 }
 
 export default function EditfeatureForm({ feature, action }: Props) {
@@ -53,11 +58,23 @@ export default function EditfeatureForm({ feature, action }: Props) {
 
     startTransition(async () => {
       try {
-        await action({ ...form, id: feature.id });
-        toast.success("Feature updated successfully!");
-        setTimeout(() => {
+        const result = await action(feature.id!, form);
+        if (result.status === 201) {
+          toast.success(result.message);
           router.push("/admin/dashboard/room_features");
-        }, 750);
+          return;
+        } else if (result.status === 401) {
+          toast.error(result.message);
+          router.push("/login");
+          return;
+        } else if (result.status === 403) {
+          toast.error(result.message);
+          router.push("/");
+          return;
+        } else {
+          toast.error(result.message);
+          return;
+        }
       } catch (_error) {
         toast.error("Failed to update feature.");
       }
@@ -65,9 +82,9 @@ export default function EditfeatureForm({ feature, action }: Props) {
   };
 
   return (
-    <main className="ml-3 xl:ml-7 mb-10 text-gray-800">
+    <main className="ml-2 xl:ml-7 mb-10 text-gray-800">
       {/* Header */}
-      <div className="flex flex-col border-b border-gray-300 pb-3 w-[70vw] mb-8">
+      <div className="flex flex-col border-b border-gray-300 pb-3 w-full mb-8">
         <h1 className="text-2xl font-semibold text-[#676e32]">
           Edit Room Feature
         </h1>
@@ -163,22 +180,17 @@ export default function EditfeatureForm({ feature, action }: Props) {
             {/* Buttons */}
             <div className="w-full flex justify-center mt-5">
               <div className="flex flex-row gap-4">
-                <button
+                <LightButton
                   type="button"
-                  className="px-5 py-2 rounded-md border border-gray-400 cursor-pointer text-gray-700 hover:bg-gray-100 transition"
                   onClick={() =>
                     router.replace("/admin/dashboard/room_features")
                   }
                 >
                   Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-md bg-[#676e32] text-white cursor-pointer hover:bg-[#7b8444] transition"
-                  disabled={isPending}
-                >
+                </LightButton>
+                <DarkButton type="submit" disabled={isPending}>
                   {isPending ? "Updating..." : "Save Changes"}
-                </button>
+                </DarkButton>
               </div>
             </div>
           </CardContent>

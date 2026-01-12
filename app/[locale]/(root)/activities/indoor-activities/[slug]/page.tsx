@@ -30,7 +30,6 @@ export default async function Page({ params }: PageProps) {
         return uniqueTypes;
       });
     } else {
-      console.log("User has no cart");
     }
   }
 

@@ -4,8 +4,14 @@ import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 
 
-export default function VideoHeroSection() {
+interface Props {
+  locale: "en" | "ar";
+}
+
+
+export default function VideoHeroSection({locale}:Props) {
   const sectionRef = useRef<HTMLElement>(null);
+  const isAr=locale==="ar"
 
   useEffect(() => {
     const q = gsap.utils.selector(sectionRef);
@@ -45,7 +51,7 @@ export default function VideoHeroSection() {
  
       <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4 sm:px-6">
         <h1 className="hero-text text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 opacity-0 drop-shadow-lg leading-tight max-w-4xl">
-          Al-koroom restaurant
+          {isAr ? "مطعم الكروم":"Al-koroom restaurant"}
         </h1>
 
         

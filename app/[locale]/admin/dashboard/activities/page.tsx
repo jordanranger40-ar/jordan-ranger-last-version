@@ -1,6 +1,6 @@
 import { activitiesColumns } from "@/components/columns/activities-columns";
 import { DataTable } from "@/components/data-table";
-import { deleteActivity } from "./(fetch)/deleteActivity";
+import { deleteActivityAction } from "./(fetch)/deleteActivity";
 import NavigationButton from "@/components/NavigationButton";
 import { getAllActivities } from "@/app/models/db/lib/services/activities";
 import { Card, CardContent } from "@/components/ui/card";
@@ -42,12 +42,9 @@ export default async function ActivitiesTable() {
             columns={activitiesColumns}
             data={AllActivities}
             routeName="activities"
-            deleteAction={deleteActivity}
+            deleteAction={deleteActivityAction}
           />
-          <NavigationButton
-            routeName="newActivity"
-            value="Add New Activity"
-          />
+          <NavigationButton routeName="newActivity" value="Add New Activity" />
         </>
       )}
     </main>

@@ -25,7 +25,7 @@ export const createCart = async (user_id: string, client?: PoolClient) => {
 
 export const getCartByUserId = async (userId: string) => {
   const result = await pool.query<newCart>(
-    "SELECT * FROM cart  where user_id= $1 ",
+    "SELECT * FROM cart  where user_id= $1 and is_paid=false ",
     [userId]
   );
   return { data: result.rows, message: "All Cart Details", status: 200 };
@@ -33,7 +33,7 @@ export const getCartByUserId = async (userId: string) => {
 
 export const getCartItemsByUserId = async (userId: string) => {
   const cartDetials = await pool.query<newCart>(
-    "SELECT * FROM cart WHERE user_id= $1",
+    "SELECT * FROM cart WHERE user_id= $1 and is_paid=false ",
     [userId]
   );
   if (cartDetials.rowCount === 0) {

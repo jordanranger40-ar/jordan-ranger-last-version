@@ -1,5 +1,5 @@
 import React from "react";
-import { editDisabledBooking } from "../(fetch)/editDisableDate";
+import { editDisabledBookingAction } from "../(fetch)/editDisableDate";
 import EditDisableBookingForm from "@/components/disableBooking/editDisabledBooking";
 import { getDisabledDateById } from "@/app/models/db/lib/services/booking_disabled_dates";
 import { getActivitiesNameAndId } from "@/app/models/db/lib/services/activities";
@@ -33,7 +33,7 @@ const rooms: { id: string; name_en: string }[] = Array.isArray(roomsData)
   return (
     <EditDisableBookingForm
       initialData={disabledBooking} 
-      action={editDisabledBooking}
+      action={editDisabledBookingAction}
       activities={activities}
       rooms={rooms}
     />

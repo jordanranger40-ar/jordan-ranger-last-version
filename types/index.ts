@@ -228,7 +228,7 @@ export type newRoom = {
   price: number;
   room_images: string[];
   is_deleted?: boolean;
-  features: roomFeatures[];
+  room_features: roomFeatures[];
   room_type_en: string;
   room_type_ar: string;
   slug: string;
@@ -395,4 +395,25 @@ export type UnifiedBooking = {
   name_en: string;
   slug: string;
   is_confirmed: boolean;
+};
+
+
+export type NewPayment = {
+  user_id?: string;
+  cart_id?: string;
+  amount?: number;
+  currency?: "JOD";
+  provider?: "Hyperpay";
+  checkout_id?: string;
+  transaction_id?: string;
+  status?: "PENDING"| "PAID"| "FAILED";
+  raw_response?: string;
+  billing_country: string;
+  billing_street: string;
+  billing_city: string;
+  billing_state:string;
+  billing_postal_code: string;
+  customer_first_name: string;
+  customer_last_name: string;
+  customer_email: string;
 };

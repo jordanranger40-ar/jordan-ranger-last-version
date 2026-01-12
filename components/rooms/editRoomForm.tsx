@@ -11,17 +11,27 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 interface Props {
   room: newRoom;
-  action: (data: newRoom) => Promise<void>;
+  action: (
+    id: string,
+    data: newRoom
+  ) => Promise<{ status: number; message: string; success: boolean }>;
 }
-import {toast} from "sonner"
+import { toast } from "sonner";
+import LightButton from "../ui/light-button";
+import DarkButton from "../ui/dark-button";
 
 export default function EditRoomForm({ room, action }: Props) {
-  console.log("room bfhidaiadijadi: ",room);
-
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [form, setForm] = useState<newRoom>({
@@ -35,9 +45,9 @@ export default function EditRoomForm({ room, action }: Props) {
     price: room.price,
     cover_image: room.cover_image ?? "",
     room_images: room.room_images ?? [],
-   features: (room.features ?? []).filter(
-  (f: roomFeatures) => f && f.id
-),
+    room_features: (room.room_features ?? []).filter(
+      (f: roomFeatures) => f && f.id
+    ),
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -48,8 +58,6 @@ export default function EditRoomForm({ room, action }: Props) {
     >
   ) => {
     const { name, value } = e.target;
-    console.log("name: ",name,"value: ",value);
-    
     setForm((prev) => {
       const updated = { ...prev, [name]: value };
 
@@ -61,8 +69,8 @@ export default function EditRoomForm({ room, action }: Props) {
           .replace(/^-+|-+$/g, "");
       }
 
-      if (name === "price") {  
-        updated.price = Number(value) 
+      if (name === "price") {
+        updated.price = Number(value);
       }
 
       return updated;
@@ -78,19 +86,33 @@ export default function EditRoomForm({ room, action }: Props) {
         fieldErrors[err.path[0] as string] = err.message;
       });
       setErrors(fieldErrors);
-      toast.error("Please fix the highlighted fields.")
+      toast.error("Please fix the highlighted fields.");
       return;
     }
     setErrors({});
     startTransition(async () => {
       try {
-        await action({ ...form, id: room.id });
-        toast.success("Room updated successfully!")
-        setTimeout(() => {
-          router.push("/admin/dashboard/rooms");
-        }, 1000);
+        const result = await action(room.id!, form);
+        if (result.status === 201) {
+          toast.success(result.message);
+          setTimeout(() => {
+            router.push("/admin/dashboard/rooms");
+          }, 500);
+          return;
+        } else if (result.status === 401) {
+          toast.error(result.message);
+          router.push("/login");
+          return;
+        } else if (result.status === 403) {
+          toast.error(result.message);
+          router.push("/");
+          return;
+        } else {
+          toast.error(result.message);
+          return;
+        }
       } catch (error) {
-        toast.error("Failed to update Room.")
+        toast.error("Failed to update Room.");
       }
     });
   };
@@ -111,14 +133,9 @@ export default function EditRoomForm({ room, action }: Props) {
     setForm((prev) => ({ ...prev, room_images: [] }));
   };
 
-  console.log("FORM FEATURES:", form.features);
- 
-  console.log("error zod: ",errors);
-  
-
   return (
-    <main className="ml-3 xl:ml-7 mb-10 text-gray-800">
-      <div className="flex flex-col border-b border-gray-300 pb-3 w-[65vw] mb-8">
+    <main className="ml-2 xl:ml-7 mb-10 text-gray-800">
+      <div className="flex flex-col border-b border-gray-300 pb-3 w-full mb-8">
         <h1 className="text-2xl font-semibold text-[#676e32]">Edit Room</h1>
         <p className="text-sm text-gray-500">Room ID: {room.id}</p>
       </div>
@@ -128,7 +145,7 @@ export default function EditRoomForm({ room, action }: Props) {
           e.preventDefault();
           handleFormSubmit();
         }}
-        className="h-full w-full lg:w-[65vw] flex flex-col gap-6"
+        className="h-full w-full lg:w-[75vw] flex flex-col gap-6"
       >
         <Card className="w-full shadow-md hover:shadow-lg transition-all duration-300">
           <CardHeader>
@@ -155,52 +172,70 @@ export default function EditRoomForm({ room, action }: Props) {
 
             {/* Room Type */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {[
-                {
-                  label: "English Room Type",
-                  name: "room_type_en",
-                  value: form.room_type_en,
-                  options: [
-                    { value: "cabins", label: "Cabins" },
-                    { value: "tents", label: "Tents" },
-                  ],
-                },
-                {
-                  label: "Arabic Room Type",
-                  name: "room_type_ar",
-                  value: form.room_type_ar,
-                  options: [
-                    { value: "الغرف", label: "غرف" },
-                    { value: "الخيام", label: "خيام" },
-                  ],
-                },
-              ].map((field) => (
-                <div key={field.name} className="flex flex-col md:w-[90%]">
-                  <label className="text-sm font-medium text-gray-700 mb-1">
-                    <span className="text-red-500">*</span> {field.label}
-                  </label>
-                  <select
-                    name={field.name}
-                    value={field.value}
-                    disabled={isPending}
-                    onChange={handleInputChange}
-                    className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
-                  >
-                    <option value="">Select {field.label}</option>
-                    {field.options.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                  {errors[field.name] && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors[field.name]}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
+  {[
+    {
+      label: "English Room Type",
+      name: "room_type_en",
+      value: form.room_type_en,
+      options: [
+        { value: "cabins", label: "Cabins" },
+        { value: "tents", label: "Tents" },
+      ],
+    },
+    {
+      label: "Arabic Room Type",
+      name: "room_type_ar",
+      value: form.room_type_ar,
+      options: [
+        { value: "الغرف", label: "غرف" },
+        { value: "الخيام", label: "خيام" },
+      ],
+    },
+  ].map((field) => (
+    <div key={field.name} className="flex flex-col md:w-[90%]">
+      <label className="text-sm font-medium text-gray-700 mb-1">
+        <span className="text-red-500">*</span> {field.label}
+      </label>
+
+      <Select
+        value={field.value}
+        disabled={isPending}
+        onValueChange={(value) =>
+          handleInputChange({
+            target: {
+              name: field.name,
+              value,
+            },
+          } as React.ChangeEvent<HTMLInputElement>)
+        }
+      >
+        <SelectTrigger
+          className={`h-10 w-full ${
+            errors[field.name]
+              ? "border-red-500"
+              : "border-gray-300"
+          } focus:ring-2 focus:ring-[#676e32]`}
+        >
+          <SelectValue placeholder={`Select ${field.label}`} />
+        </SelectTrigger>
+
+        <SelectContent>
+          {field.options.map((opt) => (
+            <SelectItem key={opt.value} value={opt.value}>
+              {opt.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      {errors[field.name] && (
+        <p className="text-red-500 text-sm mt-1">
+          {errors[field.name]}
+        </p>
+      )}
+    </div>
+  ))}
+</div>
 
             {/* Name Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -289,9 +324,9 @@ export default function EditRoomForm({ room, action }: Props) {
                 <span className="text-red-500">*</span> Room Features
               </label>
               <RoomFeaturesMultiSelect
-                selectedFeatures={form.features}
+                selectedFeatures={form.room_features}
                 onChange={(features) =>
-                  setForm((prev) => ({ ...prev, features: features }))
+                  setForm((prev) => ({ ...prev, room_features: features }))
                 }
               />
               {errors.roomFeatures && (
@@ -311,9 +346,7 @@ export default function EditRoomForm({ room, action }: Props) {
                   endpoint="rooms"
                   initialImageUrl={form.cover_image ?? ""}
                   onUploadComplete={handleUploadComplete}
-                  onUploadError={(e) =>
-                    toast.error(e.message)
-                  }
+                  onUploadError={(e) => toast.error(e.message)}
                   onDelete={handleImageDelete}
                 />
                 {errors.cover_image && (
@@ -332,9 +365,7 @@ export default function EditRoomForm({ room, action }: Props) {
                   initialImageUrls={form.room_images}
                   maxImages={5}
                   onUploadComplete={handleRoomImagesUploadComplete}
-                  onUploadError={(e) =>
-                    toast.error(e.message)
-                  }
+                  onUploadError={(e) => toast.error(e.message)}
                   onDelete={handleRoomImagesDelete}
                 />
                 {errors.room_images && (
@@ -348,22 +379,16 @@ export default function EditRoomForm({ room, action }: Props) {
             {/* Buttons */}
             <div className="flex justify-center mt-8">
               <div className="flex gap-4">
-                <button
-                disabled={isPending}
+                <LightButton
+                  disabled={isPending}
                   type="button"
-                  className="px-5 py-2 rounded-md border border-gray-400 cursor-pointer text-gray-700 hover:bg-gray-100 transition"
                   onClick={() => router.replace("/admin/dashboard/rooms")}
                 >
                   Cancel
-                </button>
-                <button
-                
-                  type="submit"
-                  className="px-5 py-2 rounded-md bg-[#676e32] text-white cursor-pointer hover:bg-[#7b8444] transition"
-                  disabled={isPending}
-                >
+                </LightButton>
+                <DarkButton type="submit" disabled={isPending}>
                   {isPending ? "Updating..." : "Save Changes"}
-                </button>
+                </DarkButton>
               </div>
             </div>
           </CardContent>

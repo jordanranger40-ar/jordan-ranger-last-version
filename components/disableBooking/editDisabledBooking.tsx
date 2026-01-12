@@ -11,14 +11,25 @@ import {
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { DisableBookingData } from "@/types";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+
 import { disableBookingSchema } from "@/app/models/db/lib/schemas/disableBookingSchema";
 import { toast } from "sonner";
 import TimeSelect from "@/components/activities/activityBooking/TimeSelect";
+import LightButton from "../ui/light-button";
+import DarkButton from "../ui/dark-button";
 
 interface Props {
   action: (
+    id: string,
     data: DisableBookingData
-  ) => Promise<{ message: string; status?: number }>;
+  ) => Promise<{ message: string; status: number; success: boolean }>;
   initialData: DisableBookingData;
   activities: { id: string; name_en: string }[];
   rooms: { id: string; name_en: string }[];
@@ -27,12 +38,12 @@ interface Props {
 export default function EditDisableBookingForm({
   action,
   initialData,
+
   activities,
   rooms,
 }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-
 
   // form state including the ID
   const [form, setForm] = useState<DisableBookingData>({ ...initialData });
@@ -46,25 +57,24 @@ export default function EditDisableBookingForm({
   const list = form.type === "activity" ? activities : rooms;
 
   // populate times if activity with datetime
-useEffect(() => {
-  if (
-    form.type === "activity" &&
-    typeof form.start_date === "string" &&
-    form.start_date.includes(" ")
-  ) {
-    const [startDate, startTime] = form.start_date.split(" ");
-    const [endDate, endTime] =
-      typeof form.end_date === "string" ? form.end_date.split(" ") : ["", ""];
-    setForm((prev) => ({
-      ...prev,
-      start_date: startDate,
-      end_date: endDate,
-    }));
-    setTimeStart(startTime.slice(0, 2));
-    setTimeEnd(endTime.slice(0, 2));
-  }
-}, [form.type]);
-
+  useEffect(() => {
+    if (
+      form.type === "activity" &&
+      typeof form.start_date === "string" &&
+      form.start_date.includes(" ")
+    ) {
+      const [startDate, startTime] = form.start_date.split(" ");
+      const [endDate, endTime] =
+        typeof form.end_date === "string" ? form.end_date.split(" ") : ["", ""];
+      setForm((prev) => ({
+        ...prev,
+        start_date: startDate,
+        end_date: endDate,
+      }));
+      setTimeStart(startTime.slice(0, 2));
+      setTimeEnd(endTime.slice(0, 2));
+    }
+  }, [form.type]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -92,15 +102,13 @@ useEffect(() => {
     // append times if activity
     if (form.type === "activity") {
       if (!timeStart || !timeEnd) {
-        toast.error( "Choose start and end hours");
+        toast.error("Choose start and end hours");
         return;
       }
       finalStart = `${form.start_date} ${timeStart}:00`;
       finalEnd = `${form.end_date} ${timeEnd}:00`;
     }
 
-    console.log(" form kk: ",form);
-    
     const validated = disableBookingSchema.safeParse({
       ...form,
       start_date: finalStart,
@@ -113,24 +121,31 @@ useEffect(() => {
         fieldErrors[err.path[0] as string] = err.message;
       });
       setErrors(fieldErrors);
-      toast.error( "Please fill all required fields");
+      toast.error("Please fill all required fields");
       return;
     }
 
     setErrors({});
     startTransition(async () => {
       try {
-        console.log("validated: ",validated);
-        
-        const result = await action(validated.data);
-        if (result.status === 200 || result.status === 201) {
+        const result = await action(initialData.id!, validated.data);
+        if (result.status === 201) {
           toast.success(result.message);
-          setTimeout(() => router.push("/admin/dashboard/disable_booking"), 900);
+          router.push("/admin/dashboard/disable_booking");
+          return;
+        } else if (result.status === 401) {
+          toast.error(result.message);
+          router.push("/login");
+          return;
+        } else if (result.status === 403) {
+          toast.error(result.message);
+          router.push("/");
+          return;
         } else {
           toast.error(result.message);
         }
       } catch (_error) {
-        toast.error( "Failed to update disabled booking.");
+        toast.error("Failed to update disabled booking.");
       }
     });
   };
@@ -157,8 +172,13 @@ useEffect(() => {
       >
         <Card className="w-full shadow-md hover:shadow-lg transition-all duration-300">
           <CardHeader>
-            <CardTitle className="text-[#676e32]"> Edit Disabled Booking</CardTitle>
-            <CardDescription>Update the date range of the disabled booking.</CardDescription>
+            <CardTitle className="text-[#676e32]">
+              {" "}
+              Edit Disabled Booking
+            </CardTitle>
+            <CardDescription>
+              Update the date range of the disabled booking.
+            </CardDescription>
           </CardHeader>
 
           <CardContent className="flex flex-col gap-6 mb-7">
@@ -170,7 +190,9 @@ useEffect(() => {
               <input
                 type="text"
                 disabled
-                value={`${form.type === "activity" ? "Activity" :  "Room"}: ${currentItem?.name_en || "Unknown"}`}
+                value={`${form.type === "activity" ? "Activity" : "Room"}: ${
+                  currentItem?.name_en || "Unknown"
+                }`}
                 className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 bg-gray-100"
               />
             </div>
@@ -189,7 +211,9 @@ useEffect(() => {
                   className="border border-gray-300 px-3 py-2 rounded-md text-gray-800"
                   disabled={isPending}
                 />
-                {errors.start_date && <p className="text-red-500 text-sm">{errors.start_date}</p>}
+                {errors.start_date && (
+                  <p className="text-red-500 text-sm">{errors.start_date}</p>
+                )}
               </div>
 
               <div className="flex flex-col md:w-[90%]">
@@ -204,7 +228,9 @@ useEffect(() => {
                   className="border border-gray-300 px-3 py-2 rounded-md text-gray-800"
                   disabled={isPending}
                 />
-                {errors.end_date && <p className="text-red-500 text-sm">{errors.end_date}</p>}
+                {errors.end_date && (
+                  <p className="text-red-500 text-sm">{errors.end_date}</p>
+                )}
               </div>
             </div>
 
@@ -224,22 +250,19 @@ useEffect(() => {
 
             {/* Buttons */}
             <div className="flex justify-center mt-8 gap-4">
-              <button
+              <LightButton
                 type="button"
                 disabled={isPending}
-                className="px-5 py-2 rounded-md border border-gray-400 text-gray-700 hover:bg-gray-100"
-                onClick={() => router.replace("/admin/dashboard/disable_booking")}
+                onClick={() =>
+                  router.replace("/admin/dashboard/disable_booking")
+                }
               >
                 Cancel
-              </button>
+              </LightButton>
 
-              <button
-                type="submit"
-                disabled={isPending}
-                className="px-5 py-2 rounded-md bg-[#676e32] text-white hover:bg-[#7b8444]"
-              >
-                {isPending ? "Saving..." :  "Update"}
-              </button>
+              <DarkButton type="submit" disabled={isPending}>
+                {isPending ? "Saving..." : "Update"}
+              </DarkButton>
             </div>
           </CardContent>
         </Card>

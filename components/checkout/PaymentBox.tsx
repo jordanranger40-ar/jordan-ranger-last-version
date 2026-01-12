@@ -27,7 +27,7 @@ export default function PaymentBox({
     <button
       onClick={onClick}
       aria-pressed={selected}
-      className={`w-full rounded-2xl h-36 p-8 flex items-center gap-4 text-left transition-transform transform hover:-translate-y-1 shadow-sm focus:outline-none focus:ring-1`}
+      className={`w-full rounded-2xl  h-48 md:h-32 p-2 md:p-8 flex items-center gap-4 text-left transition-transform transform hover:-translate-y-1 shadow-sm focus:outline-none focus:ring-1`}
       style={{
         border: `1px solid #676e32`,
         background: selected
@@ -38,7 +38,7 @@ export default function PaymentBox({
       <div className="shrink-0 text-gray-700">{icon}</div>
 
       <div className="flex-1">
-        <div className="flex items-start justify-between gap-2">
+        <div className="flex flex-col items-start justify-between gap-2">
           <div>
             <h3 className="text-xl font-semibold">{title}</h3>
             <p className="mt-2 text-sm text-gray-500">{description}</p>

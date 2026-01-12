@@ -4,7 +4,6 @@ import { getUserUpcomingRoomBookings } from "@/app/models/db/lib/services/room_b
 import { getUserUpcomingTrainingBookings } from "@/app/models/db/lib/services/training_booking";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
-import React from "react";
 import ActivitiesList from "@/components/userBookingPage/ActivitiesList";
 import AccommodationList from "@/components/userBookingPage/AccommodationList";
 import TrainingsList from "@/components/userBookingPage/TrainingsList";
@@ -18,11 +17,9 @@ interface PageProps {
 export default async function Page({ params }: PageProps) {
   const { locale } = await params;
   const isArabic = locale === "ar";
-  console.log(isArabic, "locale: ",locale);
   
   const session = await getServerSession(authOptions);
-  const user_id = session?.user?.id;
-
+  const user_id = session?.user?.id;  
   // Translation strings
   const t = {
     title: isArabic ? "حجوزاتي القادمة" : "My Upcoming Bookings",
@@ -56,6 +53,10 @@ export default async function Page({ params }: PageProps) {
   const roomBookings = (await getUserUpcomingRoomBookings(user_id))?.data ?? [];
   const activityBookings = (await getUserUpcomingActivityBookings(user_id))?.data ?? [];
   const trainingBookings = (await getUserUpcomingTrainingBookings(user_id))?.data ?? [];
+  console.log("trainingBookings: ",trainingBookings);
+    console.log("activityBookings: ",activityBookings);
+
+  
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4 mt-14"  dir={isArabic ? "rtl" : "ltr"}>

@@ -1,12 +1,12 @@
 import React from "react";
 import CreateRoomForm from "@/components/rooms/createRoomForm" 
-import { addRoom } from "../(fetch)/addNewRoom";
+import { addRoomAction } from "../(fetch)/addNewRoom";
 async function page() {
   
 
   return (
    <>
-   <CreateRoomForm   action={addRoom}/>
+   <CreateRoomForm   action={addRoomAction}/>
    </>
   );
 }

@@ -19,7 +19,6 @@ export default async function Page({ params }: Props) {
   const res = await getActivityBookingById(bookingId);
   const booking = res?.data as ActivityBookingWithDetails | undefined;
 
-  console.log("befnjkml: ", res);
 
   if (!booking) {
     return (

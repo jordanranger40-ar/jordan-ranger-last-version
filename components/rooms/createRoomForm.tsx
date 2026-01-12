@@ -11,11 +11,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import {toast} from "sonner"
+import { toast } from "sonner";
+import LightButton from "../ui/light-button";
+import DarkButton from "../ui/dark-button";
 interface Props {
-  action: (data: newRoom) => Promise<void>;
+  action: (
+    data: newRoom
+  ) => Promise<{ status: number; message: string; success: boolean }>;
 }
 export default function CreateRoomForm({ action }: Props) {
   const router = useRouter();
@@ -31,7 +43,7 @@ export default function CreateRoomForm({ action }: Props) {
     price: 0,
     cover_image: "",
     room_images: [],
-    features: [],
+    room_features: [],
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -42,8 +54,6 @@ export default function CreateRoomForm({ action }: Props) {
     >
   ) => {
     const { name, value } = e.target;
-    console.log("name: ",name," value: ",value);
-    
     setForm((prev) => {
       const updated = { ...prev, [name]: value };
 
@@ -56,7 +66,7 @@ export default function CreateRoomForm({ action }: Props) {
       }
 
       if (name === "price") {
-        updated.price = Number(value)
+        updated.price = Number(value);
       }
 
       return updated;
@@ -72,20 +82,34 @@ export default function CreateRoomForm({ action }: Props) {
         fieldErrors[err.path[0] as string] = err.message;
       });
       setErrors(fieldErrors);
-      toast.error("Please fill the highlighted fields.")
+      toast.error("Please fill the highlighted fields.");
       return;
     }
 
     setErrors({});
     startTransition(async () => {
       try {
-        await action({ ...form });
-        toast.success("Room updated successfully!")
-        setTimeout(() => {
-          router.push("/admin/dashboard/rooms");
-        }, 1000);
+        const result = await action({ ...form });
+        if (result.status === 201) {
+          toast.success(result.message);
+          setTimeout(() => {
+            router.push("/admin/dashboard/rooms");
+          }, 500);
+          return;
+        } else if (result.status === 401) {
+          toast.error(result.message);
+          router.push("/login");
+          return;
+        } else if (result.status === 403) {
+          toast.error(result.message);
+          router.push("/");
+          return;
+        } else {
+          toast.error(result.message);
+          return;
+        }
       } catch (_error) {
-        toast.error("Failed to update Room.")
+        toast.error("Failed to update Room.");
       }
     });
   };
@@ -107,8 +131,8 @@ export default function CreateRoomForm({ action }: Props) {
   };
 
   return (
-    <main className="ml-3 xl:ml-7 mb-10 text-gray-800">
-      <div className="flex flex-col border-b border-gray-300 pb-3 w-[65vw] mb-8">
+    <main className="ml-2 xl:ml-7 mb-10 text-gray-800">
+      <div className="flex flex-col border-b border-gray-300 pb-3 w-full mb-8">
         <h1 className="text-2xl font-semibold text-[#676e32]">New Room</h1>
       </div>
 
@@ -117,7 +141,7 @@ export default function CreateRoomForm({ action }: Props) {
           e.preventDefault();
           handleFormSubmit();
         }}
-        className="h-full w-full lg:w-[65vw] flex flex-col gap-6"
+        className="h-full w-full lg:w-[75vw] flex flex-col gap-6"
       >
         <Card className="w-full shadow-md hover:shadow-lg transition-all duration-300">
           <CardHeader>
@@ -143,53 +167,67 @@ export default function CreateRoomForm({ action }: Props) {
             </div>
 
             {/* Room Type */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {[
-                {
-                  label: "English Room Type",
-                  name: "room_type_en",
-                  value: form.room_type_en,
-                  options: [
-                    { value: "cabins", label: "Cabins" },
-                    { value: "tents", label: "Tents" },
-                  ],
-                },
-                {
-                  label: "Arabic Room Type",
-                  name: "room_type_ar",
-                  value: form.room_type_ar,
-                  options: [
-                    { value: "الغرف", label: "غرف" },
-                    { value: "الخيام", label: "خيام" },
-                  ],
-                },
-              ].map((field) => (
-                <div key={field.name} className="flex flex-col md:w-[90%]">
-                  <label className="text-sm font-medium text-gray-700 mb-1">
-                    <span className="text-red-500">*</span> {field.label}
-                  </label>
-                  <select
-                  disabled={isPending}
-                    name={field.name}
-                    value={field.value}
-                    onChange={handleInputChange}
-                    className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
-                  >
-                    <option value="">Select {field.label}</option>
-                    {field.options.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                  {errors[field.name] && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors[field.name]}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+  {[
+    {
+      label: "English Room Type",
+      name: "room_type_en",
+      value: form.room_type_en,
+      options: [
+        { value: "cabins", label: "Cabins" },
+        { value: "tents", label: "Tents" },
+      ],
+    },
+    {
+      label: "Arabic Room Type",
+      name: "room_type_ar",
+      value: form.room_type_ar,
+      options: [
+        { value: "الغرف", label: "غرف" },
+        { value: "الخيام", label: "خيام" },
+      ],
+    },
+  ].map((field) => (
+    <div key={field.name} className="flex flex-col md:w-[90%]">
+      <label className="text-sm font-medium text-gray-700 mb-1">
+        <span className="text-red-500">*</span> {field.label}
+      </label>
+
+      <Select
+        disabled={isPending}
+        value={field.value}
+        onValueChange={(value) =>
+          handleInputChange({
+            target: { name: field.name, value },
+          } as React.ChangeEvent<HTMLInputElement>)
+        }
+      >
+        <SelectTrigger
+          className={`h-10 border w-full ${
+            errors[field.name] ? "border-red-500" : "border-gray-300"
+          } focus:ring-2 focus:ring-[#676e32]`}
+        >
+          <SelectValue placeholder={`Select ${field.label}`} />
+        </SelectTrigger>
+
+        <SelectContent>
+          {field.options.map((opt) => (
+            <SelectItem key={opt.value} value={opt.value}>
+              {opt.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      {errors[field.name] && (
+        <p className="text-red-500 text-sm mt-1">
+          {errors[field.name]}
+        </p>
+      )}
+    </div>
+  ))}
+</div>
+
 
             {/* Name Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -202,7 +240,7 @@ export default function CreateRoomForm({ action }: Props) {
                     <span className="text-red-500">*</span> {field.label}
                   </label>
                   <input
-                  disabled={isPending}
+                    disabled={isPending}
                     type="text"
                     name={field.name}
                     value={field.value}
@@ -220,25 +258,24 @@ export default function CreateRoomForm({ action }: Props) {
 
             {/* Price */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex flex-col md:w-[90%] ">
-              <label className="text-sm font-medium text-gray-700 mb-1">
-                <span className="text-red-500">*</span> Price
-              </label>
-              <input
-              disabled={isPending}
-                type="number"
-                name="price"
-                value={form.price}
-                onChange={handleInputChange}
-                className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
-              />
-              {errors.price && (
-                <p className="text-red-500 text-sm mt-1">{errors.price}</p>
-              )}
+              <div className="flex flex-col md:w-[90%] ">
+                <label className="text-sm font-medium text-gray-700 mb-1">
+                  <span className="text-red-500">*</span> Price
+                </label>
+                <input
+                  disabled={isPending}
+                  type="number"
+                  name="price"
+                  value={form.price}
+                  onChange={handleInputChange}
+                  className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
+                />
+                {errors.price && (
+                  <p className="text-red-500 text-sm mt-1">{errors.price}</p>
+                )}
+              </div>
             </div>
 
-            </div>
-            
             {/* Descriptions */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[
@@ -258,7 +295,7 @@ export default function CreateRoomForm({ action }: Props) {
                     <span className="text-red-500">*</span> {field.label}
                   </label>
                   <textarea
-                  disabled={isPending}
+                    disabled={isPending}
                     name={field.name}
                     value={field.value}
                     onChange={handleInputChange}
@@ -279,7 +316,7 @@ export default function CreateRoomForm({ action }: Props) {
                 <span className="text-red-500">*</span> Room Features
               </label>
               <RoomFeaturesMultiSelect
-                selectedFeatures={form.features}
+                selectedFeatures={form.room_features}
                 onChange={(features) =>
                   setForm((prev) => ({ ...prev, room_features: features }))
                 }
@@ -301,9 +338,7 @@ export default function CreateRoomForm({ action }: Props) {
                   endpoint="rooms"
                   initialImageUrl={form.cover_image ?? ""}
                   onUploadComplete={handleUploadComplete}
-                  onUploadError={(e) =>
-                    toast.error(e.message)
-                  }
+                  onUploadError={(e) => toast.error(e.message)}
                   onDelete={handleImageDelete}
                 />
                 {errors.cover_image && (
@@ -322,9 +357,7 @@ export default function CreateRoomForm({ action }: Props) {
                   initialImageUrls={form.room_images}
                   maxImages={5}
                   onUploadComplete={handleRoomImagesUploadComplete}
-                  onUploadError={(e) =>
-                    toast.error(e.message)
-                  }
+                  onUploadError={(e) => toast.error(e.message)}
                   onDelete={handleRoomImagesDelete}
                 />
                 {errors.room_images && (
@@ -338,21 +371,16 @@ export default function CreateRoomForm({ action }: Props) {
             {/* Buttons */}
             <div className="flex justify-center mt-8">
               <div className="flex gap-4">
-                <button
+                <LightButton
                   type="button"
                   disabled={isPending}
-                  className="px-5 py-2 rounded-md border border-gray-400 cursor-pointer text-gray-700 hover:bg-gray-100 transition"
                   onClick={() => router.replace("/admin/dashboard/rooms")}
                 >
                   Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-md bg-[#676e32] text-white cursor-pointer hover:bg-[#7b8444] transition"
-                  disabled={isPending}
-                >
+                </LightButton>
+                <DarkButton type="submit" disabled={isPending}>
                   {isPending ? "Adding..." : "Add Room"}
-                </button>
+                </DarkButton>
               </div>
             </div>
           </CardContent>

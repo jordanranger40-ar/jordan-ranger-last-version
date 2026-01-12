@@ -11,7 +11,7 @@ function TrainingDetailsCard(data: Props) {
 
   return (
     <div className="border rounded-2xl shadow-sm p-6 bg-white">
-      <h2 className="text-lg font-semibold mb-4 text-[#676e32]">
+      <h2 className="text-lg font-semibold text-center mb-4 text-[#676e32]">
         Training Details
       </h2>
 

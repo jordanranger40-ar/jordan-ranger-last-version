@@ -11,34 +11,46 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+
 import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import {toast} from "sonner"
-import { toNamespacedPath } from "path";
+import { toast } from "sonner";
+import LightButton from "@/components/ui/light-button";
+import DarkButton from "@/components/ui/dark-button";
 interface Props {
-    activity: newActivity
-  action: (data: newActivity) => Promise<void>;
+  activity: newActivity;
+  action: (
+    id: string,
+    data: newActivity
+  ) => Promise<{ status: number; message: string; success: boolean }>;
 }
-export default function EditActivityForm({ activity,action }: Props) {
+export default function EditActivityForm({ activity, action }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
   const [form, setForm] = useState<newActivity>({
-    id:activity.id??"",
-    slug: activity.slug??"",
-    name_en: activity.name_en?? "",
-    name_ar: activity.name_ar?? "",
-    description_en: activity.description_en?? "",
-    description_ar: activity.description_ar?? "",
-    location_type_en: activity.location_type_en??"",
-    location_type_ar: activity.location_type_ar??"",
-    price: activity.price??0,
-    card_image:activity.card_image?? "",
-    poster_image: activity.poster_image?? "",
-    header_image: activity.header_image?? "",
-    capacity: activity.capacity?? 0,
-    minimum_quantity:activity.minimum_quantity??1,
-    coming_soon:activity.coming_soon?? false
+    id: activity.id ?? "",
+    slug: activity.slug ?? "",
+    name_en: activity.name_en ?? "",
+    name_ar: activity.name_ar ?? "",
+    description_en: activity.description_en ?? "",
+    description_ar: activity.description_ar ?? "",
+    location_type_en: activity.location_type_en ?? "",
+    location_type_ar: activity.location_type_ar ?? "",
+    price: activity.price ?? 0,
+    card_image: activity.card_image ?? "",
+    poster_image: activity.poster_image ?? "",
+    header_image: activity.header_image ?? "",
+    capacity: activity.capacity ?? 0,
+    minimum_quantity: activity.minimum_quantity ?? 1,
+    coming_soon: activity.coming_soon ?? false,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -54,8 +66,12 @@ export default function EditActivityForm({ activity,action }: Props) {
       let updated = { ...prev, [name]: value };
 
       // convert numeric inputs to numbers
-      if (name === "price" || name === "capacity" || name==="minimum_quantity") {
-        updated = { ...prev, [name]: Number(value) };
+      if (
+        name === "price" ||
+        name === "capacity" ||
+        name === "minimum_quantity"
+      ) {
+        updated = { ...prev, [name]: Number(value.trim()) };
       }
 
       // auto-generate slug from English name
@@ -80,27 +96,41 @@ export default function EditActivityForm({ activity,action }: Props) {
         fieldErrors[err.path[0] as string] = err.message;
       });
       setErrors(fieldErrors);
-      toast.error("Please fill the highlighted fields.")
+      toast.error("Please fill the highlighted fields.");
       return;
     }
 
     setErrors({});
     startTransition(async () => {
       try {
-        await action({ ...form });
-        toast.success("Activity Updated successfully!")
-        setTimeout(() => {
+        const result = await action(activity.id!, form);
+        if (result.status === 201) {
+          toast.success(result.message);
           router.push("/admin/dashboard/activities");
-        }, 1000);
+          return;
+        } else if (result.status === 401) {
+          toast.error(result.message);
+          router.push("/login");
+          return;
+        } else if (result.status === 403) {
+          toast.error(result.message);
+          router.push("/");
+          return;
+        } else {
+          toast.error(result.message);
+          return;
+        }
       } catch (_error) {
-        toast.error("Failed to Update Activity.")
+        toast.error("Failed to Update Activity.");
       }
     });
   };
   return (
     <main className="ml-3 xl:ml-7 mb-10 text-gray-800">
       <div className="flex flex-col border-b border-gray-300 pb-3 w-[65vw] mb-8">
-        <h1 className="text-2xl font-semibold text-[#676e32]">Update Activity</h1>
+        <h1 className="text-2xl font-semibold text-[#676e32]">
+          Update Activity
+        </h1>
       </div>
 
       <form
@@ -137,7 +167,7 @@ export default function EditActivityForm({ activity,action }: Props) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[
                 {
-                  label: "English Loacation Type",
+                  label: "English Location Type",
                   name: "location_type_en",
                   value: form.location_type_en,
                   options: [
@@ -146,7 +176,7 @@ export default function EditActivityForm({ activity,action }: Props) {
                   ],
                 },
                 {
-                  label: "Arabic Loacation Type",
+                  label: "Arabic Location Type",
                   name: "location_type_ar",
                   value: form.location_type_ar,
                   options: [
@@ -159,20 +189,37 @@ export default function EditActivityForm({ activity,action }: Props) {
                   <label className="text-sm font-medium text-gray-700 mb-1">
                     <span className="text-red-500">*</span> {field.label}
                   </label>
-                  <select
-                    name={field.name}
-                    value={field.value}
+
+                  <Select
                     disabled={isPending}
-                    onChange={handleInputChange}
-                    className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
+                    value={field.value}
+                    onValueChange={(value) =>
+                      handleInputChange({
+                        target: { name: field.name, value },
+                      } as React.ChangeEvent<HTMLInputElement>)
+                    }
                   >
-                    <option value="">Select {field.label}</option>
-                    {field.options.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger
+                      className={`h-10 w-full ${
+                        errors[field.name]
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      } focus:ring-2 focus:ring-[#676e32]`}
+                    >
+                      <SelectValue placeholder={`Select ${field.label}`} />
+                    </SelectTrigger>
+
+                    <SelectContent
+                      dir={field.name.endsWith("_ar") ? "rtl" : "ltr"}
+                    >
+                      {field.options.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
                   {errors[field.name] && (
                     <p className="text-red-500 text-sm mt-1">
                       {errors[field.name]}
@@ -216,10 +263,9 @@ export default function EditActivityForm({ activity,action }: Props) {
                   <span className="text-red-500">*</span> Price
                 </label>
                 <input
+                  disabled={isPending}
                   type="number"
                   name="price"
-                  disabled={isPending}
-                  value={form.price}
                   onChange={handleInputChange}
                   className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
                 />
@@ -237,7 +283,7 @@ export default function EditActivityForm({ activity,action }: Props) {
                   <span className="text-red-500">*</span> Capacity
                 </label>
                 <input
-                disabled={isPending}
+                  disabled={isPending}
                   type="number"
                   name="capacity"
                   value={form.capacity}
@@ -253,7 +299,7 @@ export default function EditActivityForm({ activity,action }: Props) {
                   <span className="text-red-500">*</span> Minimum Quantity
                 </label>
                 <input
-                disabled={isPending}
+                  disabled={isPending}
                   type="number"
                   value={form.minimum_quantity}
                   name="minimum_quantity"
@@ -267,7 +313,6 @@ export default function EditActivityForm({ activity,action }: Props) {
                 )}
               </div>
             </div>
-
 
             {/* Descriptions */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -302,7 +347,7 @@ export default function EditActivityForm({ activity,action }: Props) {
               ))}
             </div>
 
-              <div className="flex items-center gap-3  rounded-2xl border border-gray-200 p-4 bg-gray-50  w-fit">
+            <div className="flex items-center gap-3  rounded-2xl border border-gray-200 p-4 bg-gray-50  w-fit">
               <Checkbox
                 id="coming_soon"
                 name="coming_soon"
@@ -331,10 +376,7 @@ export default function EditActivityForm({ activity,action }: Props) {
                   onUploadComplete={(url) =>
                     setForm({ ...form, card_image: url })
                   }
-                  onUploadError={(e) =>
-                    toast.error(e.message)
-
-                  }
+                  onUploadError={(e) => toast.error(e.message)}
                   onDelete={() => setForm({ ...form, card_image: "" })}
                 />
                 {errors.card_image && (
@@ -355,10 +397,7 @@ export default function EditActivityForm({ activity,action }: Props) {
                   onUploadComplete={(url) =>
                     setForm({ ...form, poster_image: url })
                   }
-                  onUploadError={(e) =>
-                    toast.error(e.message)
-
-                  }
+                  onUploadError={(e) => toast.error(e.message)}
                   onDelete={() => setForm({ ...form, poster_image: "" })}
                 />
                 {errors.poster_image && (
@@ -379,10 +418,7 @@ export default function EditActivityForm({ activity,action }: Props) {
                   onUploadComplete={(url) =>
                     setForm({ ...form, header_image: url })
                   }
-                  onUploadError={(e) =>
-                    toast.error(e.message)
-
-                  }
+                  onUploadError={(e) => toast.error(e.message)}
                   onDelete={() => setForm({ ...form, header_image: "" })}
                 />
                 {errors.header_image && (
@@ -395,21 +431,16 @@ export default function EditActivityForm({ activity,action }: Props) {
             {/* Buttons */}
             <div className="flex justify-center mt-8">
               <div className="flex gap-4">
-                <button
-                disabled={isPending}
+                <LightButton
+                  disabled={isPending}
                   type="button"
-                  className="px-5 py-2 rounded-md border border-gray-400 cursor-pointer text-gray-700 hover:bg-gray-100 transition"
                   onClick={() => router.replace("/admin/dashboard/activities")}
                 >
                   Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-md bg-[#676e32] text-white cursor-pointer hover:bg-[#7b8444] transition"
-                  disabled={isPending}
-                >
+                </LightButton>
+                <DarkButton type="submit" disabled={isPending}>
                   {isPending ? "Updating..." : "Update Activity"}
-                </button>
+                </DarkButton>
               </div>
             </div>
           </CardContent>

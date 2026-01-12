@@ -21,6 +21,8 @@ export default async function Page({ params }: Props) {
 
   const bookingId = par.id;
   const res = await getTrainingBookingById(bookingId);
+  console.log("res: ",res);
+  
   const booking = res?.data as TrainingBookingWithDetails | undefined;
   const contactEmail = process.env.CONTACT_EMAIL;
 

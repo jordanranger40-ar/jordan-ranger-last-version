@@ -13,9 +13,7 @@ type Props = {
 
 export default function AccommodationList({ bookings, locale = "en" }: Props) {
   const isArabic = locale === "ar";
-  const msPerDay = 1000 * 60 * 60 * 24;
-  console.log("bookings room: ",bookings);
-  
+  const msPerDay = 1000 * 60 * 60 * 24;  
   const formatDate = (d?: string | Date) => {
     if (!d) return "—";
     const date = typeof d === "string" ? new Date(d) : d;

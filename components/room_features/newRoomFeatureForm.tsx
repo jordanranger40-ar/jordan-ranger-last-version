@@ -1,6 +1,6 @@
 "use client";
 import { getRoomFeaturesSchema } from "@/app/models/db/lib/schemas/roomFeaturesSchema";
-import {toast} from "sonner"
+import { toast } from "sonner";
 import { roomFeatures } from "@/types";
 import {
   Card,
@@ -11,9 +11,13 @@ import {
 } from "@/components/ui/card";
 import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import LightButton from "../ui/light-button";
+import DarkButton from "../ui/dark-button";
 
 interface Props {
-  action: (data: roomFeatures) => Promise<void>;
+  action: (
+    data: roomFeatures
+  ) => Promise<{ status: number; message: string; success: boolean }>;
 }
 
 export default function CreateNewFeature({ action }: Props) {
@@ -30,10 +34,7 @@ export default function CreateNewFeature({ action }: Props) {
   });
 
   const [isPending, startTransition] = useTransition();
- /* const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);*/
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -48,26 +49,40 @@ export default function CreateNewFeature({ action }: Props) {
         fieldError[fieldName] = err.message;
       });
       setErrors(fieldError);
-      toast.error("Please fix the highlighted fields.")
+      toast.error("Please fix the highlighted fields.");
       return;
     }
 
     startTransition(async () => {
       try {
-        await action({ ...form });
-        toast.success("Feature added successfully!")
-        setTimeout(() => {
-          router.replace("/admin/dashboard/room_features");
-        }, 1500);
+        const result = await action({ ...form });
+        if (result.status === 201) {
+          toast.success(result.message);
+          setTimeout(() => {
+            router.push("/admin/dashboard/room_features");
+          }, 500);
+          return;
+        } else if (result.status === 401) {
+          toast.error(result.message);
+          router.push("/login");
+          return;
+        } else if (result.status === 403) {
+          toast.error(result.message);
+          router.push("/");
+          return;
+        } else {
+          toast.error(result.message);
+          return
+        }
       } catch (_error) {
-        toast.error("Failed to add Feature.")
+        toast.error("Failed to add Feature.");
       }
     });
   };
 
   return (
     <main className="ml-3 xl:ml-7 mb-7">
-      <div className="flex flex-col justify-start items-start border-b border-gray-500 w-[70vw] mb-7">
+      <div className="flex flex-col justify-start items-start border-b border-gray-500 w-full  mb-7">
         <h1 className="text-2xl font-semibold text-[#676e32]">
           Add New Feature
         </h1>
@@ -78,7 +93,7 @@ export default function CreateNewFeature({ action }: Props) {
           e.preventDefault();
           handleFormSubmit();
         }}
-        className="h-full w-full lg:w-[70vw] flex flex-col gap-5"
+        className="h-full w-full lg:w-[75vw] flex flex-col gap-5"
       >
         <Card className="w-full h-full">
           <CardHeader>
@@ -163,20 +178,10 @@ export default function CreateNewFeature({ action }: Props) {
             ))}
             <div className="w-full flex justify-center mt-5">
               <div className="flex flex-row gap-3">
-                <button
-                  type="button"
-                  className="px-5 py-2 rounded-md border border-gray-400 cursor-pointer text-gray-700 hover:bg-gray-100 transition"
-                  onClick={() => router.push("/admin/dashboard/room_features")}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-md bg-[#676e32] text-white cursor-pointer hover:bg-[#7b8444] transition"
-                  disabled={isPending}
-                >
-                  {isPending ? "Adding..." : "Add Feature"}
-                </button>
+                <LightButton type="button"
+                  onClick={() => router.push("/admin/dashboard/room_features")}>Cancel</LightButton>
+               <DarkButton type="submit"
+                  disabled={isPending}>{isPending ? "Adding..." : "Add Feature"}</DarkButton>
               </div>
             </div>
           </CardContent>

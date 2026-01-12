@@ -1,5 +1,5 @@
 import React from "react";
-import { disableBookingRange } from "../(fetch)/disableBookingRange";
+import { disableBookingRangeAction } from "../(fetch)/disableBookingRange";
 import CreateDisableBookingForm from "@/components/disableBooking/newDisableBooking";
 import { getRoomsNameAndId } from "@/app/models/db/lib/services/rooms";
 import { getActivitiesNameAndId } from "@/app/models/db/lib/services/activities";
@@ -23,7 +23,7 @@ async function page() {
     <CreateDisableBookingForm
       rooms={rooms}
       activities={activities}
-      action={disableBookingRange}
+      action={disableBookingRangeAction}
     />
   );
 }

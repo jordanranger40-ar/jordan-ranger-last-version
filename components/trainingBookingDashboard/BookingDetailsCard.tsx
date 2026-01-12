@@ -4,6 +4,7 @@ import React, { useTransition } from "react";
 import {  TrainingBookingWithDetails } from "@/types";
 import { updateBookingStatus } from "./(fetch)/updateBookingStatus";
 import { toast } from "sonner"; 
+import DarkButton from "../ui/dark-button";
 
 interface Props {
   data: TrainingBookingWithDetails;
@@ -40,27 +41,25 @@ export default function BookingDetailsCard({ data }: Props) {
 
   return (
     <div className="border rounded-2xl shadow-sm p-5 bg-white">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-[#676e32]">
+      <div className="flex flex-col mb-4">
+        <h2 className="text-lg text-center font-semibold text-[#676e32]">
           Booking Information
         </h2>
 
         {/* Status Toggle Button */}
-        <button
-          onClick={handleStatusChange}
-          disabled={isPending}
-          className={`px-4 py-1 text-sm rounded transition ${
-            booking.is_confirmed
-              ? "bg-red-500 hover:bg-red-600 text-white"
-              : "bg-green-600 hover:bg-green-700 text-white"
-          } ${isPending ? "opacity-60 cursor-not-allowed" : ""}`}
-        >
-          {isPending
-            ? "Updating..."
-            : booking.is_confirmed
-            ? "Unconfirm Booking"
-            : "Confirm Booking"}
-        </button>
+        <DarkButton onClick={handleStatusChange}
+                 disabled={isPending}
+                 className={`px-4 py-1 text-sm rounded transition ${
+                   booking.is_confirmed
+                     ? "bg-red-500 hover:bg-red-600 text-white"
+                     : "bg-green-600 hover:bg-green-700 text-white"
+                 } ${isPending ? "opacity-60 cursor-not-allowed" : ""}`}>
+        {isPending
+                   ? "Updating..."
+                   : booking.is_confirmed
+                   ? "Unconfirm Booking"
+                   : "Confirm Booking"}
+               </DarkButton>
       </div>
 
       <dl className="space-y-2 text-sm">

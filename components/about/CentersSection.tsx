@@ -15,7 +15,7 @@ export default function CentersSection({ isArabic }: Props) {
       </h2>
 
       <div
-        className={`grid grid-cols-1 md:grid-cols-2 gap-16 text-lg leading-relaxed ${
+        className={`grid grid-cols-1 md:grid-cols-2 gap-16 text-lg  ${
           isArabic
             ? "text-gray-700 dark:text-gray-300 text-right"
             : "text-gray-700 dark:text-gray-300 text-left"
@@ -72,20 +72,16 @@ export default function CentersSection({ isArabic }: Props) {
           </p>
         </div>
 
-        <div>
+        <div className="col-span-2">
           <h3 className="text-2xl font-bold text-[#b3c820] mb-4">
             {isArabic ? "منتجع إيكو فيو" : "Eco-View Resort"}
           </h3>
-          <p>
+          <p >
             {isArabic
-              ? "تأسس عام 2015 في كفر خل/جرش وافتتح في ديسمبر 2019، يقدم تجربة العيش في بيوت الأشجار المصممة لتعكس جمال طبيعة جرش..."
-              : "Founded in 2015 in Kufr Khal-Jarash and opened in December 2019, it offers treehouse living experiences showcasing the beauty of Jarash nature..."}
+            ?"تأسس منتجع Jordan Ranger عام 2015 وافتُتح رسميًا في عام 2019 في منطقة كفر خال – جرش، ليقدّم تجربة سياحية بيئية فريدة من نوعها من خلال بيوت شجر مصممة بطابع ريفي يعكس جمال طبيعة جرش الخلابة. يجمع المنتجع بين السياحة والترفيه والتدريب البيئي، مع تركيز خاص على تنمية المهارات الحياتية، والعمل الجماعي، وبناء الشخصية.يمتد المنتجع على مساحة 1100 متر مربع، ويضم 10 وحدات سكنية بسعة تصل إلى 40 شخصًا، تشمل 8 بيوت شجر ووحدتين حجريتين مستوحيتين من البيئة الأردنية القديمة وحياة الكهوف. كما يحتوي على مرافق صحية متكاملة، ومطعم سياحي فاخر، وقاعات تدريب متعددة الاستخدامات، ومواقف للسيارات، ويقع بجوار Jordan Ranger Camp. يستقبل المنتجع العائلات والأفراد والسياح، بالإضافة إلى المؤسسات المحلية والدولية التي تشترك في حب الطبيعة والمغامرة، ويهدف إلى توفير تجارب ملهمة تساعد الزوار على تحقيق أهدافهم الشخصية والاستمتاع بروح التحدي والاكتشاف."
+              : "Founded in 2015 and opened in 2019 in Kufr Khal–Jarash, Jordan Ranger Resort offers a unique eco-experience through rustic treehouses set in the natural beauty of Jerash. The resort combines tourism, training, and environmental activities, focusing on life skills, teamwork, and personal development. Spanning 1,100 square meters, it includes 10 cabins accommodating up to 40 guests—eight treehouses and two stone lodges inspired by ancient Jordanian living. The resort features modern facilities, a luxury restaurant, training halls, parking, and is located next to Jordan Ranger Camp. It welcomes families, tourists, and organizations seeking nature, adventure, and meaningful experiences."}
           </p>
-          <p>
-            {isArabic
-              ? "يعد المنتجع وجهة سياحية مثالية للعائلات والأفراد والمنظمات المحلية والدولية..."
-              : "The resort is a perfect tourist destination for families, individuals, and local and international organizations..."}
-          </p>
+         
         </div>
       </div>
     </section>

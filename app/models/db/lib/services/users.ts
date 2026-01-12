@@ -80,7 +80,7 @@ export const login = async (userInfo: userInfo) => {
   }
 };
 
-export const editUser = async (id: string, modifiedUser: modifiedUser) => {
+export const editUser = async (id: string, newRole: string) => {
   const isVaild = await pool.query<modifiedUser>(
     "select * from users where id=$1",
     [id]
@@ -91,7 +91,7 @@ export const editUser = async (id: string, modifiedUser: modifiedUser) => {
   } else {
     const result = await pool.query<modifiedUser>(
       "update users set role= coalesce($2,role) where id= $1 returning *",
-      [id, modifiedUser.role]
+      [id, newRole]
     );
 
     return result.rows;

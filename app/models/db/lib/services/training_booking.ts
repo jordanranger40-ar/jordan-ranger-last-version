@@ -2,6 +2,7 @@ import {
   TrainingBookingWithDetails,
   type newTraining,
   type newTrainingBooking,
+  type newUser
 } from "@/types/index";
 import pool from "../index";
 import { createCart, updateCartTotalAmount } from "./cart";
@@ -534,8 +535,16 @@ export const updateBookingStatus = async (
   };
 };
 
-export const getUserUpcomingTrainingBookings = async (user_id: string) => {
+export const getUserUpcomingTrainingBookings = async (user_id?: string,email?:string) => {
   const now = new Date();
+
+   let updatedUserId= ''
+      if(email && !user_id) {
+        const getUserIdByEmail= await pool.query<newUser>("select id from users where email=$1 ",[email])
+        updatedUserId=getUserIdByEmail.rows[0].id!
+      }else {
+        updatedUserId=user_id!
+      }
 
   const result = await pool.query<TrainingBookingWithDetails>(`
     SELECT 
@@ -574,7 +583,7 @@ export const getUserUpcomingTrainingBookings = async (user_id: string) => {
       AND tb.user_id = $1
       AND t.start_date > $2
     ORDER BY t.start_date ASC
-  `, [user_id, now]);
+  `, [updatedUserId, now]);
 
   return {
     data: result.rows,

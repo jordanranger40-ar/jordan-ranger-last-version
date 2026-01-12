@@ -23,7 +23,6 @@ export default async function Home({ params }: PageProps) {
   let banners: newBanner[] = [];
   const comingSoonActivities = await getComingSoonActivities();
   const isThereComingSoon = comingSoonActivities.length !== 0;
-  console.log(isThereComingSoon, "gfhdjsioeir: ", comingSoonActivities.length);
 
   try {
     banners = await getBannerData();

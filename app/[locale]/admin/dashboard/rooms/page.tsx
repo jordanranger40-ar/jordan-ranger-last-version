@@ -1,19 +1,15 @@
 import { roomsColumns } from "@/components/columns/rooms-columns";
 import { DataTable } from "@/components/data-table";
-import { deleteRoom } from "./(fetch)/deleteRoom";
+import { deleteRoomAction } from "./(fetch)/deleteRoom";
 import { getAllRooms } from "@/app/models/db/lib/services/rooms";
 import { Card, CardContent } from "@/components/ui/card";
 import { FolderOpen } from "lucide-react";
 import NavigationButton from "@/components/NavigationButton";
 
 export default async function RoomsTable() {
-  const allRooms = (await getAllRooms()) || [];
-
-  console.log("allRooms: ",allRooms);
-  
-
+  const allRooms = (await getAllRooms()) || [];  
   return (
-    <main className="flex flex-col justify-center items-center ml-7 w-[88vw] md:w-[60vw] xl:w-[80vw]">
+    <main className="flex flex-col justify-center items-center ml-7 w-[95vw] md:w-[60vw] xl:w-[80vw]">
       {/* Header */}
       <div className="flex flex-col justify-start items-start mb-6 border-b border-gray-300 w-full">
         <h1 className="text-lg md:text-2xl font-bold">Rooms</h1>
@@ -42,7 +38,7 @@ export default async function RoomsTable() {
             columns={roomsColumns}
             data={allRooms}
             routeName="rooms"
-            deleteAction={deleteRoom}
+            deleteAction={deleteRoomAction}
           />
           <NavigationButton routeName="newRoom" value="Add New Room" />
         </>

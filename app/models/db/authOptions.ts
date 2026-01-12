@@ -31,6 +31,7 @@ declare module "next-auth" {
 
   interface Session {
     user: User;
+    expires?: string;
   }
 }
 
@@ -41,6 +42,7 @@ declare module "next-auth/jwt" {
     role: string;
     email: string;
     token: string;
+    exp?: number;
   }
 }
 
@@ -49,6 +51,8 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
     maxAge: 60 * 60 * 24 * 30, // 30 days
+   
+     
   },
 
   providers: [
@@ -72,6 +76,7 @@ export const authOptions: NextAuthOptions = {
           email: result.email,
           role: result.role,
           token: result.token,
+          
         } as User;
       },
     }),
@@ -158,6 +163,7 @@ export const authOptions: NextAuthOptions = {
           session.user.firstName = token.firstName;
           session.user.role = latestRole;
           session.user.token = token.token;
+          session.expires=session.expires
         } catch (err) {
           console.error("Error fetching user role:", err);
           // fallback to old token role

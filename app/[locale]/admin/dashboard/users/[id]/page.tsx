@@ -9,13 +9,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import UpdateRoleForm from "@/components/users/updateUserForm";
-import { updateUserRole } from "../(fetch)/updateUserRole";
+import { updateUserRoleAction } from "../(fetch)/updateUserRole";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 async function page(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   const user = await getUserById(params.id);
-  console.log(user);
 
   return (
     <main className="ml-7 mb-7">
@@ -94,7 +93,7 @@ async function page(props: { params: Promise<{ id: string }> }) {
               <UpdateRoleForm
                 userId={user[0].id}
                 userRole={user[0].role}
-                action={updateUserRole}
+                action={updateUserRoleAction}
               />
             </CardDescription>
           </CardHeader>

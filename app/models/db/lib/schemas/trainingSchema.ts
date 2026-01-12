@@ -1,4 +1,3 @@
-// app/models/db/lib/schemas/trainingSchema.ts
 
 import { z } from "zod";
 

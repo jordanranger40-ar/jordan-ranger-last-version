@@ -1,4 +1,3 @@
-import React from "react";
 import {
   getCartByUserId,
   getCartItemsByUserId,
@@ -6,6 +5,7 @@ import {
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/models/db/authOptions";
 import CheckoutWrapper from "@/components/checkout/CheckoutWrapper";
+import { redirect } from "next/navigation";
 interface Props {
   params: Promise<{ locale: "en" | "ar" }>;
 }
@@ -24,9 +24,10 @@ async function Page({ params }: Props) {
   }
   const cartData = (await getCartByUserId(session.user.id)).data[0];
     const cartDetails = (await getCartItemsByUserId(session.user.id)).data;
-    console.log(" jehjjd cartData: ",cartData);
     
-  
+   if (cartDetails?.length === 0 || cartDetails===null) {
+    redirect("/")
+  }
     const safeCartData = JSON.parse(JSON.stringify(cartData || []));
     const safeCartDetails = JSON.parse(JSON.stringify(cartDetails || []));
   return (

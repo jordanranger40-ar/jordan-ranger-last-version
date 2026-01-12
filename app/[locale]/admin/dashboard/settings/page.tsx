@@ -20,8 +20,6 @@ import { getSettingsData } from "@/app/models/db/lib/services/settings";
 
 export default async function SettingsTable() {
   const settings = await getSettingsData();
-  console.log("settings: ", settings);
-
   return (
     <main className="flex flex-col justify-center items-center ml-7 w-[88vw] md:w-[60vw] xl:w-[80vw]">
       {/* Header */}

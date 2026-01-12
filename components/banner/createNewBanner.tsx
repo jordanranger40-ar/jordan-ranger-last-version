@@ -10,15 +10,14 @@ import {
 } from "@/components/ui/card";
 import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import {toast} from "sonner"
+import { toast } from "sonner";
+import LightButton from "../ui/light-button";
+import DarkButton from "../ui/dark-button";
 
 interface Props {
-  action: (data: {
-    alt: string;
-    description_en: string;
-    description_ar: string;
-    image?: string | null;
-  }) => Promise<void>;
+  action: (
+    data: newBanner
+  ) => Promise<{ success: boolean; status: number; message: string }>;
 }
 
 export default function AddBannerForm({ action }: Props) {
@@ -30,7 +29,9 @@ export default function AddBannerForm({ action }: Props) {
     image: "",
   });
   const [isPending, startTransition] = useTransition();
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -40,7 +41,7 @@ export default function AddBannerForm({ action }: Props) {
 
   const handleUploadError = (error: Error) => {
     console.error(error);
-    toast.error(`Upload failed: ${error.message}`)
+    toast.error(`Upload failed: ${error.message}`);
   };
 
   const handleImageDelete = () => {
@@ -50,21 +51,32 @@ export default function AddBannerForm({ action }: Props) {
   const handleFormSubmit = () => {
     startTransition(async () => {
       try {
-        await action({ ...form });
-        toast.success("Banner added successfully!")
-        setTimeout(() => {
-          router.push("/admin/dashboard/banners");
-        }, 1500);
+        const result = await action({ ...form });
+        if (result.status === 201) {
+          toast.success("Banner added successfully!");
+          setTimeout(() => {
+            router.push("/admin/dashboard/banners");
+          }, 500);
+          return;
+        } else if (result.status === 401) {
+          toast.error(result.message);
+          router.push("/login");
+          return;
+        } else if (result.status === 403) {
+          toast.error(result.message);
+          router.push("/");
+          return;
+        }
       } catch (error) {
         console.error(error);
-        toast.error("Failed to add banner.")
+        toast.error("Failed to add banner.");
       }
     });
   };
 
   return (
-    <main className="ml-3 xl:ml-7 mb-7">
-      <div className="flex flex-col justify-start items-start border-b border-gray-500 w-[95vw] mb-7">
+    <main className="ml-2 xl:ml-7 mb-7">
+      <div className="flex flex-col justify-start items-start border-b border-gray-500 w-[90vw] lg:w-[75vw] mb-7">
         <h1 className="text-lg md:text-2xl font-bold">Add New Banner</h1>
       </div>
 
@@ -73,9 +85,9 @@ export default function AddBannerForm({ action }: Props) {
           e.preventDefault();
           handleFormSubmit();
         }}
-        className="h-full w-full lg:w-[70vw] flex flex-col gap-5"
+        className="h-full w-[90vw] lg:w-[70vw] flex flex-col gap-5"
       >
-        <Card className="w-full h-full">
+        <Card className="w-[95vw] lg:w-[75vw] h-full">
           <CardHeader>
             <CardTitle>New Banner Details</CardTitle>
             <CardDescription>
@@ -100,7 +112,8 @@ export default function AddBannerForm({ action }: Props) {
 
             <div className="flex flex-col">
               <label className="text-base text-black mb-1">
-                <span className="text-red-500 text-sm">*</span> English Description
+                <span className="text-red-500 text-sm">*</span> English
+                Description
               </label>
               <textarea
                 name="description_en"
@@ -113,7 +126,8 @@ export default function AddBannerForm({ action }: Props) {
 
             <div className="flex flex-col">
               <label className="text-base text-black mb-1">
-                <span className="text-red-500 text-sm">*</span> Arabic Description
+                <span className="text-red-500 text-sm">*</span> Arabic
+                Description
               </label>
               <textarea
                 name="description_ar"
@@ -137,26 +151,21 @@ export default function AddBannerForm({ action }: Props) {
 
             <div className="w-full flex justify-center mt-5">
               <div className="flex flex-row gap-3">
-                <button
+                <LightButton
                   type="button"
-                  className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
                   onClick={() => router.replace("/admin/dashboard/banners")}
                 >
                   Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bg-[#676e32] text-white px-4 py-2 rounded-md cursor-pointer hover:bg-[#89971b]"
-                  disabled={isPending}
-                >
+                </LightButton>
+                <DarkButton type="submit" disabled={isPending}>
+                  {" "}
                   {isPending ? "Adding..." : "Add Banner"}
-                </button>
+                </DarkButton>
               </div>
             </div>
           </CardContent>
         </Card>
       </form>
-      
     </main>
   );
 }

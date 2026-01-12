@@ -47,7 +47,7 @@ interface DataTableProps<TData> {
   columns: ColumnDef<TData>[];
   data: TData[];
   routeName: string;
-  deleteAction: (id: string) => Promise<void>;
+  deleteAction: (id: string) => Promise<{status:number,message:string, success:boolean}>;
 }
 
 export function DataTable<TData>({
@@ -117,14 +117,13 @@ export function DataTable<TData>({
   });
 
   const selectedRows = table.getSelectedRowModel().flatRows;
-console.log("table.getSelectedRowModel(): ",table.getSelectedRowModel());
 
   const selectedIds = selectedRows.map(
     (row) => (row.original as TData & { id: string }).id
   );
 
   return (
-    <div className="space-y-4 mb-20 ml-0 mr-0 lg:ml-4 lg:mr-4 w-full">
+    <div className="space-y-4  ml-0 mr-0 lg:ml-4 lg:mr-4 w-full">
       {/* === Column Visibility Menu === */}
       <div className="flex justify-end flex-row items-end gap-2">
          {selectedIds.length > 0 && (

@@ -179,7 +179,7 @@ export const deleteDisabledDate = async (id: string) => {
 };
 
 
-export const editDisabledBookingRange = async (data: DisableBookingData & { id: string }) => {
+export const editDisabledBookingRange = async (id:string, data: DisableBookingData) => {
   const client = await pool.connect();
 
   try {
@@ -230,7 +230,7 @@ export const editDisabledBookingRange = async (data: DisableBookingData & { id: 
        SET start_date = $1, end_date = $2
        WHERE id = $3
        RETURNING *`,
-      [data.start_date, data.end_date, data.id]
+      [data.start_date, data.end_date, id]
     );
 
     await client.query("COMMIT");

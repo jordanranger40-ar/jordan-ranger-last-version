@@ -1,22 +1,67 @@
-"use server"
-import { authOptions } from "@/app/models/db/authOptions";
+"use server";
+
 import { getServerSession } from "next-auth";
 import { revalidatePath } from "next/cache";
+import { authOptions } from "@/app/models/db/authOptions";
+import { deleteActivityBookingById } from "@/app/models/db/lib/services/activity_booking";
 
-export async function deleteActivityBooking(id: string) {
+export async function deleteActivityBookingAction(bookingId: string) {
   const session = await getServerSession(authOptions);
-  const token = session?.user.token;
-  const result = await fetch(
-    `${process.env.NEXT_PUBLIC_APP_URL}/api/activityBooking/getBookingById/${id}`,
-    {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+
+  // 1️⃣ Auth
+  if (!session) {
+    return {
+      success: false,
+      status: 401,
+      message: "Please Login To Perform This Action",
+    };
+  }
+
+  // 2️⃣ Authorization
+  if (session.user.role !== "admin") {
+    return {
+      success: false,
+      status: 403,
+      message: "You Are Not Allowed To Perform This Action",
+    };
+  }
+
+  // 3️⃣ Validate ID
+  if (!bookingId) {
+    return {
+      success: false,
+      status: 400,
+      message: "Invalid Booking ID",
+    };
+  }
+
+  try {
+    // 4️⃣ DB delete
+    const deleted = await deleteActivityBookingById(bookingId);
+
+    if (!deleted) {
+      return {
+        success: false,
+        status: 409,
+        message: "Booking Not Found",
+      };
     }
-  );
-  if (!result.ok) throw new Error("Failed To Delete The Booking");
-  revalidatePath(`/dashboard/activitiesBookings`);
-  return result.json();
+
+    // 5️⃣ Revalidate
+    revalidatePath(`/dashboard/activitiesBookings`);
+
+    return {
+      success: true,
+      status: 201,
+      message: "Booking Deleted Successfully",
+      data: deleted,
+    };
+  } catch (error) {
+    console.error("Delete Activity Booking Error:", error);
+    return {
+      success: false,
+      status: 500,
+      message: "Failed To Delete The Booking",
+    };
+  }
 }

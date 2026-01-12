@@ -11,10 +11,13 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 interface DeleteActionProps {
   ids: string[]; // can be 1 or many
-  deleteAction: (id: string) => Promise<void>;
+  deleteAction: (
+    id: string
+  ) => Promise<{ status: number; message: string; success: boolean }>;
   onFinish?: () => void;
 }
 
@@ -25,6 +28,7 @@ export default function BulkDeleteButton({
 }: DeleteActionProps) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   async function handleBulkDelete() {
     if (ids.length === 0) return;
@@ -33,10 +37,25 @@ export default function BulkDeleteButton({
 
     try {
       for (const id of ids) {
-        await deleteAction(id); 
+        const result = await deleteAction(id);
+        if (result.status === 401) {
+          toast.error(result.message);
+          router.push("/login");
+          return;
+        } else if (result.status === 403) {
+          toast.error(result.message);
+          router.push("/");
+          return;
+        } else if(result.status!==201) {
+          toast.error(result.message);
+          return;
+        }
       }
+      
+      
 
-      if (onFinish) onFinish(); 
+      if (onFinish) onFinish();
+      toast.success(`${ids.length} Items Removed Suucessfully`);
     } finally {
       setLoading(false);
       setOpen(false);
@@ -62,7 +81,7 @@ export default function BulkDeleteButton({
         <DialogHeader>
           <DialogTitle>Confirm Delete</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete {ids.length} item(s)?  
+            Are you sure you want to delete {ids.length} item(s)?
             <br />
             This action cannot be undone.
           </DialogDescription>

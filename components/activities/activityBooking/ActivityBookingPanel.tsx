@@ -13,9 +13,7 @@ import { useLocale } from "next-intl";
 type Activity = newActivity;
 
 export default function ActivityBookingPanel({ activity,uniqueTypes }: { activity: Activity,uniqueTypes:string[] }) {
-  const { data: session } = useSession();
-  console.log("session: ",session);
-  
+  const { data: session } = useSession();  
   const userDetails = session?.user;
   const locale = useLocale();
   const isArabic = locale === "ar";

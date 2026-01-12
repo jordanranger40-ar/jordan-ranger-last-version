@@ -136,6 +136,48 @@
   cursor: not-allowed;
 }
 
+/* widget-global.css (import in your global stylesheet) */
+.paymentWidgets,
+.paymentWidgets * {
+  font-family: inherit !important;
+  box-sizing: border-box;
+}
+
+/* inputs look nicer and match our card */
+.paymentWidgets .wpwl-control,
+.paymentWidgets input,
+.paymentWidgets select {
+  border-radius: 0.5rem !important;
+  padding: 0.6rem 0.75rem !important;
+  border: 1px solid rgba(15, 23, 42, 0.06) !important;
+  background: #fff !important;
+  box-shadow: none !important;
+}
+
+/* focus ring uses the accent color */
+.paymentWidgets input:focus,
+.paymentWidgets select:focus,
+.paymentWidgets .wpwl-control:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 4px rgba(72,77,35,0.12) !important; /* uses #484d23 */
+  border-color: #484d23 !important;
+}
+
+/* compact brand & helper text */
+.paymentWidgets .wpwl-brand,
+.paymentWidgets .wpwl-help {
+  font-size: 0.8rem !important;
+  color: #6b7280 !important;
+}
+
+/* keep backgrounds transparent so our card shows through */
+.wpwl-form,
+.paymentWidgets .wpwl-controls,
+.paymentWidgets .wpwl-form {
+  background: transparent !important;
+}
+
+
 
 @layer base {
   * {

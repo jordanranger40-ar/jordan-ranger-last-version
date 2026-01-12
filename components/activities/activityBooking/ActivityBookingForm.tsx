@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Clock, User, Mail } from "lucide-react";
-import { bookActivity } from "./(fetch)/bookActivity";
+import { bookActivityAction } from "./(fetch)/bookActivity";
 import { toast } from "sonner";
 
 export default function ActivityBookingForm({
@@ -44,7 +44,6 @@ export default function ActivityBookingForm({
     setUserTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone);
   }, []);
 
-    console.log("isArabic: ",isArabic);
 
   const handleBook = async () => {
     if (!session) {
@@ -77,14 +76,24 @@ export default function ActivityBookingForm({
 
     setLoading(true);
     try {
-      const result = await bookActivity({
+      const result = await bookActivityAction({
         activity_id: activityId,
         start_time: new Date(selectedRange.start),
         quantity,
       });
+     
+      if (result.status === 401) {
+        toast.error(
+          isArabic
+            ? "يرجى تسجيل الدخول لحجز النشاط"
+            : "Please login to book the activity"
+        );
+        setTimeout(() => router.push("/login"), 1000);
+        return
+      }
 
       if (result.success) {
-        toast.success(isArabic ? "✅ تم إرسال الحجز!" : "✅ Booking Submitted!");
+        toast.success(isArabic ? "✅ تم  حجز النشاط!" : "✅ The activity has been booked successfully!");
         onBooked(true, quantity);
       } else {
         toast.error(result.message || (isArabic ? "فشل الحجز" : "Booking failed"));

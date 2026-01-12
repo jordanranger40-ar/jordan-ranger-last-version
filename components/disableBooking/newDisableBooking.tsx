@@ -11,17 +11,33 @@ import {
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { DisableBookingData } from "@/types";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+
 import { disableBookingSchema } from "@/app/models/db/lib/schemas/disableBookingSchema";
 import { toast } from "sonner";
 import TimeSelect from "@/components/activities/activityBooking/TimeSelect";
+import LightButton from "../ui/light-button";
+import DarkButton from "../ui/dark-button";
 
 interface Props {
-  action: (data: DisableBookingData) => Promise<{ message: string; status?: number }>;
+  action: (
+    data: DisableBookingData
+  ) => Promise<{ message: string; status: number; success: boolean }>;
   activities: { id: string; name_en: string }[];
   rooms: { id: string; name_en: string }[];
 }
 
-export default function CreateDisableBookingForm({ action, activities, rooms }: Props) {
+export default function CreateDisableBookingForm({
+  action,
+  activities,
+  rooms,
+}: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [form, setForm] = useState<DisableBookingData>({
@@ -48,7 +64,9 @@ export default function CreateDisableBookingForm({ action, activities, rooms }: 
     setTimeEnd("");
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
@@ -59,7 +77,7 @@ export default function CreateDisableBookingForm({ action, activities, rooms }: 
 
     if (form.type === "activity") {
       if (!timeStart || !timeEnd) {
-        toast.error( "Choose start and end hours");
+        toast.error("Choose start and end hours");
         return;
       }
       finalStart = `${form.start_date} ${timeStart}:00`;
@@ -78,18 +96,25 @@ export default function CreateDisableBookingForm({ action, activities, rooms }: 
         fieldErrors[err.path[0] as string] = err.message;
       });
       setErrors(fieldErrors);
-      toast.error( "Please fill all required fields");
+      toast.error("Please fill all required fields");
       return;
     }
 
     setErrors({});
     startTransition(async () => {
       const result = await action(validated.data);
-      console.log("result123321: ",result);
-      
-      if (result.status === 200 || result.status === 201) {
+      if (result.status === 201) {
         toast.success(result.message);
-        setTimeout(() => router.push("/admin/dashboard/disable_booking"), 900);
+        router.push("/admin/dashboard/disable_booking");
+        return;
+      } else if (result.status === 401) {
+        toast.error(result.message);
+        router.push("/login");
+        return;
+      } else if (result.status === 403) {
+        toast.error(result.message);
+        router.push("/");
+        return;
       } else {
         toast.error(result.message);
       }
@@ -100,7 +125,7 @@ export default function CreateDisableBookingForm({ action, activities, rooms }: 
     <main className="ml-3 xl:ml-7 mb-10 text-gray-800">
       <div className="flex flex-col border-b border-gray-300 pb-3 w-[65vw] mb-8">
         <h1 className="text-2xl font-semibold text-[#676e32]">
-         Disable Booking
+          Disable Booking
         </h1>
       </div>
 
@@ -114,72 +139,94 @@ export default function CreateDisableBookingForm({ action, activities, rooms }: 
         <Card className="w-full shadow-md">
           <CardHeader>
             <CardTitle className="text-[#676e32]">Disable Booking</CardTitle>
-            <CardDescription>
-             Choose type and date range
-            </CardDescription>
+            <CardDescription>Choose type and date range</CardDescription>
           </CardHeader>
 
           <CardContent className="flex flex-col gap-6 mb-7">
             {/* Type selector */}
-            <div className="flex flex-col md:w-[70%]">
-              <Label>
-                <span className="text-red-500">*</span> Type
-              </Label>
-              <select
-                name="type"
-                value={form.type}
-                onChange={(e) => handleTypeChange(e.target.value as "activity" | "room")}
-                className="border px-3 py-2 rounded-md"
-              >
-                <option value="activity">Activity</option>
-                <option value="room">Accommodation</option>
-              </select>
-            </div>
+           <div className="flex flex-col md:w-[70%]">
+  <Label className="mb-2 ml-2">
+    <span className="text-red-500">*</span>Type
+  </Label>
+
+  <Select
+    value={form.type}
+    onValueChange={(value) =>
+      handleTypeChange(value as "activity" | "room")
+    }
+  >
+    <SelectTrigger className="h-10 w-full border focus:ring-2 focus:ring-[#676e32]">
+      <SelectValue placeholder="Select type" />
+    </SelectTrigger>
+
+    <SelectContent>
+      <SelectItem value="activity">Activity</SelectItem>
+      <SelectItem value="room">Accommodation</SelectItem>
+    </SelectContent>
+  </Select>
+</div>
+
 
             {/* Activity / Room selector */}
             <div className="flex flex-col md:w-[70%]">
-              <Label>
-                <span className="text-red-500">*</span>{" "}
-                {form.type === "activity" ?  "Activity":  "Accommodation"}
-              </Label>
-              <select
-                name="ref_id"
-                value={form.ref_id}
-                onChange={handleInputChange}
-                className="border px-3 py-2 rounded-md"
-              >
-                <option value="">Select one</option>
-                {list.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.name_en}
-                  </option>
-                ))}
-              </select>
-              {errors.ref_id && <p className="text-red-500 text-sm">{errors.ref_id}</p>}
-            </div>
+  <Label className="mb-2 ml-2">
+    <span className="text-red-500">*</span>{" "}
+    {form.type === "activity" ? "Activity" : "Accommodation"}
+  </Label>
+
+  <Select
+    value={form.ref_id}
+    onValueChange={(value) =>
+      handleInputChange({
+        target: { name: "ref_id", value },
+      } as React.ChangeEvent<HTMLInputElement>)
+    }
+  >
+    <SelectTrigger
+      className={`h-10 w-full border focus:ring-2 focus:ring-[#676e32] ${
+        errors.ref_id ? "border-red-500" : "border-gray-300"
+      }`}
+    >
+      <SelectValue placeholder="Select one" />
+    </SelectTrigger>
+
+    <SelectContent>
+      {list.map((item) => (
+        <SelectItem key={item.id} value={item.id}>
+          {item.name_en}
+        </SelectItem>
+      ))}
+    </SelectContent>
+  </Select>
+
+  {errors.ref_id && (
+    <p className="text-red-500 text-sm mt-1">{errors.ref_id}</p>
+  )}
+</div>
+
 
             {/* Date input */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <Label>
+                <Label className="mb-2 ml-2">
                   <span className="text-red-500">*</span> Start Date
                 </Label>
                 <input
                   type="date"
                   name="start_date"
-                  value={form.start_date??""}
+                  value={form.start_date ?? ""}
                   onChange={handleInputChange}
                   className="border px-3 py-2 rounded-md w-full"
                 />
               </div>
               <div>
-                <Label>
+                <Label className="mb-2 ml-2">
                   <span className="text-red-500">*</span> End Date
                 </Label>
                 <input
                   type={form.type === "activity" ? "date" : "date"}
                   name="end_date"
-                  value={form.end_date??""}
+                  value={form.end_date ?? ""}
                   onChange={handleInputChange}
                   className="border px-3 py-2 rounded-md w-full"
                 />
@@ -190,11 +237,11 @@ export default function CreateDisableBookingForm({ action, activities, rooms }: 
             {form.type === "activity" && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <Label>Start Time</Label>
-                  <TimeSelect value={timeStart} onChange={setTimeStart}  />
+                  <Label className="mb-2 ml-2">Start Time</Label>
+                  <TimeSelect value={timeStart} onChange={setTimeStart} />
                 </div>
                 <div>
-                  <Label>End Time</Label>
+                  <Label className="mb-2 ml-2">End Time</Label>
                   <TimeSelect value={timeEnd} onChange={setTimeEnd} />
                 </div>
               </div>
@@ -202,22 +249,19 @@ export default function CreateDisableBookingForm({ action, activities, rooms }: 
 
             {/* Buttons */}
             <div className="flex justify-center mt-8 gap-4">
-              <button
+              <LightButton
                 type="button"
                 disabled={isPending}
-                className="px-5 py-2 rounded-md border border-gray-400"
-                onClick={() => router.replace("/admin/dashboard/disable_booking")}
+                onClick={() =>
+                  router.replace("/admin/dashboard/disable_booking")
+                }
               >
                 Cancel
-              </button>
-
-              <button
-                type="submit"
-                disabled={isPending}
-                className="px-5 py-2 rounded-md bg-[#676e32] text-white"
-              >
-                {isPending ?  "Saving..." : "Disable Booking"}
-              </button>
+              </LightButton>
+              <DarkButton type="submit" disabled={isPending}>
+                {" "}
+                {isPending ? "Saving..." : "Disable Booking"}
+              </DarkButton>
             </div>
           </CardContent>
         </Card>

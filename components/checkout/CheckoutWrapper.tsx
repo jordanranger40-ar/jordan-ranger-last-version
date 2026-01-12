@@ -19,27 +19,12 @@ export default function CheckoutWrapper({
   safeCartDetails,
 }: Props) {
   const router = useRouter();
-
-  console.log("safeCartData: ", safeCartData);
-
   const handleConfirm = async (method: "card" | "cod") => {
     try {
       if (!safeCartData?.id || !safeCartData?.user_id) return;
 
       if (method === "card") {
-        const res = await fetch("/api/payments/create", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            cartId: safeCartData.id,
-            userId: safeCartData.user_id,
-          }),
-        });
-        const data = await res.json();
-
-        if (data.checkoutId) {
-          router.push(`/payment?checkoutId=${data.checkoutId}`);
-        }
+       router.push("/payment")
       } else if (method === "cod") {
         router.push(`/checkout/cashOnDelivery`);
       }

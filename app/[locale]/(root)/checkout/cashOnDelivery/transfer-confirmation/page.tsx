@@ -25,7 +25,6 @@ async function Page({params}:Props) {
           </div>
         );
       }
-      console.log("session.user.id: ",session.user.id);
       const cartData = (await getCartByUserId(session.user.id)).data
       if(cartData.length===0){
        toast.error("Your Cart Is Empty")

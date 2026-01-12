@@ -10,8 +10,6 @@ export default async function CorporateTeamBuildingSection({
   isArabic,
 }: Props) {
   const data = await getTrainingByType("Corporate Team Building");
-
-  console.log(data.data);
   return (
     <section
       dir={isArabic ? "rtl" : "ltr"}

@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { format } from "date-fns";
 import Link from "next/link";
 import { ar, enUS } from "date-fns/locale";
@@ -22,10 +21,7 @@ const formatDate = (d?: string | Date) => {
   } catch {
     return date.toLocaleString();
   }
-};
- console.log("training bookings: ",bookings);
- 
-
+}; 
   return (
     <div>
       {/* HEADER */}

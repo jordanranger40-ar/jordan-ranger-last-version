@@ -2,7 +2,7 @@
 
 import React from "react";
 import { DataTable } from "@/components/data-table";
-import { deleteDisableBooking } from "@/app/[locale]/admin/dashboard/disable_booking/(fetch)/deleteDisabledDate"; 
+import { deleteDisableBookingAction } from "@/app/[locale]/admin/dashboard/disable_booking/(fetch)/deleteDisabledDate"; 
 import { disableBookingsColumns } from "@/components/columns/disableBooking-columns"; 
 import type { DisableBookingData } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
@@ -40,7 +40,7 @@ export default function DisableBookingClient({ initialData, activityMap, roomMap
             columns={columns}
             data={initialData}
             routeName="disable_booking"
-            deleteAction={deleteDisableBooking}
+            deleteAction={deleteDisableBookingAction}
           />
           <NavigationButton routeName="newDisableBooking" value="Disable Booking" />
         </>

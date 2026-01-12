@@ -1,5 +1,6 @@
 import {
   ActivityBookingWithDetails,
+  newUser,
   type newActivity,
   type newActivityBooking,
   type updateActivityBooking,
@@ -740,9 +741,19 @@ export const updateBookingStatus = async (
   };
 };
 
-export const getUserUpcomingActivityBookings = async (user_id: string) => {
+export const getUserUpcomingActivityBookings = async (user_id?: string,email?:string) => {
   const now = new Date();
 
+  let updatedUserId= ''
+
+  if(email && !user_id) {
+    const getUserIdByEmail= await pool.query<newUser>("select id from users where email=$1 ",[email])
+    updatedUserId=getUserIdByEmail.rows[0].id!
+    
+  }else {
+    updatedUserId=user_id!
+  }
+   
   const result = await pool.query<ActivityBookingWithDetails>(
     `
     SELECT 
@@ -781,7 +792,7 @@ export const getUserUpcomingActivityBookings = async (user_id: string) => {
       AND ab.start_time > $2
     ORDER BY ab.start_time ASC
   `,
-    [user_id, now]
+    [updatedUserId, now]
   );
 
   return {

@@ -48,7 +48,7 @@ interface DataTableProps<TData> {
   columns: ColumnDef<TData>[];
   data: TData[];
   routeName: string;
-  deleteAction: (id: string) => Promise<void>;
+  deleteAction: (id: string) => Promise<{status:number,message:string, success:boolean}>;
   totalPages: number;
 }
 

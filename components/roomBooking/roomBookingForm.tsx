@@ -5,7 +5,7 @@ import { DateRange, RangeKeyDict, Range } from "react-date-range";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { CalendarDays, CheckCircle } from "lucide-react";
-import { bookRoom } from "./(fetch)/bookARoom";
+import { bookRoomAction } from "./(fetch)/bookARoom";
 import { newRoom } from "@/types";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -113,13 +113,13 @@ export default function RoomBookingPage({
 
     setIsLoading(true);
     try {
-      const result = await bookRoom({
+      const result = await bookRoomAction({
         room_id: room.id ?? "",
         start_time: startDate,
         end_time: endDate,
       });
 
-      if (result.message === "Please login to book the Room") {
+      if (result.status === 401) {
         toast.error(
           isArabic
             ? "يرجى تسجيل الدخول لحجز الغرفة"
@@ -127,22 +127,20 @@ export default function RoomBookingPage({
         );
         setTimeout(() => router.push("/login"), 1000);
       } else {
-        console.log("error in room booking jreiow");
-        console.log("result: d;lkfjkdldffg: ", result);
+
         if (result.status === 201) {
           setIsBooked(true);
           onBooked({
             start: startDate.toISOString(),
             end: endDate.toISOString(),
           });
-          toast.success(isArabic ? "تم تأكيد الحجز!" : "Booking confirmed!");
+          toast.success(isArabic ? "تم حجز الإقامة" : "Accommodation Has Been Booked");
         } else {
           setIsBooked(false);
           toast.error(isArabic ? "حدث خطأ" : result.message);
         }
       }
     } catch (error) {
-      console.error("Booking failed:", error);
       toast.error(
         isArabic
           ? "فشل الحجز. حاول مرة أخرى لاحقًا."

@@ -1,6 +1,5 @@
 import { trainingBookingsColumns } from "@/components/columns/trainingBooking-columns";
-import { DataTable } from "@/components/data-table";
-import { deleteTrainingBooking } from "../(fetch)/deleteTrainingBooking";
+import { deleteTrainingBookingAction } from "../(fetch)/deleteTrainingBooking";
 import { getTrainingBookingByDate } from "@/app/models/db/lib/services/training_booking";
 import { Card, CardContent } from "@/components/ui/card";
 import { FolderOpen } from "lucide-react";
@@ -29,10 +28,7 @@ export default async function TrainingBookingTable({ searchParams,params }: Prop
     (await getTrainingBookingByDate(startDate, endDate, id,Number(page))) ||
     [];
 
-    
 
-  console.log("allTrainingBookings: ", allTrainingBookings);
-  console.log(training_id);
 
   return (
     <main className="flex flex-col lg:justify-center justify-start items-center lg:ml-7 ml-2 lg:w-[75vw]  w-[88vw] md:w-[60vw] xl:w-[80vw]">
@@ -66,7 +62,7 @@ export default async function TrainingBookingTable({ searchParams,params }: Prop
           columns={trainingBookingsColumns}
           data={allTrainingBookings.data}
           routeName="trainingBookingsById"
-          deleteAction={deleteTrainingBooking}
+          deleteAction={deleteTrainingBookingAction}
           totalPages={allTrainingBookings.meta.totalPages}
         />
       )}

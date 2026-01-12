@@ -1,12 +1,12 @@
 import React from "react";
 import CreateNewClientForm from "@/components/clients/createNewClientForm"
-import { createClient } from "../(fetch)/createNewClient";
+import { createClientAction } from "../(fetch)/createNewClient";
 async function page() {
   
 
   return (
    <>
-   <CreateNewClientForm  action={createClient}/>
+   <CreateNewClientForm  action={createClientAction}/>
    </>
   );
 }

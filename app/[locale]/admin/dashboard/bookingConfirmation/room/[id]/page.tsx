@@ -13,7 +13,6 @@ type Props = {
 export default async function Page({ params }: Props) {
   const bookingId = (await params).id;
   const res = await getBookingById(bookingId);
-  console.log("ressdd: ", res);
 
   const booking = res?.data as RoomBookingWithDetails | undefined;
 

@@ -219,7 +219,7 @@ const VintageMenu: React.FC = () => {
                   <img
                     src={item.image}
                     alt={item.name}
-                    className="w-16 h-16 object-cover rounded-lg mr-3 border border-[#d2b48c] flex-shrink-0"
+                    className="w-16 h-16 object-cover rounded-lg mr-3 border border-[#d2b48c] shrink-0"
                     style={{
                       maxWidth: "100%",
                       maxHeight: `${Math.max(

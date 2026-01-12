@@ -4,40 +4,49 @@ import React from "react";
 import VideoHeroSection from "@/components/video-section";
 import Bookmenu from "@/components/bookmenu";
 import Manakesh from "@/public/images/manakesh.webp";
-
 import restaurant from "@/public/images/restaurant.jpg";
 import restaurantlogo from "@/public/images/restaurantlogo.png";
 import Image from "next/image";
+import ContactHours from "../restaurant/ContactSection";
 
-export default function Paralexsection() {
+interface Props {
+  locale: "en" | "ar";
+}
+
+export default function ParalexSection({ locale }: Props) {
+  const isAr = locale === "ar";
+  const direction = isAr ? "rtl" : "ltr";
+  const textAlign = isAr ? "text-right" : "text-left";
+
   return (
-    <div className="relative">
+    <div className="relative" dir={direction}>
+      {/* Hero Video */}
       <section
         id="section-1"
         className="relative min-h-screen flex flex-col justify-center items-center text-center bg-white z-10"
-        style={{
-          backgroundColor: "#fff",
-        }}
+        style={{ backgroundColor: "#fff" }}
       >
-        <VideoHeroSection />
+        <VideoHeroSection locale={locale} />
       </section>
 
-      <div className="h-screen bg-white flex flex-col justify-center items-center px-6 text-center">
+      {/* Restaurant Intro */}
+      <div className={`h-screen bg-white flex flex-col justify-center items-center px-6`}>
         <Image
           src={restaurantlogo}
-          alt="Restaurant Logo"
+          alt={isAr ? "شعار المطعم" : "Restaurant Logo"}
           className="mb-6 w-60 h-60 object-contain"
         />
-        <h2 className="text-3xl font-semibold mb-4">AL KUROOM RESTAURANT</h2>
-        <p className="max-w-3xl text-gray-700 text-lg leading-relaxed">
-          Set amidst the Jordan Ranger forest overseeing Jerash’s beautiful
-          views, Al Kuroom Restaurant offers a dining experience like no other.
-          Guests can enjoy a varied selection of local dishes and flavors from
-          our daily breakfast, lunch and dinner buffets, craftily prepared by
-          our chef using the freshest handpicked ingredients from nearby farms.
+        <h2 className={`text-3xl font-semibold mb-4 ${textAlign}`}>
+          {isAr ? "مطعم الكروم" : "AL KUROOM RESTAURANT"}
+        </h2>
+        <p className={`max-w-3xl text-gray-700 text-lg leading-relaxed ${textAlign}`}>
+          {isAr
+            ? "يقع مطعم الكروم في غابات الأردن بالقرب من جرش، ويقدم تجربة طعام فريدة. يمكن للضيوف الاستمتاع بمجموعة متنوعة من الأطباق المحلية، مُعدة يومياً باستخدام مكونات طازجة محلية المصدر."
+            : "Set amidst the Jordan Ranger forest overseeing Jerash’s beautiful views, Al Kuroom Restaurant offers a dining experience like no other. Guests can enjoy a varied selection of local dishes, freshly prepared daily using locally sourced ingredients."}
         </p>
       </div>
 
+      {/* Parallax Section 1 */}
       <section
         id="section-2"
         className="relative h-screen flex flex-col justify-center items-center text-center text-white z-10 px-6"
@@ -49,21 +58,22 @@ export default function Paralexsection() {
         }}
       >
         <div className="absolute inset-0 bg-black opacity-40 z-0"></div>
-
         <div className="relative z-10 max-w-3xl">
-
-          <h1 className="text-4xl font-bold mb-4">
-            Discover Our Unique Atmosphere
+          <h1 className={`text-4xl font-bold mb-4 ${textAlign}`}>
+            {isAr ? "اكتشف أجواءنا الفريدة" : "Discover Our Unique Atmosphere"}
           </h1>
-          <p className="max-w-xl text-lg">
-            Enjoy a warm, inviting ambiance perfect for family dinners and
-            special occasions.
+          <p className={`max-w-xl text-lg ${textAlign}`}>
+            {isAr
+              ? "استمتع بأجواء دافئة مثالية لعشاء العائلة والمناسبات الخاصة."
+              : "Enjoy a warm, inviting ambiance perfect for family dinners and special occasions."}
           </p>
         </div>
       </section>
 
-    <Bookmenu />
+      {/* Book Menu Component */}
+      <Bookmenu  />
 
+      {/* Parallax Section 2 */}
       <section
         id="section-3"
         className="relative h-screen flex flex-col justify-center items-center text-center text-white z-10 px-6"
@@ -75,39 +85,20 @@ export default function Paralexsection() {
         }}
       >
         <div className="absolute inset-0 bg-black opacity-40 z-0"></div>
-
         <div className="relative z-10 max-w-3xl">
-          <h1 className="text-4xl font-bold mb-4">Taste Authentic Flavors</h1>
-          <p className="max-w-xl text-lg">
-            Our traditional recipes are prepared fresh daily, ensuring an
-            unforgettable experience.
+          <h1 className={`text-4xl font-bold mb-4 ${textAlign}`}>
+            {isAr ? "تذوق النكهات الأصيلة" : "Taste Authentic Flavors"}
+          </h1>
+          <p className={`max-w-xl text-lg ${textAlign}`}>
+            {isAr
+              ? "يتم تحضير وصفاتنا التقليدية يومياً لضمان تجربة لا تُنسى."
+              : "Our traditional recipes are prepared fresh daily, ensuring an unforgettable experience."}
           </p>
         </div>
       </section>
 
-      <div className="h-screen bg-white flex flex-col justify-center items-center px-6 text-center">
-        <h2 className="text-3xl font-semibold mb-4">Contact & Opening Hours</h2>
-        <p className="text-gray-700 text-lg mb-2">
-          Monday - Friday: 11:00 AM - 10:00 PM
-        </p>
-        <p className="text-gray-700 text-lg mb-2">
-          Saturday - Sunday: 12:00 PM - 11:00 PM
-        </p>
-        <p className="text-gray-700 text-lg">
-          Phone:{" "}
-          <a href="tel:+1234567890" className="text-blue-600 underline">
-            +1 (234) 567-890
-          </a>
-          <br />
-          Email:{" "}
-          <a
-            href="mailto:info@restaurant.com"
-            className="text-blue-600 underline"
-          >
-            info@restaurant.com
-          </a>
-        </p>
-      </div>
+      {/* Contact & Opening Hours */}
+      <ContactHours locale={locale}/>
     </div>
   );
 }

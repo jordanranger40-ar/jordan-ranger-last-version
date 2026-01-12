@@ -9,6 +9,7 @@ interface Props {
 
 export default async function RoomsAndTents({ isArabic }: Props) {
   const rooms = await getRoomsByRoomType("cabins");
+  const limtedRooms= rooms.slice(0,3)
 
   return (
     <section className="w-full  ">
@@ -25,7 +26,7 @@ export default async function RoomsAndTents({ isArabic }: Props) {
 
         {/* Rooms Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {rooms.map((room) => (
+          {limtedRooms.map((room) => (
             <Link
               key={room.id}
               href={`/Accommodation/Cabins/${room.slug}`}

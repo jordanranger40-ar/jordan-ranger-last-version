@@ -1,6 +1,6 @@
 import { clientsColumns } from "@/components/columns/clients-columns";
 import { DataTable } from "@/components/data-table";
-import { deleteClient } from "./(fetch)/deleteClient";
+import { deleteClientAction } from "./(fetch)/deleteClient";
 import NavigationButton from "@/components/NavigationButton";
 import { Card, CardContent } from "@/components/ui/card";
 import { FolderOpen } from "lucide-react";
@@ -42,7 +42,7 @@ export default async function ClientsTable() {
             columns={clientsColumns}
             data={allClients}
             routeName="clients"
-            deleteAction={deleteClient}
+            deleteAction={deleteClientAction}
           />
           <NavigationButton
             routeName="newClient"

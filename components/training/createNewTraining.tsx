@@ -12,9 +12,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {toast} from "sonner"
+import { toast } from "sonner";
+import { LightBulbIcon } from "@heroicons/react/24/solid";
+import LightButton from "../ui/light-button";
+import DarkButton from "../ui/dark-button";
 interface Props {
-  action: (data: newTraining) => Promise<void>;
+  action: (
+    data: newTraining
+  ) => Promise<{ status: number; message: string; success: boolean }>;
 }
 
 export default function CreateEventForm({ action }: Props) {
@@ -35,8 +40,8 @@ export default function CreateEventForm({ action }: Props) {
     capacity: 0,
     card_image: "",
     is_deleted: false,
-    post_image:"",
-    header_image:""
+    post_image: "",
+    header_image: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -72,28 +77,39 @@ export default function CreateEventForm({ action }: Props) {
         fieldErrors[err.path[0] as string] = err.message;
       });
       setErrors(fieldErrors);
-      toast.error("Please fill the highlighted fields.")
+      toast.error("Please fill the highlighted fields.");
       return;
     }
 
     setErrors({});
     startTransition(async () => {
       try {
-        await action({ ...form });
-        toast.success("Training created successfully!")
-        setTimeout(() => {
-          router.push("/admin/dashboard/training");
-        }, 1000);
+        const result = await action({ ...form });
+        if (result.status === 201) {
+          toast.success(result.message);
+          router.push("/admin/dashboard/trainings");
+          return;
+        } else if (result.status === 401) {
+          toast.error(result.message);
+          router.push("/login");
+          return;
+        } else if (result.status === 403) {
+          toast.error(result.message);
+          router.push("/");
+          return;
+        } else {
+          toast.error(result.message);
+          return;
+        }
       } catch (_error) {
-        toast.error("Failed to create training.")
+        toast.error("Failed to create training.");
       }
     });
   };
 
-
   return (
     <main className="ml-3 xl:ml-7 mb-10 text-gray-800">
-      <div className="flex flex-col border-b border-gray-300 pb-3 w-[65vw] mb-8">
+      <div className="flex flex-col border-b border-gray-300 pb-3 w-full mb-8">
         <h1 className="text-2xl font-semibold text-[#676e32]">New Event</h1>
       </div>
 
@@ -313,95 +329,85 @@ export default function CreateEventForm({ action }: Props) {
             </div>
 
             {/* Image Upload */}
-              <div className="flex flex-col gap-8 mt-4">
-                         {/* Card Image */}
-                         <div>
-                           <label className="text-base text-black mb-2">
-                             <span className="text-red-500">*</span> Card Image
-                           </label>
-                           <ImageUploader
-                             endpoint="activities"
-                             initialImageUrl={form.card_image ?? ""}
-                             onUploadComplete={(url) =>
-                               setForm({ ...form, card_image: url })
-                             }
-                             onUploadError={(e) =>
-                              toast.error(e.message)
-                             }
-                             onDelete={() => setForm({ ...form, card_image: "" })}
-                           />
-                           {errors.card_image && (
-                             <p className="text-red-500 text-sm mt-1">
-                               {errors.card_image}
-                             </p>
-                           )}
-                         </div>
-           
-                         {/* Poster Image */}
-                         <div>
-                           <label className="text-base text-black mb-2">
-                             <span className="text-red-500">*</span> Poster Image
-                           </label>
-                           <ImageUploader
-                             endpoint="activities"
-                             initialImageUrl={form.post_image ?? ""}
-                             onUploadComplete={(url) =>
-                               setForm({ ...form, post_image: url })
-                             }
-                             onUploadError={(e) =>
-                               toast.error(e.message)
-                             }
-                             onDelete={() => setForm({ ...form, post_image: "" })}
-                           />
-                           {errors.post_image && (
-                             <p className="text-red-500 text-sm mt-1">
-                               {errors.post_image}
-                             </p>
-                           )}
-                         </div>
-           
-                         {/* Header Image */}
-                         <div>
-                           <label className="text-base text-black mb-2">
-                             <span className="text-red-500">*</span> Header Image
-                           </label>
-                           <ImageUploader
-                             endpoint="activities"
-                             initialImageUrl={form.header_image ?? ""}
-                             onUploadComplete={(url) =>
-                               setForm({ ...form, header_image: url })
-                             }
-                             onUploadError={(e) =>
-                               toast.error(e.message)
-                             }
-                             onDelete={() => setForm({ ...form, header_image: "" })}
-                           />
-                           {errors.header_image && (
-                             <p className="text-red-500 text-sm mt-1">
-                               {errors.header_image}
-                             </p>
-                           )}
-                         </div>
-                       </div>
+            <div className="flex flex-col gap-8 mt-4">
+              {/* Card Image */}
+              <div>
+                <label className="text-base text-black mb-2">
+                  <span className="text-red-500">*</span> Card Image
+                </label>
+                <ImageUploader
+                  endpoint="activities"
+                  initialImageUrl={form.card_image ?? ""}
+                  onUploadComplete={(url) =>
+                    setForm({ ...form, card_image: url })
+                  }
+                  onUploadError={(e) => toast.error(e.message)}
+                  onDelete={() => setForm({ ...form, card_image: "" })}
+                />
+                {errors.card_image && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.card_image}
+                  </p>
+                )}
+              </div>
+
+              {/* Poster Image */}
+              <div>
+                <label className="text-base text-black mb-2">
+                  <span className="text-red-500">*</span> Poster Image
+                </label>
+                <ImageUploader
+                  endpoint="activities"
+                  initialImageUrl={form.post_image ?? ""}
+                  onUploadComplete={(url) =>
+                    setForm({ ...form, post_image: url })
+                  }
+                  onUploadError={(e) => toast.error(e.message)}
+                  onDelete={() => setForm({ ...form, post_image: "" })}
+                />
+                {errors.post_image && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.post_image}
+                  </p>
+                )}
+              </div>
+
+              {/* Header Image */}
+              <div>
+                <label className="text-base text-black mb-2">
+                  <span className="text-red-500">*</span> Header Image
+                </label>
+                <ImageUploader
+                  endpoint="activities"
+                  initialImageUrl={form.header_image ?? ""}
+                  onUploadComplete={(url) =>
+                    setForm({ ...form, header_image: url })
+                  }
+                  onUploadError={(e) => toast.error(e.message)}
+                  onDelete={() => setForm({ ...form, header_image: "" })}
+                />
+                {errors.header_image && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.header_image}
+                  </p>
+                )}
+              </div>
+            </div>
 
             {/* Buttons */}
             <div className="flex justify-center mt-8">
               <div className="flex gap-4">
-                <button
+                <LightButton
                   disabled={isPending}
                   type="button"
-                  className="px-5 py-2 rounded-md border border-gray-400 cursor-pointer text-gray-700 hover:bg-gray-100 transition"
-                  onClick={() => router.replace("/admin/dashboard/events")}
+                  onClick={() => router.replace("/admin/dashboard/training")}
                 >
                   Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-md bg-[#676e32] text-white cursor-pointer hover:bg-[#7b8444] transition"
+                </LightButton>
+                <DarkButton
                   disabled={isPending}
-                >
-                  {isPending ? "Saving..." : "Save Changes"}
-                </button>
+                  type="submit"
+                >{isPending ? "Adding..." : "Add Training"}</DarkButton>
               </div>
             </div>
           </CardContent>

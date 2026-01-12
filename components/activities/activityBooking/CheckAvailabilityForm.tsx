@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { checkActivityAvailability } from "./(fetch)/checkAvailability";
+import { checkActivityAvailabilityAction } from "./(fetch)/checkAvailability";
 import TimeSelect from "./TimeSelect";
+import { toast } from "sonner";
 
 export default function CheckAvailabilityForm({
   activityId,
@@ -19,8 +20,6 @@ export default function CheckAvailabilityForm({
   const [minDate, setMinDate] = useState<string>("");
   const [startHour, setStartHour] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-
   const [userTimeZone, setUserTimeZone] = useState<string>("");
 
   useEffect(() => {
@@ -44,30 +43,26 @@ export default function CheckAvailabilityForm({
 
   const handleCheck = async () => {
     if (!startDate || !startHour) {
-      setMessage(
-        isArabic
+      toast.error( isArabic
           ? "يرجى اختيار تاريخ ووقت الحجز."
-          : "Please select booking date/time."
-      );
+          : "Please select booking date/time.")
       return;
     }
 
     const start = new Date(`${startDate}T${startHour}:00:00`).toISOString();
 
     setLoading(true);
-    const result = await checkActivityAvailability(activityId, start);
+    const result = await checkActivityAvailabilityAction(activityId, start);
     setLoading(false);
-    setMessage(null);
 
-    if (result.success && result.available) {
-      onAvailable(result.available, { start });
-    } else {
-      setMessage(
-        result.message ||
-          (isArabic
-            ? "غير متاح في الوقت المحدد"
-            : "Unavailable for selected time")
+    if (result?.status === 200) {
+      onAvailable(result.data!, { start });
+    } else if (result?.status === 409) {
+      toast.error(
+        isArabic ? "غير متاح في الوقت المحدد" : "Unavailable for selected time"
       );
+    } else {
+      toast.error(isArabic ? "حدث خطأ" : "An error occured");
     }
   };
 
@@ -122,13 +117,6 @@ export default function CheckAvailabilityForm({
             : "Check Availability"}
         </button>
       </div>
-
-      {/* Message */}
-      {message && (
-        <p className="text-sm text-red-600 text-center font-medium">
-          {message}
-        </p>
-      )}
 
       <p className="text-xs text-gray-500 text-center">
         {isArabic

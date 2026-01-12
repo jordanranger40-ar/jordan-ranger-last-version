@@ -11,11 +11,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+
 import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import {toast} from "sonner"
+import { toast } from "sonner";
+import LightButton from "@/components/ui/light-button";
+import DarkButton from "@/components/ui/dark-button";
 interface Props {
-  action: (data: newActivity) => Promise<void>;
+  action: (
+    data: newActivity
+  ) => Promise<{ status: number; message: string; success: boolean }>;
 }
 export default function CreateActivityForm({ action }: Props) {
   const router = useRouter();
@@ -55,7 +67,7 @@ export default function CreateActivityForm({ action }: Props) {
         name === "capacity" ||
         name === "minimum_quantity"
       ) {
-        updated = { ...prev, [name]: Number(value) };
+        updated = { ...prev, [name]: Number(value.trim()) };
       }
 
       // auto-generate slug from English name
@@ -80,20 +92,32 @@ export default function CreateActivityForm({ action }: Props) {
         fieldErrors[err.path[0] as string] = err.message;
       });
       setErrors(fieldErrors);
-      toast.error("Please fill the highlighted fields.")
+      toast.error("Please fill the highlighted fields.");
       return;
     }
 
     setErrors({});
     startTransition(async () => {
       try {
-        await action({ ...form });
-        toast.success("Activity Created successfully!")
-        setTimeout(() => {
+        const result = await action({ ...form });
+        if (result.status === 201) {
+          toast.success(result.message);
           router.push("/admin/dashboard/activities");
-        }, 1000);
+          return;
+        } else if (result.status === 401) {
+          toast.error(result.message);
+          router.push("/login");
+          return;
+        } else if (result.status === 403) {
+          toast.error(result.message);
+          router.push("/");
+          return;
+        } else {
+          toast.error(result.message);
+          return;
+        }
       } catch (_error) {
-        toast.error("Failed to Create Activity.")
+        toast.error("Failed to Create Activity.");
       }
     });
   };
@@ -136,52 +160,68 @@ export default function CreateActivityForm({ action }: Props) {
 
             {/* Activity Type */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {[
-                {
-                  label: "English Loacation Type",
-                  name: "location_type_en",
-                  value: form.location_type_en,
-                  options: [
-                    { value: "indoor", label: "Indoor" },
-                    { value: "outdoor", label: "Outdoor" },
-                  ],
-                },
-                {
-                  label: "Arabic Loacation Type",
-                  name: "location_type_ar",
-                  value: form.location_type_ar,
-                  options: [
-                    { value: "داخلي", label: "داخلي" },
-                    { value: "خارجي", label: "خارجي" },
-                  ],
-                },
-              ].map((field) => (
-                <div key={field.name} className="flex flex-col md:w-[90%]">
-                  <label className="text-sm font-medium text-gray-700 mb-1">
-                    <span className="text-red-500">*</span> {field.label}
-                  </label>
-                  <select
-                  disabled={isPending}
-                    name={field.name}
-                    value={field.value}
-                    onChange={handleInputChange}
-                    className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
-                  >
-                    <option value="">Select {field.label}</option>
-                    {field.options.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                  {errors[field.name] && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors[field.name]}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
+  {[
+    {
+      label: "English Location Type",
+      name: "location_type_en",
+      value: form.location_type_en,
+      options: [
+        { value: "indoor", label: "Indoor" },
+        { value: "outdoor", label: "Outdoor" },
+      ],
+    },
+    {
+      label: "Arabic Location Type",
+      name: "location_type_ar",
+      value: form.location_type_ar,
+      options: [
+        { value: "داخلي", label: "داخلي" },
+        { value: "خارجي", label: "خارجي" },
+      ],
+    },
+  ].map((field) => (
+    <div key={field.name} className="flex flex-col md:w-[90%]">
+      <label className="text-sm font-medium text-gray-700 mb-1">
+        <span className="text-red-500">*</span> {field.label}
+      </label>
+
+      <Select
+        disabled={isPending}
+        value={field.value}
+        onValueChange={(value) =>
+          handleInputChange({
+            target: { name: field.name, value },
+          } as React.ChangeEvent<HTMLInputElement>)
+        }
+      >
+        <SelectTrigger
+          className={`h-10 w-full ${
+            errors[field.name]
+              ? "border-red-500"
+              : "border-gray-300"
+          } focus:ring-2 focus:ring-[#676e32]`}
+        >
+          <SelectValue placeholder={`Select ${field.label}`} />
+        </SelectTrigger>
+
+        <SelectContent dir={field.name.endsWith("_ar") ? "rtl" : "ltr"}>
+          {field.options.map((opt) => (
+            <SelectItem key={opt.value} value={opt.value}>
+              {opt.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      {errors[field.name] && (
+        <p className="text-red-500 text-sm mt-1">
+          {errors[field.name]}
+        </p>
+      )}
+    </div>
+  ))}
+</div>
+
 
             {/* Name Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -194,7 +234,7 @@ export default function CreateActivityForm({ action }: Props) {
                     <span className="text-red-500">*</span> {field.label}
                   </label>
                   <input
-                  disabled={isPending}
+                    disabled={isPending}
                     type="text"
                     name={field.name}
                     value={field.value}
@@ -217,7 +257,7 @@ export default function CreateActivityForm({ action }: Props) {
                   <span className="text-red-500">*</span> Price
                 </label>
                 <input
-                disabled={isPending}
+                  disabled={isPending}
                   type="number"
                   name="price"
                   onChange={handleInputChange}
@@ -236,7 +276,7 @@ export default function CreateActivityForm({ action }: Props) {
                   <span className="text-red-500">*</span> Capacity
                 </label>
                 <input
-                disabled={isPending}
+                  disabled={isPending}
                   type="number"
                   name="capacity"
                   onChange={handleInputChange}
@@ -251,7 +291,7 @@ export default function CreateActivityForm({ action }: Props) {
                   <span className="text-red-500">*</span> Minimum Quantity
                 </label>
                 <input
-                disabled={isPending}
+                  disabled={isPending}
                   type="number"
                   name="minimum_quantity"
                   onChange={handleInputChange}
@@ -284,7 +324,7 @@ export default function CreateActivityForm({ action }: Props) {
                     <span className="text-red-500">*</span> {field.label}
                   </label>
                   <textarea
-                  disabled={isPending}
+                    disabled={isPending}
                     name={field.name}
                     value={field.value}
                     onChange={handleInputChange}
@@ -328,10 +368,7 @@ export default function CreateActivityForm({ action }: Props) {
                   onUploadComplete={(url) =>
                     setForm({ ...form, card_image: url })
                   }
-                  onUploadError={(e) =>
-                    toast.error(e.message)
-                    
-                  }
+                  onUploadError={(e) => toast.error(e.message)}
                   onDelete={() => setForm({ ...form, card_image: "" })}
                 />
                 {errors.card_image && (
@@ -352,9 +389,7 @@ export default function CreateActivityForm({ action }: Props) {
                   onUploadComplete={(url) =>
                     setForm({ ...form, poster_image: url })
                   }
-                  onUploadError={(e) =>
-                    toast.error(e.message)
-                  }
+                  onUploadError={(e) => toast.error(e.message)}
                   onDelete={() => setForm({ ...form, poster_image: "" })}
                 />
                 {errors.poster_image && (
@@ -375,9 +410,7 @@ export default function CreateActivityForm({ action }: Props) {
                   onUploadComplete={(url) =>
                     setForm({ ...form, header_image: url })
                   }
-                  onUploadError={(e) =>
-                    toast.error(e.message)
-                  }
+                  onUploadError={(e) => toast.error(e.message)}
                   onDelete={() => setForm({ ...form, header_image: "" })}
                 />
                 {errors.header_image && (
@@ -390,21 +423,16 @@ export default function CreateActivityForm({ action }: Props) {
             {/* Buttons */}
             <div className="flex justify-center mt-8">
               <div className="flex gap-4">
-                <button
-                disabled={isPending}
+                <LightButton
+                  disabled={isPending}
                   type="button"
-                  className="px-5 py-2 rounded-md border border-gray-400 cursor-pointer text-gray-700 hover:bg-gray-100 transition"
                   onClick={() => router.replace("/admin/dashboard/activities")}
                 >
                   Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-md bg-[#676e32] text-white cursor-pointer hover:bg-[#7b8444] transition"
-                  disabled={isPending}
-                >
+                </LightButton>
+                <DarkButton type="submit" disabled={isPending}>
                   {isPending ? "Adding..." : "Add Activity"}
-                </button>
+                </DarkButton>
               </div>
             </div>
           </CardContent>

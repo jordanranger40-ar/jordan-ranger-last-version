@@ -1,27 +1,73 @@
-"use server"
-import { authOptions } from "@/app/models/db/authOptions";
-import { newActivity } from "@/types";
+"use server";
+
 import { getServerSession } from "next-auth";
 import { revalidatePath } from "next/cache";
+import { authOptions } from "@/app/models/db/authOptions";
+import { z } from "zod";
+import { editActivity } from "@/app/models/db/lib/services/activities";
+import { newActivitySchema } from "@/app/models/db/lib/schemas/activitySchema";
 
-export async function editActivity(data: newActivity) {
+type ActivityInput = z.infer<typeof newActivitySchema>;
+
+export async function editActivityAction(id:string,data: ActivityInput) {
   const session = await getServerSession(authOptions);
-  const token = session?.user.token;
-  console.log("dataid: ", data.id);
-  
-  const result = await fetch(
-    `${process.env.NEXT_PUBLIC_APP_URL}/api/activities/${data.id}`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(data),
+
+  // 1️⃣ Auth
+  if (!session) {
+    return {
+      success: false,
+      status: 401,
+      message: "Please Login To Perform This Action",
+    };
+  }
+
+  // 2️⃣ Authorization
+  if (session.user.role !== "admin") {
+    return {
+      success: false,
+      status: 403,
+      message: "You Are Not Allowed To Perform This Action",
+    };
+  }
+
+  // 3️⃣ Validation
+  const parsed = newActivitySchema.safeParse(data);
+  if (!parsed.success) {
+    return {
+      success: false,
+      status: 400,
+      message: "Invalid Activity Data",
+    };
+  }
+;
+
+  try {
+    // 4️⃣ DB update
+    const updated = await editActivity(id, parsed.data);
+
+    if (!updated) {
+      return {
+        success: false,
+        status: 409,
+        message: "Activity Not Found",
+      };
     }
-  );
-  
-  if (!result.ok) throw new Error("Failed To Edit The Activity");
-  revalidatePath(`/dashboard/activities`);
-  return result.json();
+
+    // 5️⃣ Revalidate
+    revalidatePath(`/dashboard/activities`);
+
+    return {
+      success: true,
+      status: 201,
+      message: "Activity Updated Successfully",
+      data: updated,
+    };
+  } catch (error) {
+    console.error("Edit Activity Error:", error);
+    return {
+      success: false,
+      status: 500,
+      message: "Failed To Update The Activity",
+    };
+  }
 }

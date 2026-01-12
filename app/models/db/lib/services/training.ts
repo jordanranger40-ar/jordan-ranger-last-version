@@ -3,7 +3,6 @@ import pool from "../index";
 import { newTraining } from "@/types/index";
 
 export const addNewTraining = async (newTraining: newTraining) => {
-  console.log("ebfebjn");
   const result = await pool.query<newTraining>(
     "insert into training (name_en, name_ar,description_en,description_ar, category_en ,category_ar, price, capacity,start_date,end_date,card_image,slug,post_image,header_image ) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) returning *",
     [

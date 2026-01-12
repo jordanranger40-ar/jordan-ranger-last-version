@@ -2,33 +2,53 @@
 import { getServerSession } from "next-auth";
 import { revalidatePath } from "next/cache";
 import { authOptions } from "@/app/models/db/authOptions";
+import { addNewBanner } from "@/app/models/db/lib/services/banners";
+import { newBanner } from "@/types";
+import { z } from "zod";
 
-interface BannerData {
-  alt: string;
-  description_en: string;
-  description_ar: string;
-  image?: string | null;
-}
+const bannerSchema = z.object({
+  alt: z.string().min(1),
+  description_en: z.string().min(1),
+  description_ar: z.string().min(1),
+  image: z.string().nullable(),
+});
 
-export async function createBanner(data: BannerData) {
+export async function createBanner(data: newBanner) {
   const session = await getServerSession(authOptions);
-  const token = session?.user.token;
- 
-  const result = await fetch(
-    `${process.env.NEXT_PUBLIC_APP_URL}/api/banners`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(data)
+  try {
+    const parsed = bannerSchema.safeParse(data);
+    if (!parsed.success) {
+      return {
+        success: false,
+        status: 400,
+        message: "Invalid Banner Data",
+      };
     }
-  );
-console.log("result.ok: ",result.ok);
+    if (!session)
+      return {
+        success: false,
+        status: 401,
+        message: "Please Login To Perform This Action",
+      };
+    if (session.user.role !== "admin")
+      return {
+        success: false,
+        status: 403,
+        message: "You Are Not Allowed To Perform This Action",
+      };
 
-if (!result.ok) throw new Error("Failed to create banner");
-
-  revalidatePath(`/dashboard/banners`);
-  return await result.json();
+    const result = await addNewBanner(parsed.data);
+    revalidatePath(`/dashboard/banners`);
+    return {
+      success: true,
+      status: 201,
+      message: "Banner Added Successfully",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      status: 500,
+      message: "Failded To Add Banner",
+    };
+  }
 }

@@ -48,6 +48,7 @@ export const deleteFeatureById = async (id: string) => {
     await client.query("delete from room_features where id=$1", [id]);
 
     client.query("commit");
+    return "Room Feature Deleted Succesfully"
   } catch (error) {
     client.query("ROLLBACK");
     console.error("Error deleting feature:", error);

@@ -36,13 +36,14 @@ export const trainingColumns: ColumnDef<newTraining>[] = [
     ),
     cell: ({ row }) => {
       const type = row.getValue("category_en") as string;
-      const englishName = row.getValue("name_en") as string;
+      const englishName = row.original.name_en.slice(0,35);
+      const points= row.original.name_en.length>35 ? "...":""
       return (
         <>
           {type === "Schools Training" ? (
-            <div className="text-[#676e32]  ">{englishName}</div>
+            <div className="text-[#676e32]  ">{englishName}{points}</div>
           ) : (
-            <div className="">{englishName}</div>
+            <div className="">{englishName}{points}</div>
           )}
         </>
       );
@@ -61,13 +62,14 @@ export const trainingColumns: ColumnDef<newTraining>[] = [
     ),
     cell: ({ row }) => {
       const type = row.getValue("category_en") as string;
-      const arabicName = row.getValue("name_ar") as string;
+      const arabicName = row.original.name_ar.slice(0,35);
+      const points= row.original.name_ar.length>35 ? "...":""
       return (
         <>
           {type === "Schools Training" ? (
-            <div className="text-[#676e32]  ">{arabicName}</div>
+            <div className="text-[#676e32]  ">{arabicName}{points}</div>
           ) : (
-            <div className="">{arabicName}</div>
+            <div className="">{arabicName}{points}</div>
           )}
         </>
       );
@@ -88,13 +90,14 @@ export const trainingColumns: ColumnDef<newTraining>[] = [
     ),
     cell: ({ row }) => {
       const type = row.getValue("category_en") as string;
-      const englishDesc = row.getValue("description_en") as string;
+      const englishDesc = row.original.description_en.slice(0,35);
+      const points= row.original.description_en.length>35 ? "...":""
       return (
         <>
           {type === "Schools Training" ? (
-            <div className="text-[#676e32]  ">{englishDesc}</div>
+            <div className="text-[#676e32]  ">{englishDesc}{points}</div>
           ) : (
-            <div className="">{englishDesc}</div>
+            <div className="">{englishDesc}{points}</div>
           )}
         </>
       );
@@ -114,13 +117,14 @@ export const trainingColumns: ColumnDef<newTraining>[] = [
     ),
     cell: ({ row }) => {
       const type = row.getValue("category_en") as string;
-      const arabicDesc = row.getValue("description_ar") as string;
+      const arabicDesc = row.original.description_ar.slice(0,35);
+      const points= row.original.description_ar.length>35 ? "...":""
       return (
         <>
           {type === "Schools Training" ? (
-            <div className="text-[#676e32]  ">{arabicDesc}</div>
+            <div className="text-[#676e32]  ">{arabicDesc}{points}</div>
           ) : (
-            <div>{arabicDesc}</div>
+            <div>{arabicDesc}{points}</div>
           )}
         </>
       );

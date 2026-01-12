@@ -1,10 +1,14 @@
 import React from 'react'
 import Paralexsection from '@/components/paralexsection/Paralexsection'
 
-export default function page() {
+interface Props {
+  params:Promise<{locale:"en"|"ar"}>
+}
+export default async function page({params}:Props) {
+  const locale= (await params).locale
   return (
     <div>
-      <Paralexsection />
+      <Paralexsection locale={locale} />
     </div>
   )
 }

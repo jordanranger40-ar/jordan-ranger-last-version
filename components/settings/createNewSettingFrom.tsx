@@ -138,8 +138,6 @@ export default function CreateNewSetting({
       setTimeout(() => setToast(null), 3000);
     }
   };
-console.log("existingKeys:", existingKeys);
-
   const handleVideoUploadError = () => {
     setIsUploading(false);
     setToast({

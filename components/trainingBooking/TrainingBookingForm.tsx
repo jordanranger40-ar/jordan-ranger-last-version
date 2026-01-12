@@ -4,9 +4,9 @@ import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { User, Mail, Users } from "lucide-react";
-import { bookTrainingFunction } from "./(fetch)/bookTraining";
+import { bookTrainingAction } from "./(fetch)/bookTraining";
 import DarkButton from "../ui/dark-button";
-
+import {toast} from "sonner"
 export default function TrainingBookingForm({
   training_id,
   price,
@@ -31,8 +31,6 @@ export default function TrainingBookingForm({
 
   const [quantity, setQuantity] = useState<number>(1);
   const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
-
   const t = {
     availableSpots: isArabic ? "المقاعد المتاحة" : "Available Spots",
     fullyBooked: isArabic ? "مكتمل الحجز" : "Fully Booked",
@@ -61,39 +59,37 @@ export default function TrainingBookingForm({
       router.push("/login");
       return;
     }
-
     if (available <= 0) {
-      setMsg(t.fullyBookedMsg);
+      toast.error(t.fullyBookedMsg)
       return;
     }
-
     if (quantity < 1 || quantity > available) {
-      setMsg(t.qtyError);
+      toast.error(t.qtyError)
       return;
     }
-
     setLoading(true);
-    setMsg(null);
-
     try {
-      const result = await bookTrainingFunction({
+      const result = await bookTrainingAction({
         training_id,
         quantity,
       });
-
+       if (result.status === 401) {
+        toast.error(
+          isArabic
+            ? "يرجى تسجيل الدخول لحجز الغرفة"
+            : "Please login to book the Room"
+        );
+        setTimeout(() => router.push("/login"), 1000);
+      }
       if (result.success) {
-        setMsg("✅ " + t.success);
+        toast.success("✅ " + t.success)
         onBooked(true, quantity);
       } else {
-        setMsg(result.message || t.failed);
-        if (result.message === "Please login to book the Training") {
-          router.push("/login");
-        }
+        toast.error(result.message || t.failed)
         onBooked(false, quantity);
       }
     } catch (err) {
-      console.error(err);
-      setMsg(t.networkError);
+      toast.error(t.networkError)
       onBooked(false, quantity);
     } finally {
       setLoading(false);
@@ -175,16 +171,7 @@ export default function TrainingBookingForm({
         </DarkButton>
       </div>
 
-      {/* Message */}
-      {msg && (
-        <div
-          className={`text-sm mt-2 ${
-            msg.includes("✅") ? "text-green-600" : "text-red-600"
-          }`}
-        >
-          {msg}
-        </div>
-      )}
+     
     </div>
   );
 }

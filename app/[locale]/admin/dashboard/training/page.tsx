@@ -1,6 +1,6 @@
 import { trainingColumns } from "@/components/columns/training-columns";
 import { DataTable } from "@/components/data-table";
-import { deleteTraining } from "./(fetch)/deleteTraining";
+import { deleteTrainingAction } from "./(fetch)/deleteTraining";
 import NavigationButton from "@/components/NavigationButton";
 import { getAllTraining } from "@/app/models/db/lib/services/training";
 export default async function TrainingTable() {
@@ -18,7 +18,7 @@ export default async function TrainingTable() {
         columns={trainingColumns}
         data={allTraining}
         routeName="training"
-        deleteAction={deleteTraining}
+        deleteAction={deleteTrainingAction}
       />
 
       <NavigationButton routeName="newTraining" value="Add New Training"/>

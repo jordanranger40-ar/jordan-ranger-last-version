@@ -21,7 +21,7 @@ interface Props {
 const DEFAULT_ROUTES: Record<ServiceKey, string> = {
   room: "/rooms",
   activity: "/activities",
-  training: "/trainings",
+  training: "/training/corporate-team-building",
 };
 
 export default function UpSellingComponent({

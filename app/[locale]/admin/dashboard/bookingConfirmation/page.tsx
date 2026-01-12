@@ -2,7 +2,6 @@ import { getUserUpcomingActivityBookings } from "@/app/models/db/lib/services/ac
 import { getUserUpcomingRoomBookings } from "@/app/models/db/lib/services/room_booking";
 import { getUserUpcomingTrainingBookings } from "@/app/models/db/lib/services/training_booking";
 import UserIdFilter from "@/components/UserIdFelter";
-import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { FolderOpen } from "lucide-react";
 import { type UnifiedBooking } from "@/types/index";
@@ -10,12 +9,14 @@ import { AllBookingTable } from "@/components/AllBookingsTable";
 import { bookingsColumns } from "@/components/columns/allBooking-columns";
 
 interface Props {
-  searchParams?: Promise<{ user_id: string }>;
+  searchParams?: Promise<{ user_id: string , email:string}>;
 }
 
 async function Page({ searchParams }: Props) {
   const user_id = (await searchParams)?.user_id;
-  if (!user_id) {
+  const userEmail= (await searchParams)?.email
+  
+  if (!user_id && !userEmail) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 p-6 bg-white border-gray-300 rounded-lg shadow-md w-[95vw] lg:w-[50vw] mx-auto ml-1 lg:ml-5 mt-10">
         <h2 className="text-lg font-semibold text-gray-800">
@@ -24,19 +25,21 @@ async function Page({ searchParams }: Props) {
         <p className="text-sm text-gray-500 text-center">
           To view bookings, you need to provide a valid User ID below.
         </p>
-        <UserIdFilter user_id={user_id} />
+        <UserIdFilter user_id={user_id} email={userEmail} />
       </div>
     );
   }
 
+  
+
   const upCommingActivitiesBookings = (
-    await getUserUpcomingActivityBookings(user_id)
+    await getUserUpcomingActivityBookings(user_id,userEmail)
   ).data;
   const upCommingAccomodationBookings = (
-    await getUserUpcomingRoomBookings(user_id)
+    await getUserUpcomingRoomBookings(user_id,userEmail)
   ).data;
   const upCommingTrainingBookings = (
-    await getUserUpcomingTrainingBookings(user_id)
+    await getUserUpcomingTrainingBookings(user_id,userEmail)
   ).data;
 
   const unifiedBookings: UnifiedBooking[] = [
@@ -131,7 +134,7 @@ async function Page({ searchParams }: Props) {
             routeName="bookingConfirmation"
           />
           {/* Total bookings amount */}
-          <div className=" w-full flex justify-end">
+          <div className=" w-full flex justify-end mb-16 mt-4">
             <span className="text-lg font-semibold text-[#484d23]">
               Total Amount: {totalBookingsAmount.toFixed(2)} JOD
             </span>

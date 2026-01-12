@@ -1,6 +1,6 @@
 import { roomFeaturesColumns } from "@/components/columns/features-columns";
 import { DataTable } from "@/components/data-table";
-import { deleteFeature } from "./(fetch)/deleteFeature";
+import { deleteFeatureAction } from "./(fetch)/deleteFeature";
 import { getAllFeatures } from "@/app/models/db/lib/services/rooms_features";
 import { Card, CardContent } from "@/components/ui/card";
 import { FolderOpen } from "lucide-react";
@@ -39,7 +39,7 @@ export default async function RoomsFeaturesTable() {
             columns={roomFeaturesColumns}
             data={allFeatures}
             routeName="room_features"
-            deleteAction={deleteFeature}
+            deleteAction={deleteFeatureAction}
           />
           <NavigationButton routeName="newFeature" value="Add New Feature" />
         </>

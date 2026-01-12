@@ -2,6 +2,7 @@ import {
   RoomBookingWithDetails,
   type newBooking,
   type newRoom,
+  type newUser
 } from "@/types/index";
 import pool from "../index";
 import { createCart, updateCartTotalAmount } from "./cart";
@@ -562,8 +563,16 @@ export const updateBookingStatus = async (
   };
 };
 
-export const getUserUpcomingRoomBookings = async (user_id: string) => {
+export const getUserUpcomingRoomBookings = async (user_id?: string,email?:string) => {
   const now = new Date();
+
+   let updatedUserId= ''
+    if(email && !user_id) {
+      const getUserIdByEmail= await pool.query<newUser>("select id from users where email=$1 ",[email])
+      updatedUserId=getUserIdByEmail.rows[0].id!
+    }else {
+      updatedUserId=user_id!
+    }
 
   const result = await pool.query<RoomBookingWithDetails>(
     `
@@ -597,7 +606,7 @@ export const getUserUpcomingRoomBookings = async (user_id: string) => {
       AND rb.start_time > $2
     ORDER BY rb.start_time ASC
   `,
-    [user_id, now]
+    [updatedUserId, now]
   );
 
   return {

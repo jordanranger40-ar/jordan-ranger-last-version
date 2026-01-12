@@ -32,7 +32,7 @@ export default async function Page({ params }: Props) {
   return (
     <main className="p-6 space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between">
         <div>
           <h1 className="text-3xl font-bold text-[#676e32]">Booking Details</h1>
           <p className="text-sm text-gray-500">
@@ -41,7 +41,7 @@ export default async function Page({ params }: Props) {
         </div>
         <Link
           href={`/admin/dashboard/roomsBooking/${res.data.room_id}`}
-          className="text-sm font-medium text-[#676e32] hover:text-[#7d8d07] underline"
+          className="text-xs font-medium text-[#676e32] hover:text-[#7d8d07] underline xl:text-sm mt-3 xl:mt-0"
         >
           ← Back To {res.data.name_en} Bookings
         </Link>

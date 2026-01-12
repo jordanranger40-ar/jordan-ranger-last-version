@@ -11,9 +11,13 @@ import {
 import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import LightButton from "../ui/light-button";
+import DarkButton from "../ui/dark-button";
 
 interface Props {
-  action: (data: newClient) => Promise<void>;
+  action: (
+    data: newClient
+  ) => Promise<{ message: string; status: number; success: boolean }>;
 }
 
 export default function AddClientForm({ action }: Props) {
@@ -23,7 +27,9 @@ export default function AddClientForm({ action }: Props) {
     logo: "",
   });
   const [isPending, startTransition] = useTransition();
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -32,7 +38,7 @@ export default function AddClientForm({ action }: Props) {
   };
 
   const handleUploadError = (error: Error) => {
-    toast.error(`Upload failed: ${error.message}`)
+    toast.error(`Upload failed: ${error.message}`);
   };
 
   const handleImageDelete = () => {
@@ -42,13 +48,25 @@ export default function AddClientForm({ action }: Props) {
   const handleFormSubmit = () => {
     startTransition(async () => {
       try {
-        await action({ ...form });
-        toast.success("Client added successfully!")
-        setTimeout(() => {
-          router.replace("/admin/dashboard/clients");
-        }, 1000);
+        const result = await action({ ...form });
+        if (result.status === 201) {
+          toast.success(result.message);
+          router.push("/admin/dashboard/clients");
+          return;
+        } else if (result.status === 401) {
+          toast.error(result.message);
+          router.push("/login");
+          return;
+        } else if (result.status === 403) {
+          toast.error(result.message);
+          router.push("/");
+          return;
+        } else {
+          toast.error(result.message);
+          return;
+        }
       } catch (_error) {
-        toast.error("Failed to add Client.")
+        toast.error("Failed to add Client.");
       }
     });
   };
@@ -77,7 +95,7 @@ export default function AddClientForm({ action }: Props) {
           <CardContent className="flex flex-col items-start gap-5 mb-7">
             <div className="flex flex-col">
               <label className="text-base text-black mb-1">
-                <span className="text-red-500 text-sm">*</span> Name 
+                <span className="text-red-500 text-sm">*</span> Name
               </label>
               <input
                 type="text"
@@ -89,8 +107,6 @@ export default function AddClientForm({ action }: Props) {
               />
             </div>
 
-
-           
             <div className="flex flex-col w-full max-w-sm">
               <label className="text-base text-black mb-1">Client Logo</label>
               <ImageUploader
@@ -104,20 +120,15 @@ export default function AddClientForm({ action }: Props) {
 
             <div className="w-full flex justify-center mt-5">
               <div className="flex flex-row gap-3">
-                <button
+                <LightButton
                   type="button"
-                  className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
                   onClick={() => router.replace("/admin/dashboard/clients")}
                 >
                   Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bg-[#125892] text-white px-4 py-2 rounded-md cursor-pointer hover:bg-[#0f4473]"
-                  disabled={isPending}
-                >
+                </LightButton>
+                <DarkButton type="submit" disabled={isPending}>
                   {isPending ? "Adding..." : "Add Client"}
-                </button>
+                </DarkButton>
               </div>
             </div>
           </CardContent>

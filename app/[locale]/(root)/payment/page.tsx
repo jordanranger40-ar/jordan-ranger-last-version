@@ -1,16 +1,17 @@
-import React from "react";
-import { getCartByUserId } from "@/app/models/db/lib/services/cart";
+import { getCartByUserId,getCartItemsByUserId } from "@/app/models/db/lib/services/cart";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/models/db/authOptions";
 import PaymentPage from "@/components/checkout/PaymentPage";
+import { redirect } from "next/navigation";
+
 type Locale = "en" | "ar";
 
 interface Props {
-  params: Promise <{locale:Locale}>
+  params: Promise<{ locale: Locale }>;
 }
 
 export default async function Page({ params }: Props) {
-  const locale=(await params).locale
+  const locale = (await params).locale;
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
@@ -23,13 +24,18 @@ export default async function Page({ params }: Props) {
     );
   }
 
-  const cartData = (await getCartByUserId(session.user.id)).data[0];
+  const cartData = (await getCartByUserId(session.user.id)).data;
+  const cartDetailsData=  (await getCartItemsByUserId(session.user.id)).data
+
+  if (cartData.length === 0 || cartData === null) {
+    redirect("/");
+  }
 
   const safeCartData = JSON.parse(JSON.stringify(cartData || []));
 
   return (
     <div className="h-full bg-gray-50 mt-14">
-     <PaymentPage  cartDetails={safeCartData} Locale={locale} />
+      <PaymentPage cartDetails={safeCartData[0]} locale={locale} cartDetailsData={cartDetailsData!} />
     </div>
   );
 }

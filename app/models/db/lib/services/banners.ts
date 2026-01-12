@@ -15,7 +15,7 @@ export const addNewBanner = async (newBanner: newBanner) => {
     ]
   );
 
-  return result.rows;
+  return {status:201, sucess:true, message:"Banner Created Successfully"};
 };
 
 export const getBannerData = async () => {
@@ -38,7 +38,7 @@ export const editBanner = async (id: string, modifiedCategory: newBanner) => {
     id,
   ]);
   if (isValidId.rows.length === 0) {
-    return null;
+    return {status:409, sucess:false, message:"No Banner With This ID"};
   } else {
     const result = await pool.query<newBanner>(
       " update banners set alt= coalesce ($2,alt ), description_en = coalesce ($3,description_en) ,description_ar = coalesce($4,description_ar),image= coalesce($5,image) where id= $1 returning * ",
@@ -50,7 +50,7 @@ export const editBanner = async (id: string, modifiedCategory: newBanner) => {
         modifiedCategory.image,
       ]
     );
-    return result.rows;
+    return {status:201, sucess:true, message:"Banner Updated Successfully"};
   }
 };
 

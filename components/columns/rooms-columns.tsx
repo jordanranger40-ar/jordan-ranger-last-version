@@ -74,6 +74,7 @@ export const roomsColumns: ColumnDef<newRoom>[] = [
       );
     },
     enableSorting: true,
+    meta: { hiddenByDefault: true },
   },
   {
     accessorKey: "description_en",
@@ -88,13 +89,13 @@ export const roomsColumns: ColumnDef<newRoom>[] = [
     ),
     cell: ({ row }) => {
       const type = row.getValue("room_type_en") as string;
-      const englishDesc = row.getValue("description_en") as string;
+      const englishDesc = row.original.description_en.slice(0,35);
       return (
         <>
           {type === "cabins" ? (
-            <div className="text-[#676e32]  ">{englishDesc}</div>
+            <div className="text-[#676e32]  ">{englishDesc}...</div>
           ) : (
-            <div className="">{englishDesc}</div>
+            <div className="">{englishDesc}...</div>
           )}
         </>
       );
@@ -126,6 +127,7 @@ export const roomsColumns: ColumnDef<newRoom>[] = [
       );
     },
     enableSorting: true,
+    meta: { hiddenByDefault: true },
   },
   {
     accessorKey: "room_type_en",
@@ -179,5 +181,6 @@ export const roomsColumns: ColumnDef<newRoom>[] = [
       );
     },
     enableSorting: true,
+    meta: { hiddenByDefault: true },
   },
 ];

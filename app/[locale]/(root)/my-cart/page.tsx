@@ -26,7 +26,6 @@ export default async function Page({ params }: Props) {
 
   const cartData = (await getCartByUserId(session.user.id)).data[0];
   const cartDetails = (await getCartItemsByUserId(session.user.id)).data;
-
   const safeCartData = JSON.parse(JSON.stringify(cartData || []));
   const safeCartDetails = JSON.parse(JSON.stringify(cartDetails || []));
 

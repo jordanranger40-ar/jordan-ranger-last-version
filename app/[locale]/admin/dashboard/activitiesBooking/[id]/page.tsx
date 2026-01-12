@@ -1,6 +1,6 @@
 import { activitiesBookingsColumns } from "@/components/columns/activitiesBooking-columns";
 import { ActivityDataTable } from "@/components/Activity-data-table";
-import { deleteActivityBooking } from "../(fetch)/deleteActivityBooking";
+import { deleteActivityBookingAction } from "../(fetch)/deleteActivityBooking";
 import { getActivityBookingByDate } from "@/app/models/db/lib/services/activity_booking";
 import DateRangeFilter from "@/components/DateRangeFilter";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,7 +15,6 @@ interface Props {
 
 export default async function ActivitiesBookingTable({ searchParams,params }: Props) {
   const id= (await params).id
-  console.log("id: ",id);
   
 const date = searchParams ? await searchParams : {};
   const startDate = date?.start ? new Date(date.start) : null;
@@ -24,8 +23,6 @@ const date = searchParams ? await searchParams : {};
   const response = await getActivityBookingByDate(startDate, endDate,id,Number(page));
   const activity= await getActivityById(id)
   const allActivitiesBookings = response.data || [];
-
-  console.log("response: ", response.data);
 
   return (
     <main className="flex flex-col lg:justify-center justify-start items-center lg:ml-7 ml-2   w-[88vw] md:w-[65vw] xl:w-[80vw]">
@@ -58,7 +55,7 @@ const date = searchParams ? await searchParams : {};
           columns={activitiesBookingsColumns}
           data={allActivitiesBookings}
           routeName="activityBookingById"
-          deleteAction={deleteActivityBooking}
+          deleteAction={deleteActivityBookingAction}
           totalPages={response.meta.totalPages}
         />
       )}

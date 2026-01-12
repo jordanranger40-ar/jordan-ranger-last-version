@@ -97,7 +97,7 @@ export default function Navbar() {
       <NavigationMenuLink asChild key="logout">
   <button
     onClick={() => signOut({ callbackUrl: "/" })}
-    className={`"w-full  px-2 py-1 text-sm hover:text-[#676e32] transition ${isArabic ?"text-right":"text-left"}`}
+    className={`"w-full  px-2 py-1 text-sm cursor-pointer hover:text-[#676e32] transition ${isArabic ?"text-right":"text-left"}`}
   >
     {t("logout") ?? "Logout"}
   </button>
@@ -167,13 +167,21 @@ export default function Navbar() {
       key: "restaurant",
     },
 
-    // <-- ADDED My Account dropdown (no other code changed)
-    {
+    
+    isLoggedIn
+  ? {
       type: "dropdown",
       label: t("myaccount") ?? "My Account",
       key: "account",
       content: accountContent,
+    }
+  : {
+      type: "link",
+      href: "/login",
+      label: t("login") ?? "Login",
+      key: "login",
     },
+
   ];
 
   const finalMenu = isArabic ? [...menuItems].reverse() : menuItems;

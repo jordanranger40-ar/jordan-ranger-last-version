@@ -10,10 +10,12 @@ import {
 } from "@/components/ui/select";
 import {toast} from "sonner"
 import { useRouter } from "next/navigation";
+import LightButton from "../ui/light-button";
+import DarkButton from "../ui/dark-button";
 interface Props {
   userId: string;
   userRole: string;
-  action: (formData: FormData) => Promise<void>;
+  action: (formData: FormData) => Promise<{ status: number; message: string; success: boolean }>;
 }
 
 
@@ -24,9 +26,23 @@ export default function UpdateRoleForm({ userId, userRole, action }: Props) {
   const handleFormSubmit = (formData: FormData) => {
     startTransition(async () => {
       try {
-        await action(formData);
-        toast.success("Role Updated Successfully!")
-         router.push("/admin/dashboard/users")
+      const result=  await action(formData);
+       if (result.status === 201) {
+                 toast.success(result.message);
+                  router.push("/admin/dashboard/users");
+                 return;
+               } else if (result.status === 401) {
+                 toast.error(result.message);
+                 router.push("/login");
+                 return;
+               } else if (result.status === 403) {
+                 toast.error(result.message);
+                 router.push("/");
+                 return;
+               } else {
+                 toast.error(result.message);
+                 return;
+               }
       } catch (_error) {
            toast.error("Failed to update role.")
       }
@@ -56,16 +72,9 @@ export default function UpdateRoleForm({ userId, userRole, action }: Props) {
         only.{" "}
       </div>
       <div className="flex flex-row gap-3 justify-end mt-8">
-        <Button variant="outline" type="button" className="cursor-pointer">
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          className="bg-[#676e32] text-white cursor-pointer hover:bg-[#87970f]" 
-          disabled={isPending}
-        >
-          {isPending ? "Updating..." : "Update Role"}
-        </Button>
+        <LightButton type="button"> Cancel</LightButton>
+        <DarkButton   type="submit" disabled={isPending}>{isPending ? "Updating..." : "Update Role"}</DarkButton>
+       
       </div>
     </form>
   );

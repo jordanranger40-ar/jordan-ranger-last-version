@@ -15,19 +15,38 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {  Trash2 } from "lucide-react";
+import {toast} from "sonner"
+import { useRouter } from "next/navigation";
+
 export default function DeleteButton({
   id,
   deleteAction,
 }: {
   id: string;
-  deleteAction: (id: string) => Promise<void>;
+  deleteAction: (id: string) => Promise<{status:number,message:string, success:boolean}>;
 }) {
     const [open, setOpen] = useState<boolean>(false)
  const [loading, setLoading] = useState<boolean>(false);
+ const router= useRouter()
 
  const handleConfirm= async ()=>{
     setLoading(true);
-    await deleteAction(id); 
+    const result= await deleteAction(id); 
+      if (result.status === 201) {
+          toast.success(result.message);
+          return;
+        } else if (result.status === 401) {
+          toast.error(result.message);
+          router.push("/login");
+          return;
+        } else if (result.status === 403) {
+          toast.error(result.message);
+          router.push("/");
+          return;
+        } else {
+          toast.error(result.message);
+        }
+        
     setLoading(false);
     setOpen(false);
     
@@ -62,7 +81,7 @@ export default function DeleteButton({
               Cancel
             </button>
           </DialogTrigger>
-          <form action={() => deleteAction(id)}>
+          
             <button
               type="submit"
               className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
@@ -70,7 +89,7 @@ export default function DeleteButton({
             >
                {loading ? "Deleting..." : "Confirm"}
             </button>
-          </form>
+          
         </div>
       </DialogContent>
     </Dialog>

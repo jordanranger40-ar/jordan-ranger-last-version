@@ -9,18 +9,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import React, { useState, useTransition } from "react";
-import { useRouter } from "next/navigation"; 
-import {toast} from "sonner"
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import LightButton from "../ui/light-button";
+import DarkButton from "../ui/dark-button";
 
 interface Props {
   banner: newBanner;
-  action: (data: {
-    alt: string;
-    description_en: string;
-    description_ar: string;
-    image?: string | null;
-    bannerId?: string;
-  }) => Promise<void>;
+  action: (
+    bannerId: string,
+    data: newBanner
+  ) => Promise<{ success: boolean; status: number; message: string }>;
 }
 
 export default function EditBannerForm({ banner, action }: Props) {
@@ -33,7 +32,9 @@ export default function EditBannerForm({ banner, action }: Props) {
   });
 
   const [isPending, startTransition] = useTransition();
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -43,7 +44,7 @@ export default function EditBannerForm({ banner, action }: Props) {
 
   const handleUploadError = (error: Error) => {
     console.error(error);
-    toast.error(`Upload failed: ${error.message}`)
+    toast.error(`Upload failed: ${error.message}`);
   };
 
   const handleImageDelete = () => {
@@ -53,21 +54,35 @@ export default function EditBannerForm({ banner, action }: Props) {
   const handleFormSubmit = () => {
     startTransition(async () => {
       try {
-        await action({ ...form, bannerId: banner.id });
-        toast.success("Banner updated successfully!")
-        setTimeout(() => {
-          router.push("/admin/dashboard/banners");
-        }, 1500); 
+        const result = await action(banner.id!, form);
+        if (result.status === 201) {
+          toast.success("Banner added successfully!");
+          setTimeout(() => {
+            router.push("/admin/dashboard/banners");
+          }, 500);
+          return;
+        } else if (result.status === 401) {
+          toast.error(result.message);
+          router.push("/login");
+          return;
+        } else if (result.status === 403) {
+          toast.error(result.message);
+          router.push("/");
+          return;
+        } else {
+          toast.error(result.message);
+          return;
+        }
       } catch (error) {
         console.error(error);
-        toast.error("Failed to update banner.")
+        toast.error("Failed to update banner.");
       }
     });
   };
 
   return (
-    <main className="ml-3 xl:ml-7 mb-7">
-      <div className="flex flex-col justify-start items-start border-b border-gray-500 w-[70vw] mb-7">
+    <main className="ml-2 xl:ml-7 mb-7">
+      <div className="flex flex-col justify-start items-start border-b border-gray-500 w-[90vw] lg:w-[75vw] mb-7">
         <h1 className="text-lg md:text-2xl font-bold">Edit Banner</h1>
         <p className="text-xs md:text-base text-gray-600">ID: {banner.id}</p>
       </div>
@@ -79,7 +94,7 @@ export default function EditBannerForm({ banner, action }: Props) {
         }}
         className="h-full w-full lg:w-[70vw] flex flex-col gap-5"
       >
-        <Card className="w-full h-full">
+        <Card className="w-[95vw] lg:w-[75vw] h-full">
           <CardHeader>
             <CardTitle>Edit Banner Details</CardTitle>
             <CardDescription>
@@ -104,7 +119,8 @@ export default function EditBannerForm({ banner, action }: Props) {
 
             <div className="flex flex-col">
               <label className="text-base text-black mb-1">
-                <span className="text-red-500 text-sm">*</span> English Description
+                <span className="text-red-500 text-sm">*</span> English
+                Description
               </label>
               <textarea
                 name="description_en"
@@ -117,7 +133,8 @@ export default function EditBannerForm({ banner, action }: Props) {
 
             <div className="flex flex-col">
               <label className="text-base text-black mb-1">
-                <span className="text-red-500 text-sm">*</span> Arabic Description
+                <span className="text-red-500 text-sm">*</span> Arabic
+                Description
               </label>
               <textarea
                 name="description_ar"
@@ -141,28 +158,22 @@ export default function EditBannerForm({ banner, action }: Props) {
 
             <div className="w-full flex justify-center mt-5 ">
               <div className="flex flex-row gap-3">
-                <button
+                <LightButton
                   type="button"
-                  className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
-                  onClick={()=>{
+                  onClick={() => {
                     router.replace("/admin/dashboard/banners");
                   }}
                 >
                   Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bg-[#676e32] text-white px-4 py-2 rounded-md cursor-pointer hover:bg-[#7e8d0d]"
-                  disabled={isPending}
-                >
+                </LightButton>
+                <DarkButton type="submit" disabled={isPending}>
                   {isPending ? "Updating..." : "Save Changes"}
-                </button>
+                </DarkButton>
               </div>
             </div>
           </CardContent>
         </Card>
       </form>
-
     </main>
   );
 }

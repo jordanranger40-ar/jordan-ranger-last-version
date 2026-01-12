@@ -85,16 +85,6 @@ export default function BookingConfirmation({
     }
   }
 
-  console.log(" uniqueTypes", uniqueTypes);
-
-  // Date formatting helper
-  const formatDateSafe = (d: Date | null) =>
-    d
-      ? format(d, "PPpp", {
-          locale: isArabic ? arLocale : enUS,
-        })
-      : "—";
-
   return (
     <div
       className={`w-full max-w-xl mx-auto bg-white shadow-lg rounded-2xl p-3 border border-gray-100 space-y-3 ${

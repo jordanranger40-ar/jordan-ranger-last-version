@@ -21,7 +21,6 @@ export default async function Page({ params }: PageProps) {
   const activityData = await getActivityBySlug(slug);
   
   const isComingSoon = activityData[0].coming_soon;
-console.log("isComingSoon: ",isComingSoon);
 
   if (userId) {
     const cartItems = await getCartItemsByUserId(userId ?? "");
@@ -33,7 +32,6 @@ console.log("isComingSoon: ",isComingSoon);
         return uniqueTypes;
       });
     } else {
-      console.log("User has no cart");
     }
   }
 

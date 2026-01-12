@@ -1,42 +1,27 @@
-export async function checkActivityAvailability(
+"use server";
+import { checkAvailableActivities } from "@/app/models/db/lib/services/activity_booking";
+
+export async function checkActivityAvailabilityAction(
   activityId: string,
-  start: string,
- 
-): Promise<{ success: boolean; available?: number; message?: string }> {
-  if (!start ) {
-    return { success: false, message: "Please choose start and end time" };
+  start: string
+) {
+  // 1️⃣ Validate input
+  if (!activityId || !start) {
+    return { success: false, message: "Please provide activity ID and start time",status:400,data:null };
   }
 
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_APP_URL}/api/activityBooking/checkAvailbility/${activityId}`,
-      {
-        method: "POST",
-        body: JSON.stringify({
-          start_time: new Date(start).toISOString(),
-       
-        }),
-      }
-    );
 
-    const data = await res.json();
+    // 3️⃣ Call DB service to check availability directly
+    const available = await checkAvailableActivities(activityId, {start_time:new Date(start)});
 
-    if (res.ok && data.data !== null) {
-      if (data.data > 0) {
-        return { success: true, available: data.data };
-      } else {
-        console.log(" data:v : ",data);
-        
-        return { success: false, message: "Not available for selected time." };
-      }
-    } else {
-      return {
-        success: false,
-        message: data?.message || "Error checking availability",
-      };
+    if (available.status===409) {
+      return { success: true, status:409, message:"Activity Not available for the selected time.",data:null};
+    } else if(available.status===200) {
+      return { success: false, message: "Activity is available for the selected time.",status:200, data:available.data };
     }
   } catch (error) {
     console.error("Error checking activity availability:", error);
-    return { success: false, message: "Network error" };
+    return { success: false, message: "Error checking availability",status:500, data:null  };
   }
 }

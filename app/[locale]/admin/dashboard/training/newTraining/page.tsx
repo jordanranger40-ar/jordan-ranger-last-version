@@ -1,12 +1,12 @@
 import React from "react";
 import CreateNewTraining from "@/components/training/createNewTraining"
-import { addTraining } from "../(fetch)/createNewTraining";
+import { addTrainingAction } from "../(fetch)/createNewTraining";
 async function page() {
   
 
   return (
    <>
-   <CreateNewTraining  action={addTraining}/>
+   <CreateNewTraining  action={addTrainingAction}/>
    </>
   );
 }
