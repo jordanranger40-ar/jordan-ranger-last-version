@@ -180,7 +180,7 @@ export const getRoomById = async (id: string) => {
 
 export const getRoomBySlug = async (slug: string) => {
   const result = await pool.query<newRoom>(
-    "SELECT r.id, r.name_en, r.description_en, r.name_ar, r.description_ar, r.cover_image, r.price, r.room_images, json_agg(json_build_object('id', f.id,'feature_title_en', f.feature_title_en,'feature_description_en', f.feature_description_en,'feature_title_ar', f.feature_title_ar,'feature_description_ar', f.feature_description_ar) ) AS features FROM rooms r LEFT JOIN rooms_with_features rwf ON r.id = rwf.room_id LEFT JOIN room_features f ON f.id = rwf.room_features_id where r.slug=$1 GROUP BY r.id; ",
+    "SELECT r.id, r.name_en, r.description_en, r.name_ar, r.description_ar, r.cover_image, r.price, r.room_images, json_agg(json_build_object('id', f.id,'feature_title_en', f.feature_title_en,'feature_description_en', f.feature_description_en,'feature_title_ar', f.feature_title_ar,'feature_description_ar', f.feature_description_ar) ) AS room_features FROM rooms r LEFT JOIN rooms_with_features rwf ON r.id = rwf.room_id LEFT JOIN room_features f ON f.id = rwf.room_features_id where r.slug=$1 GROUP BY r.id; ",
     [slug]
   );
 
@@ -189,7 +189,7 @@ export const getRoomBySlug = async (slug: string) => {
 
 export const getRoomsByRoomType = async (roomType: string) => {
   const result = await pool.query<newRoom>(
-    "SELECT r.id, r.name_en, r.description_en, r.slug , r.name_ar, r.description_ar, r.cover_image, r.price, r.room_images, json_agg(json_build_object('id', f.id,'feature_title_en', f.feature_title_en,'feature_description_en', f.feature_description_en,'feature_title_ar', f.feature_title_ar,'feature_description_ar', f.feature_description_ar) ) AS features FROM rooms r LEFT JOIN rooms_with_features rwf ON r.id = rwf.room_id LEFT JOIN room_features f ON f.id = rwf.room_features_id where r.room_type_en=$1  GROUP BY r.id ",
+    "SELECT r.id, r.name_en, r.description_en, r.slug , r.name_ar, r.description_ar, r.cover_image, r.price, r.room_images, json_agg(json_build_object('id', f.id,'feature_title_en', f.feature_title_en,'feature_description_en', f.feature_description_en,'feature_title_ar', f.feature_title_ar,'feature_description_ar', f.feature_description_ar) ) AS room_features FROM rooms r LEFT JOIN rooms_with_features rwf ON r.id = rwf.room_id LEFT JOIN room_features f ON f.id = rwf.room_features_id where r.room_type_en=$1  GROUP BY r.id ",
     [roomType]
   );
 

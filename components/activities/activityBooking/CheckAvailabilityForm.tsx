@@ -88,6 +88,7 @@ export default function CheckAvailabilityForm({
             value={startHour}
             onChange={setStartHour}
             locale={locale}
+            
           />
         </div>
       </div>

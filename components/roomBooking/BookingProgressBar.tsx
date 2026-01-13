@@ -15,7 +15,7 @@ export default function BookingProgressBar({ currentStep, locale }: Props) {
   ];
 
   return (
-    <div className="w-full flex justify-between items-center px-8 relative mb-8" dir={isArabic ? "rtl" : "ltr"}>
+    <div className="w-full flex justify-between items-center  relative mb-8" dir={isArabic ? "rtl" : "ltr"}>
       {steps.map((step, index) => {
         const isActive = currentStep === step.number;
         const isCompleted = currentStep > step.number;

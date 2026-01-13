@@ -46,15 +46,24 @@ export default function ActivityBookingPanel({ activity,uniqueTypes }: { activit
   };
 
   // Close modal on click outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-        closeModal();
-      }
-    };
-    if (open) document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [open]);
+ useEffect(() => {
+  const handleClickOutside = (event: MouseEvent) => {
+    const target = event.target as HTMLElement;
+
+    // ✅ Ignore Radix Select clicks
+    if (target.closest("[data-radix-popper-content-wrapper]")) {
+      return;
+    }
+
+    if (modalRef.current && !modalRef.current.contains(target)) {
+      closeModal();
+    }
+  };
+
+  if (open) document.addEventListener("mousedown", handleClickOutside);
+  return () => document.removeEventListener("mousedown", handleClickOutside);
+}, [open]);
+
 
   // Close modal on Escape
   useEffect(() => {

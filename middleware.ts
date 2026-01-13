@@ -50,6 +50,12 @@ const isOnAuthRoute = authRoutes.some(route => pathWithoutLocale.startsWith(rout
     return NextResponse.redirect(new URL("/", req.url));
   }
 
+
+  fetch(`${req.nextUrl.origin}/api/clear-expired-carts?secret=${process.env.CRON_SECRET}`)
+    .then(res => console.log(`[manual-clear-expired-carts] Triggered, status: ${res.status}`))
+    .catch(err => console.error("[manual-clear-expired-carts] Error triggering:", err));
+
+
   return i18nResponse ?? NextResponse.next();
 }
 

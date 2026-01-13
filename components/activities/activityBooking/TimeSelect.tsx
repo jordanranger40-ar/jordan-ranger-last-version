@@ -27,7 +27,7 @@ const TimeSelect: React.FC<TimeSelectProps> = ({
 
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="h-10 w-full border focus:ring-2 focus:ring-[#676e32]">
+      <SelectTrigger className="h-12 w-full border focus:ring-2 focus:ring-[#676e32] py-5">
         <SelectValue
           placeholder={isArabic ? "اختر الساعة" : "Select hour"}
         />

@@ -28,6 +28,8 @@ export default async function Page({ params }: PageProps) {
   const topImages = data.room_images.slice(0, MAX_VISIBLE_TOP);
   const bottomImages = data.room_images.slice(MAX_VISIBLE_TOP, MAX_VISIBLE_TOP + MAX_VISIBLE_BOTTOM);
   const hiddenImagesCount = data.room_images.length - (MAX_VISIBLE_TOP + MAX_VISIBLE_BOTTOM);
+  console.log("data: ",data);
+  
 
   return (
     <div dir={direction} className={`min-h-screen bg-[#f5f5f5] text-[#333333] ${isArabic ? "text-right" : "text-left"}`}>
