@@ -12,7 +12,7 @@ export default function CorporateTeamBuildingHeader({ isArabic }: Props) {
     >
       <div className="bg-black/50 w-full h-full absolute top-0 flex justify-center items-center">
         <h2 className="text-white text-center  text-4xl font-bold">
-          {isArabic ? "بناء فرق الشركات" : " Corporate Team Buildin g"}
+          {isArabic ? "بناء فرق الشركات" : " Corporate Team Building"}
         </h2>
       </div>
     </section>
