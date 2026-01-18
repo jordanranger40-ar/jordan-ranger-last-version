@@ -189,7 +189,7 @@ export default function Navbar() {
   return (
     <NavigationMenu
       viewport={false}
-      className="text-white focus:text-white"
+      className="text-white focus:text-white "
       style={{ direction: isArabic ? "rtl" : "ltr" }}
     >
       <NavigationMenuList className="flex-row">

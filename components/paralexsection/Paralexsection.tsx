@@ -71,7 +71,7 @@ export default function ParalexSection({ locale }: Props) {
       </section>
 
       {/* Book Menu Component */}
-      <Bookmenu  />
+      <Bookmenu isArabic={isAr} />
 
       {/* Parallax Section 2 */}
       <section

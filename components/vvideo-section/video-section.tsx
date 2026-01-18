@@ -14,7 +14,6 @@ export default function VideoSection() {
   const description = isArabic
     ? "استمتع بتجربة تخييم فريدة في قلب الطبيعة."
     : "Enjoy unique camping experiences in the heart of nature.";
-  const buttonText = isArabic ? "استكشف الآن" : "Explore Now";
 
   return (
     <section
@@ -43,9 +42,7 @@ export default function VideoSection() {
         <p className="text-lg md:text-xl text-gray-200 mb-6 drop-shadow">
           {description}
         </p>
-        <LightButton >
-          {buttonText}
-        </LightButton>
+
       </div>
 
   

@@ -16,8 +16,8 @@ export default function MissionSection({ isArabic }: Props) {
         </h2>
         <p className="text-lg leading-relaxed text-white/95 group-hover:text-white">
           {isArabic
-            ? "مهمتنا هي إلهام وتمكين الناس لاستكشاف العالم من حولهم، وتقديم محتوى ومعدات وتجارب مميزة تساعدهم في بناء لحظات لا تُنسى. نحن نؤمن أن كل مغامرة تبدأ بخطوة، ونحن هنا لنجعل تلك الخطوة الأولى أكثر ثقة، وأكثر حماساً."
-            : "Our mission is to inspire and empower people to explore the world around them by offering curated content, premium gear, and unforgettable experiences. We believe every adventure begins with a step, and we're here to make that first step confident and exciting."}
+            ? "مهمتنا تهدف إلى مساعدتك على تحقيق هدفك الشخصي؛ سواء كنت تبحث عن إقامة تأملية تعيد لك صفاء الروح في أكواخنا الفريدة، أو عطلة مميزة مع من تحب، أو تجربة تخييم لا مثيل لها، أو مغامرة مع زملائك مليئة بالتحدي والحماس."
+            : "Our mission is to help you achieve your personal goal: whether you are seeking a soul-searching lodging retreat in our unique cabins, a getaway with your loved ones, a camping experience like no other or an adventure with your colleagues filled with challenge and excitement."}
         </p>
       </div>
     </section>

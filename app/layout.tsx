@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AppName, AppDescription, AppURL } from "@/lib/constants";
+import 'leaflet/dist/leaflet.css';
 
 import { NextIntlClientProvider } from "next-intl";
 import NextAuthProviders from "../providers/NextAuthProviders";

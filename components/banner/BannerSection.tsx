@@ -20,7 +20,8 @@ export default function BannerSection({ banners, locale, isThereComingSoon }: Pr
       />
 
       <section className="lg:absolute lg:-bottom-52 lg:left-0 w-full justify-self-center lg:h-80 flex justify-around lg:z-40 mt-10 lg:mt-0">
-        <Bannercards />
+        <Bannercards  locale={locale as "ar"|"en"
+        }/>
       </section>
     </section>
   );

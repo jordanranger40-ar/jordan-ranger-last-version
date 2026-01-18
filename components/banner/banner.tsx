@@ -14,6 +14,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { useRouter } from "next/navigation";
 
 type Props = {
   banners: newBanner[];
@@ -24,7 +25,7 @@ type Props = {
 export function Banner({ banners, locale, isThereComingSoon }: Props) {
   const isArabic = locale.startsWith("ar");
   const autoplay = useRef(Autoplay({ delay: 3000, stopOnInteraction: false }));
-
+  const router= useRouter()
   return (
     <section className="w-full bg-[#f1f1f1] relative">
       <header className="absolute top-0 left-0 w-full z-30 p-4">
@@ -61,13 +62,15 @@ export function Banner({ banners, locale, isThereComingSoon }: Props) {
                   <div className="absolute inset-0 bg-black/50 z-10" />
                   <div className="absolute inset-0 z-20 flex mb-3 md:mb-0 items-end md:items-center justify-center text-center text-white px-6">
                     <div>
-                      <h2 className=" text-base md:text-3xl lg:text-5xl font-bold">
-                        {title}
-                      </h2>
+                     
                       <p className=" hidden md:block text-base md:text-lg lg:text-xl mt-6 max-w-3xl mx-auto">
                         {description}
                       </p>
-                      <LightButton>Explore Now</LightButton>
+                       <LightButton onClick={()=>{
+                              router.push("/about-jordan-ranger")
+                            }}>
+                                  {isArabic ? "اعرف المزيد" : "Learn More"}
+                                </LightButton>
                     </div>
                   </div>
                 </article>

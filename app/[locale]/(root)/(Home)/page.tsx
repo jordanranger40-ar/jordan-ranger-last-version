@@ -10,6 +10,7 @@ import { newBanner } from "@/types";
 import ServicesSection from "@/components/services-section/services-section";
 import TestimonialsSection from "@/components/testimonials-section/testimonials-section";
 import { getComingSoonActivities } from "@/app/models/db/lib/services/activities";
+import CampMap from "@/components/CampMap";
 
 interface PageProps {
   params: Promise<{
@@ -66,8 +67,7 @@ export default async function Home({ params }: PageProps) {
           />
         </div>
       )}
-
-      <Mapbox3D isArabic={isArabic} />
-    </main>
+     <CampMap locale={locale as "ar"|"en"} />
+     </main>
   );
 }

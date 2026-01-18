@@ -45,6 +45,7 @@
     "gsap": "^3.13.0",
     "heroicons": "^2.2.0",
     "jsonwebtoken": "^9.0.2",
+    "leaflet": "^1.9.4",
     "lucide-react": "^0.544.0",
     "mapbox-gl": "^3.16.0",
     "next": "^16.1.1",

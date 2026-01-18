@@ -4,10 +4,12 @@ import React from "react";
 import Image from "next/image";
 import { useLocale } from "next-intl";
 import LightButton from "../ui/light-button";
+import { useRouter } from "next/navigation";
 
 export default function PosterSection() {
   const locale = useLocale();
   const isArabic = locale === "ar";
+  const router= useRouter()
 
   const heading = isArabic ? "جاهز للمغامرة؟" : "Ready for the Adventure?";
   const description = isArabic
@@ -55,7 +57,9 @@ export default function PosterSection() {
           </h1>
           <p className="text-lg md:text-xl text-gray-200 mb-6">{description}</p>
 
-      <LightButton>
+      <LightButton onClick={()=>{
+        router.push("/Accommodation/Tents")
+      }}>
             {isArabic ? "استكشف الآن" : "Explore Now"}
           </LightButton>
         </div>

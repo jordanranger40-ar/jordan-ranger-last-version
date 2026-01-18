@@ -1,13 +1,27 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 
-export default function Bannercards() {
-  const cardItems = [
-    { label: 'Tent', icon: '🏕️', color: '#515151' },
-    { label: 'Hiking', icon: '🥾', color: '#b3c820ff' },
-    { label: 'Cooking', icon: '🍳', color: '#676e32' },
-    { label: 'Telescope', icon: '🔭', color: '#9f721fff' },
+interface CardItem {
+  label: { en: string; ar: string }; // bilingual labels
+  icon: string;
+  color: string;
+  path: string; // path to navigate when clicked
+}
+
+interface Props {
+  locale: 'ar' | 'en';
+}
+
+export default function Bannercards({ locale }: Props) {
+  const router = useRouter();
+
+  const cardItems: CardItem[] = [
+    { label: { en: 'Tent', ar: 'خيمة' }, icon: '🏕️', color: '#515151', path: '/Accommodation/Tents' },
+    { label: { en: 'Hiking', ar: 'تسلق' }, icon: '🥾', color: '#b3c820ff', path: '/activities/outdoor-activities' },
+    { label: { en: 'Cooking', ar: 'طبخ' }, icon: '🍳', color: '#676e32', path: '/activities/outdoor-activities' },
+    { label: { en: 'Telescope', ar: 'تلسكوب' }, icon: '🔭', color: '#9f721fff', path: '/activities/outdoor-activities' },
   ];
 
   return (
@@ -15,19 +29,24 @@ export default function Bannercards() {
       {cardItems.map((item, index) => (
         <div
           key={index}
-          className="relative h-64 w-[90vw]  md:w-[42vw] lg:w-[22vw] overflow-hidden group transition-transform duration-500 transform-gpu hover:scale-105 hover:rotate-1"
+          onClick={() => router.push(item.path)}
+          className="cursor-pointer relative h-64 w-[90vw] md:w-[42vw] lg:w-[22vw] overflow-hidden group transition-transform duration-500 transform-gpu hover:scale-105 hover:rotate-1"
           style={{
             backgroundColor: item.color,
             borderRadius: '2rem 0.5rem 2rem 0.5rem',
-            boxShadow: '0 6px 20px rgba(0,0,0,0.25)', 
+            boxShadow: '0 6px 20px rgba(0,0,0,0.25)',
           }}
         >
           {/* محتوى البطاقة */}
           <div className="xl:relative xl:z-10 flex flex-col items-center justify-center h-full text-center p-6 gap-3 transform transition-transform duration-500 group-hover:-translate-y-2">
             <div className="text-6xl text-white drop-shadow-lg">{item.icon}</div>
-            <div className="text-white text-2xl font-bold tracking-wide">{item.label}</div>
+            <div className="text-white text-2xl font-bold tracking-wide">
+              {item.label[locale]}
+            </div>
             <div className="text-sm text-white/80 italic">
-              Explore {item.label.toLowerCase()} in style
+              {locale === 'ar'
+                ? `اكتشف ${item.label[locale]} `
+                : `Explore ${item.label[locale].toLowerCase()} `}
             </div>
           </div>
 
