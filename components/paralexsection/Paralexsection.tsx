@@ -41,8 +41,8 @@ export default function ParalexSection({ locale }: Props) {
         </h2>
         <p className={`max-w-3xl text-gray-700 text-lg leading-relaxed ${textAlign}`}>
           {isAr
-            ? "يقع مطعم الكروم في غابات الأردن بالقرب من جرش، ويقدم تجربة طعام فريدة. يمكن للضيوف الاستمتاع بمجموعة متنوعة من الأطباق المحلية، مُعدة يومياً باستخدام مكونات طازجة محلية المصدر."
-            : "Set amidst the Jordan Ranger forest overseeing Jerash’s beautiful views, Al Kuroom Restaurant offers a dining experience like no other. Guests can enjoy a varied selection of local dishes, freshly prepared daily using locally sourced ingredients."}
+            ? `يقع مطعم الكروم  وسط غابة جوردان رينجر  التي تشرف على مناظر جرش الجميلة ، ويقدم تجربة طعام لا مثيل لها. يمكن للضيوف الاستمتاع بمجموعة متنوعة من الأطباق والنكهات من بوفيهات الإفطار والغداء والعشاء اليومية ، والتي تم إعدادها بعناية من قبل مجتمعنا المحلي باستخدام المكونات الطازجة المُختارة يدويًا من الأراضي الزراعية القريبة.`
+            : "Set amidst the Jordan Ranger forest overseeing Jerash’s beautiful views, Al Kuroom Restaurant offers a dining experience like no other. Guests can enjoy a varied selection of local dishes and flavors from our daily breakfast, lunch and dinner buffets, craftily prepared by our chef using the freshest handpicked ingredients from nearby farms."}
         </p>
       </div>
 

@@ -53,9 +53,7 @@ export default async function Page({ params }: PageProps) {
       {/* ================= tent Info Section ================= */}
       <div className="max-w-7xl mx-auto px-6 md:px-12 mt-12 md:mt-16 flex flex-col md:flex-row gap-12">
         <div className="flex-1 space-y-6">
-          <h2 className="text-3xl md:text-4xl font-semibold text-[#333333]">
-            {isArabic ? data.description_ar : data.description_en}
-          </h2>
+         
           <p className="text-gray-600 leading-relaxed text-lg">
             {isArabic ? data.description_ar : data.description_en}
           </p>

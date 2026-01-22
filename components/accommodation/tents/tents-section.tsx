@@ -18,13 +18,13 @@ export default function TentsPage({ rooms, isArabic }: TentsPageProps) {
           {isArabic ? "اكتشف خيامنا المميزة" : "Discover Our Premium Tents"}
         </h2>
 
-        <p className="text-gray-600 dark:text-gray-300 mt-3 text-lg">
+        <p className="text-gray-600 dark:text-gray-300 mt-3 text-lg  max-w-[90%] mx-auto">
           {isArabic
-            ? "خيار مثالي لمحبي الطبيعة مع تجربة فاخرة"
-            : "A perfect luxury camping experience for nature lovers"}
+            ? `للتجربة على أرض الواقع حقًا ، فإن التخييم هو الطريقة الصحيحة. بفضل الخيام التي تم إعدادها بشكل مثالي وبطانية النجوم التي تتمنى لك ليلة سعيدة ، يعد خيار التخييم الخاص بنا مثاليًا لليالي الصيف والمجموعات الكبيرة والطلاب والعائلات على حد سواء.`
+            : "For a truly grounding experience, camping is the way to go. With perfectly set up tents and a blanket of stars wishing you a good night, our camping option is ideal for summer nights, bigger groups and students and families alike."}
         </p>
 
-        <div className="mt-6 w-24 h-1 bg-green-600 rounded mx-auto"></div>
+        <div className="mt-6 w-24 h-1 bg-[#676e32] rounded mx-auto"></div>
       </div>
 
    

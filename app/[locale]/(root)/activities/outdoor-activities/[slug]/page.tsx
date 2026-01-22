@@ -18,8 +18,12 @@ export default async function Page({ params }: PageProps) {
   const userInfo = await getServerSession(authOptions);
   const userId = userInfo?.user.id;
   const uniqueTypes: string[] = [];
-  const activityData = await getActivityBySlug(slug);
+  const cleanSlug = decodeURIComponent(slug)
+  .toLowerCase()
+  .replace(/&/g, "and")
+  .replace(/\s+/g, "-");
   
+  const activityData = await getActivityBySlug(cleanSlug);
   const isComingSoon = activityData[0].coming_soon;
 
   if (userId) {

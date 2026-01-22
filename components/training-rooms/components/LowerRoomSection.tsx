@@ -2,6 +2,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Plus, X } from "lucide-react";
+import LowerOne from "@/public/images/innerHall1.jpg"
+import LowerTwo from "@/public/images/innerHall2.jpg"
+import LowerThree from "@/public/images/innerHall3.jpg"
+
 
 interface Props {
   isArabic: boolean;
@@ -9,19 +13,16 @@ interface Props {
 
 const AllImages = [
   {
-    imageUrl:
-      "https://img.freepik.com/free-vector/cartoon-house-hallway-living-room-interior_107791-19063.jpg?semt=ais_hybrid&w=740&q=80",
-    imageAlt: "Image1",
+    imageUrl:LowerOne,
+    imageAlt: "LowerOne",
   },
   {
-    imageUrl:
-      "https://img.freepik.com/free-vector/cartoon-house-hallway-living-room-interior_107791-19063.jpg?semt=ais_hybrid&w=740&q=80",
-    imageAlt: "Image2",
+    imageUrl:LowerTwo,
+    imageAlt: "LowerTwo",
   },
   {
-    imageUrl:
-      "https://img.freepik.com/free-vector/cartoon-house-hallway-living-room-interior_107791-19063.jpg?semt=ais_hybrid&w=740&q=80",
-    imageAlt: "Image3",
+    imageUrl:LowerThree,
+    imageAlt: "LowerThree",
   },
 ];
 

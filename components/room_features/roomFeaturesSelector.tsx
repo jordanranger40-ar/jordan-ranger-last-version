@@ -1,14 +1,14 @@
 // components/RoomFeaturesMultiSelect.tsx
 "use client";
 import { roomFeatures } from "@/types";
-import React, { useEffect, useRef, useState } from "react";
+import  { useEffect, useRef, useState } from "react";
 import { X, ChevronDown } from "lucide-react";
 
 interface Props {
   selectedFeatures: roomFeatures[];
   onChange: (features: roomFeatures[]) => void;
   placeholder?: string;
-  maxHeight?: string; // tailwind h- class fallback, e.g. "h-56"
+  maxHeight?: string; 
 }
 
 export default function RoomFeaturesMultiSelect({
@@ -22,6 +22,7 @@ export default function RoomFeaturesMultiSelect({
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const ref = useRef<HTMLDivElement | null>(null);
+  
 
   // fetch features
   useEffect(() => {
@@ -29,10 +30,10 @@ export default function RoomFeaturesMultiSelect({
     (async () => {
       try {
         const res = await fetch("/api/room_features");
+        
         const data: roomFeatures[] = await res.json();
         if (mounted) setAll(data ?? []);
       } catch (err) {
-        console.error("Failed to load features:", err);
       } finally {
         if (mounted) setLoading(false);
       }
