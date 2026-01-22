@@ -59,7 +59,7 @@ export default function ParalexSection({ locale }: Props) {
       >
         <div className="absolute inset-0 bg-black opacity-40 z-0"></div>
         <div className="relative z-10 max-w-3xl">
-          <h1 className={`text-4xl font-bold mb-4 ${textAlign}`}>
+          <h1 className={`text-4xl centert  font-bold mb-4 ${textAlign}`}>
             {isAr ? "اكتشف أجواءنا الفريدة" : "Discover Our Unique Atmosphere"}
           </h1>
           <p className={`max-w-xl text-lg ${textAlign}`}>
@@ -86,7 +86,7 @@ export default function ParalexSection({ locale }: Props) {
       >
         <div className="absolute inset-0 bg-black opacity-40 z-0"></div>
         <div className="relative z-10 max-w-3xl">
-          <h1 className={`text-4xl font-bold mb-4 ${textAlign}`}>
+          <h1 className={`text-4xl centert font-bold mb-4 ${textAlign}`}>
             {isAr ? "تذوق النكهات الأصيلة" : "Taste Authentic Flavors"}
           </h1>
           <p className={`max-w-xl text-lg ${textAlign}`}>

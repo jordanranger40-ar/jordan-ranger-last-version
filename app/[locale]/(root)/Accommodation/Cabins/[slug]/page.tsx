@@ -1,46 +1,49 @@
 import { getRoomBySlug } from "@/app/models/db/lib/services/rooms";
 import { roomFeatures } from "@/types";
 import Link from "next/link";
+import Image from "next/image";
 
 interface PageProps {
-  params: Promise<{ locale: string; slug: string  }>;
+  params: Promise<{ locale: string; slug: string }>;
 }
 
 export default async function Page({ params }: PageProps) {
-  const slug= (await params).slug
-  const data = await getRoomBySlug(`${slug}`);
-  const isArabic = (await params).locale === "ar"; // تحديد اللغة
-  const direction = isArabic ? "rtl" : "ltr"; // تحديد الاتجاه
+  const { slug, locale } = await params;
+  const data = await getRoomBySlug(slug);
+  const isArabic = locale === "ar";
+  const direction = isArabic ? "rtl" : "ltr";
 
   if (!data) {
     return (
       <div
         dir={direction}
-        className={`text-center py-20 text-xl text-gray-700 ${isArabic ? "text-right" : "text-left"}`}
+        className={`text-center py-20 text-xl text-gray-700 ${
+          isArabic ? "text-right" : "text-left"
+        }`}
       >
         {isArabic ? "الغرفة غير موجودة" : "Room not found"}
       </div>
     );
   }
 
-  const MAX_VISIBLE_TOP = 3;
-  const MAX_VISIBLE_BOTTOM = 3;
-  const topImages = data.room_images.slice(0, MAX_VISIBLE_TOP);
-  const bottomImages = data.room_images.slice(MAX_VISIBLE_TOP, MAX_VISIBLE_TOP + MAX_VISIBLE_BOTTOM);
-  const hiddenImagesCount = data.room_images.length - (MAX_VISIBLE_TOP + MAX_VISIBLE_BOTTOM);
-  console.log("data: ",data);
-  
+  const galleryImages = data.room_images.slice(0, 5);
 
   return (
-    <div dir={direction} className={`min-h-screen bg-[#f5f5f5] text-[#333333] ${isArabic ? "text-right" : "text-left"}`}>
-      {/* ================= Hero Section ================= */}
+    <div
+      dir={direction}
+      className={`min-h-screen bg-[#f5f5f5] text-[#333333] ${
+        isArabic ? "text-right" : "text-left"
+      }`}
+    >
+      {/* ========== Hero Section ========== */}
       <div className="relative w-full h-[70vh] md:h-[80vh] overflow-hidden">
-        <img
-          src={data.room_images[0] || "/default-room.jpg"}
+        <Image
+          src={data.cover_image || "/default-room.jpg"}
           alt={isArabic ? data.name_ar : data.name_en}
-          className="w-full h-full object-cover brightness-90"
+          fill
+          className="object-cover brightness-90"
         />
-        <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
 
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white max-w-3xl mx-auto px-6">
           <h1 className="text-5xl md:text-6xl font-bold drop-shadow-lg mb-4">
@@ -52,22 +55,23 @@ export default async function Page({ params }: PageProps) {
         </div>
       </div>
 
-      {/* ================= Room Info Section ================= */}
+      {/* ========== Room Info Section ========== */}
       <div className="max-w-7xl mx-auto px-6 md:px-12 mt-12 md:mt-16 flex flex-col md:flex-row gap-12">
         <div className="flex-1 space-y-6">
-         
           <p className="text-gray-600 leading-relaxed text-lg">
             {isArabic ? data.description_ar : data.description_en}
           </p>
           <div className="flex items-center gap-4">
             <span className="text-4xl font-extrabold text-[#676e32]">{data.price}</span>
-            <span className="text-gray-500 text-lg">{isArabic ? "د.ا / الليلة" : "JOD / night"}</span>
+            <span className="text-gray-500 text-lg">
+              {isArabic ? "د.ا / الليلة" : "JOD / night"}
+            </span>
           </div>
-         
-          
-            <Link href={`/accommodationBooking/${data.id}`} className="w-full h-full"><button  className="mt-6 px-12 py-4 bg-[#676e32] text-white text-lg font-semibold rounded-full shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300"> {isArabic ? "احجز هذه الغرفة" : "Reserve This Room" }</button></Link>
-          
-         
+          <Link href={`/accommodationBooking/${data.id}`} className="w-full h-full">
+            <button className="mt-6 px-12 py-4 bg-[#676e32] text-white text-lg font-semibold rounded-full shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300">
+              {isArabic ? "احجز هذه الغرفة" : "Reserve This Room"}
+            </button>
+          </Link>
         </div>
 
         <div className="flex-1">
@@ -78,7 +82,7 @@ export default async function Page({ params }: PageProps) {
             {data.room_features.map((feature: roomFeatures, index: number) => (
               <div
                 key={index}
-                className="flex flex-col justify-center bg-linear-to-br from-[#f0f8d0] to-white border border-[#d0d9a0] rounded-2xl p-6 hover:shadow-md transition"
+                className="flex flex-col justify-center bg-gradient-to-br from-[#f0f8d0] to-white border border-[#d0d9a0] rounded-2xl p-6 hover:shadow-md transition"
               >
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-10 h-10 flex items-center justify-center bg-[#e1f0b3] rounded-full">
@@ -105,66 +109,56 @@ export default async function Page({ params }: PageProps) {
         </div>
       </div>
 
-      {/* ================= Gallery Section ================= */}
-      <div className="max-w-7xl mx-auto mt-16 px-6 md:px-12">
-        <h3 className="text-2xl font-bold text-[#333333] mb-6">
-          {isArabic ? "معرض الصور" : "Gallery"}
-        </h3>
+      {/* ========== Gallery Section (مرن حسب عدد الصور) ========== */}
+      <div className="max-w-7xl mx-auto mt-24 px-6 md:px-12 mb-20">
+        <div className="text-center mb-12">
+          <h3 className="text-3xl font-bold text-[#333333] inline-block relative">
+            {isArabic ? "استكشف الغرفة" : "Explore the Room"}
+            <span className="absolute -bottom-2 left-0 w-full h-1 bg-[#676e32] opacity-30"></span>
+          </h3>
+        </div>
 
-        {/* Top Section */}
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="relative overflow-hidden rounded-lg h-64 md:h-80 group">
-            <img
-              src={topImages[0] || "/default-room.jpg"}
-              alt="gallery-top-left"
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-black/20 transition group-hover:bg-black/30"></div>
-          </div>
-
-          <div className="grid grid-rows-2 gap-4">
-            {topImages.slice(1, 3).map((img, i) => (
-              <div key={i} className="relative overflow-hidden rounded-lg h-32 md:h-40 group">
-                <img
-                  src={img || "/default-room.jpg"}
-                  alt={`gallery-top-right-${i}`}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+        {galleryImages.length < 4 ? (
+          <div className={`flex gap-3 ${galleryImages.length === 1 ? "" : "flex-wrap"}`}>
+            {galleryImages.map((img, i) => (
+              <div key={i} className={`flex-1 overflow-hidden rounded-2xl relative aspect-[4/3]`}>
+                <Image
+                  src={img}
+                  alt={`room-${i + 1}`}
+                  fill
+                  className="object-cover transition-transform duration-700 hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-black/20 transition group-hover:bg-black/30"></div>
+                <div className="absolute inset-0 bg-black/5 transition-all" />
               </div>
             ))}
           </div>
-        </div>
-
-        {/* Bottom Section */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-          {bottomImages.map((img, i) => (
-            <div key={i} className="relative w-full h-40 md:h-48 overflow-hidden rounded-lg group">
-              <img
-                src={img || "/default-room.jpg"}
-                alt={`gallery-bottom-${i}`}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-black/20 transition group-hover:bg-black/30"></div>
+        ) : (
+          <div className="grid grid-cols-12 grid-rows-2 gap-3 h-[500px] md:h-[650px]">
+            <div className="col-span-12 md:col-span-4 row-span-2 overflow-hidden rounded-2xl relative group">
+              <Image src={galleryImages[0]} alt="room-1" fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-all" />
             </div>
-          ))}
-
-          {hiddenImagesCount > 0 && (
-            <div className="relative w-full h-40 md:h-48 overflow-hidden rounded-lg cursor-pointer group">
-              <img
-                src={data.room_images[MAX_VISIBLE_TOP + MAX_VISIBLE_BOTTOM] || "/default-room.jpg"}
-                alt="see-more"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-xl font-bold transition group-hover:bg-black/60">
-                {isArabic ? `المزيد +${hiddenImagesCount}` : `See More +${hiddenImagesCount}`}
+            <div className="col-span-12 md:col-span-5 row-span-1 overflow-hidden rounded-2xl relative group">
+              <Image src={galleryImages[1]} alt="room-2" fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
+            </div>
+            <div className="col-span-6 md:col-span-3 row-span-1 overflow-hidden rounded-2xl relative group">
+              <Image src={galleryImages[2]} alt="room-3" fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
+            </div>
+            {galleryImages[3] && (
+              <div className="col-span-6 md:col-span-3 row-span-1 overflow-hidden rounded-2xl relative group">
+                <Image src={galleryImages[3]} alt="room-4" fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
               </div>
-            </div>
-          )}
-        </div>
+            )}
+            {galleryImages[4] && (
+              <div className="col-span-12 md:col-span-5 row-span-1 overflow-hidden rounded-2xl relative group">
+                <Image src={galleryImages[4]} alt="room-5" fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
-      <div className="h-[150px] bg-linear-to-t from-[#f5f5f5] to-transparent mt-20" />
+      <div className="h-[150px] bg-gradient-to-t from-[#f5f5f5] to-transparent mt-20" />
     </div>
   );
 }

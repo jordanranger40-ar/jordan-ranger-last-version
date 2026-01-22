@@ -4,9 +4,9 @@ import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 
 type Props = {
-  size?: number; // diameter of the outer container (px)
-  pulseCount?: number; // number of ripple rings
-  targetId?: string; // id of the section to scroll to
+  size?: number;
+  pulseCount?: number;
+  targetId?: string;
   locale: string;
 };
 
@@ -21,7 +21,6 @@ export default function FlashPulseComingSoon({
   const ringsRef = useRef<HTMLDivElement[]>([]);
   const isArabic = locale === "ar";
 
-  // keep refs unique when rendering multiple rings
   ringsRef.current = ringsRef.current.slice(0, pulseCount);
   const addRingRef = (el: HTMLDivElement | null) => {
     if (!el) return;
@@ -42,7 +41,7 @@ export default function FlashPulseComingSoon({
       repeat: 5,
     });
 
-    // ripple animation
+    // ripple animation (circular waves)
     tl.add(() => {
       const rings = ringsRef.current;
       gsap.set(rings, { scale: 0.2, opacity: 0.8, display: "block" });
@@ -52,6 +51,7 @@ export default function FlashPulseComingSoon({
         duration: 1.2,
         ease: "power2.out",
         stagger: 0.18,
+        borderRadius: "50%",
         onComplete() {
           gsap.set(rings, { display: "none" });
         },
@@ -71,7 +71,6 @@ export default function FlashPulseComingSoon({
       tl.kill();
       gsap.killTweensOf([centerRef.current, ...ringsRef.current]);
     };
-    // keep dependencies minimal; if you change pulseCount dynamically you may add it here
   }, []);
 
   const handleClick = () => {
@@ -81,42 +80,38 @@ export default function FlashPulseComingSoon({
     target.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  
   return (
     <button
       ref={rootRef}
       onClick={handleClick}
       aria-label={isArabic ? "قريباً" : "Coming Soon Activities"}
       className="relative flex items-center justify-center rounded-full focus:outline-none focus:ring-4 focus:ring-offset-2"
-      style={
-        {
-
-          ["--fp-size" ]: `clamp(48px, 20vw, ${size}px)`,
-          width: "var(--fp-size)",
-          height: "var(--fp-size)",
-          outline: "none",
-          boxShadow: "none",
-        } as React.CSSProperties
-      }
+      style={{
+        ["--fp-size"]: `clamp(48px, 20vw, ${size}px)`,
+        width: "var(--fp-size)",
+        height: "var(--fp-size)",
+        outline: "none",
+        boxShadow: "none",
+      } as React.CSSProperties}
     >
-      {/* Ripple rings */}
+      {/* Ripple rings (circular) */}
       {Array.from({ length: pulseCount }).map((_, i) => (
         <div
           key={i}
           ref={addRingRef}
           aria-hidden
-          className="absolute rounded-full pointer-events-none"
+          className="absolute pointer-events-none"
           style={{
             width: "100%",
             height: "100%",
-            // border width scales with size (3% of the container)
             borderWidth: "calc(var(--fp-size) * 0.03)",
             borderStyle: "solid",
-            borderColor: "#FFD700",
+            borderColor: "#9f721fff",
+            borderRadius: "50%", // دائري
             transformOrigin: "50% 50%",
             opacity: 0,
             display: "none",
-            boxShadow: "0 10px 25px #FFD70055",
+            boxShadow: "0 10px 25px #9f721f55",
           }}
         />
       ))}
@@ -124,13 +119,12 @@ export default function FlashPulseComingSoon({
       {/* Center circle */}
       <div
         ref={centerRef}
-        className="relative rounded-full flex items-center text-[clamp(10px,3.6vw,14px)] md:text-[clamp(12px,2.2vw,16px)] justify-center text-white select-none"
+        className="relative rounded-full flex items-center justify-center text-white select-none"
         style={{
           width: "70%",
           height: "70%",
-          background:
-            "linear-gradient(45deg, #FFD700, #FFA500, #FF4500)",
-          boxShadow: "0 8px 28px #FFAA0077, 0 0 50px #FFD70066",
+          background: "linear-gradient(135deg, #cfa45bff, #9f721fff, #7c5711ff)",
+          boxShadow: "0 8px 28px #cfa45b77, 0 0 50px #9f721f66",
         }}
       >
         <span className="font-bold uppercase leading-none text-[10px] md:text-xs lg:text-sm">
@@ -145,8 +139,9 @@ export default function FlashPulseComingSoon({
         style={{
           width: "160%",
           height: "160%",
-          boxShadow: "0 25px 60px #FFD70044, 0 0 30px #FFA50055",
+          boxShadow: "0 25px 60px #9f721f44, 0 0 30px #cfa45b55",
           filter: "blur(8px)",
+          borderRadius: "50%", // دائري
         }}
       />
     </button>

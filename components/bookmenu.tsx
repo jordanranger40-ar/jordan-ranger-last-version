@@ -3,7 +3,6 @@
 import table from "@/public/images/table.jpg";
 import restaurantlogo from "@/public/images/restaurantlogo.png";
 
-
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Plus, X } from "lucide-react";
@@ -48,7 +47,6 @@ export default function MenuGallery({ isArabic = false }: Props) {
   const openLightbox = (index: number) => {
     setActiveIndex(index);
     setLightboxOpen(true);
-    // wait a tick so the button exists in the DOM then focus
     setTimeout(() => closeButtonRef.current?.focus(), 50);
   };
 
@@ -58,7 +56,7 @@ export default function MenuGallery({ isArabic = false }: Props) {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center py-32" style={{backgroundImage:`url(${table.src})`}}>
+    <div className="flex flex-col items-center justify-center py-32" style={{ backgroundImage: `url(${table.src})` }}>
       <h2 className="text-2xl sm:text-3xl md:text-5xl text-white font-semibold text-center mb-8">
         {isArabic ? "قائمة الطعام" : "Menu"}
       </h2>
@@ -71,7 +69,7 @@ export default function MenuGallery({ isArabic = false }: Props) {
                 src={src}
                 alt={`menu-${i + 1}`}
                 fill
-                className="object-cover transition-transform  duration-300 group-hover:scale-105"
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 48vw, 32vw"
                 priority={i === 0}
               />
@@ -111,20 +109,20 @@ export default function MenuGallery({ isArabic = false }: Props) {
             {activeIndex! > 0 && (
               <button
                 onClick={() => setActiveIndex((i) => (i as number) - 1)}
-                className="absolute left-3 z-20 p-3 rounded-full bg-white/90 shadow-lg hidden md:flex"
+                className="absolute left-3 md:left-6 z-20 p-3 rounded-full bg-white/90 shadow-lg flex items-center justify-center"
                 aria-label={isArabic ? "السابق" : "Previous"}
               >
-                &#8249;
+                {isArabic ? '>' : '<'}
               </button>
             )}
 
             {activeIndex! < menuImages.length - 1 && (
               <button
                 onClick={() => setActiveIndex((i) => (i as number) + 1)}
-                className="absolute right-3 z-20 p-3 rounded-full bg-white/90 shadow-lg hidden md:flex"
+                className="absolute right-3 md:right-6 z-20 p-3 rounded-full bg-white/90 shadow-lg flex items-center justify-center"
                 aria-label={isArabic ? "التالي" : "Next"}
               >
-                &#8250;
+                {isArabic ? '<' : '>'}
               </button>
             )}
 
