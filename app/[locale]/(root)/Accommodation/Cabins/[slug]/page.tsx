@@ -2,8 +2,10 @@ import { getRoomBySlug } from "@/app/models/db/lib/services/rooms";
 import { roomFeatures } from "@/types";
 import Link from "next/link";
 import Image from "next/image";
+import RoomGallery from "@/components/roomsAndTents/GallaryComponent";
 
 interface PageProps {
+  // your original pattern used a Promise for params; keep compatibility
   params: Promise<{ locale: string; slug: string }>;
 }
 
@@ -26,7 +28,18 @@ export default async function Page({ params }: PageProps) {
     );
   }
 
-  const galleryImages = data.room_images.slice(0, 5);
+  // Normalise gallery images to strings (handles case where room_images are objects)
+  type RoomImage = 
+  | string
+  | { url?: string; src?: string; path?: string; image?: string };
+
+const galleryImages: string[] = (data.room_images || [])
+  .slice(0, 5)
+  .map((img: RoomImage) =>
+    typeof img === 'string' ? img : img.url || img.src || img.path || img.image || ''
+  )
+  .filter(Boolean);
+
 
   return (
     <div
@@ -49,9 +62,7 @@ export default async function Page({ params }: PageProps) {
           <h1 className="text-5xl md:text-6xl font-bold drop-shadow-lg mb-4">
             {isArabic ? data.name_ar : data.name_en}
           </h1>
-          <p className="text-lg md:text-xl text-gray-200">
-            {isArabic ? data.description_ar : data.description_en}
-          </p>
+         
         </div>
       </div>
 
@@ -74,7 +85,7 @@ export default async function Page({ params }: PageProps) {
           </Link>
         </div>
 
-        <div className="flex-1">
+       {data.room_features[0].feature_title_en!==null && <div className="flex-1">
           <h3 className="text-2xl font-semibold text-[#333333] mb-6">
             {isArabic ? "مرافق الغرفة" : "Room Amenities"}
           </h3>
@@ -106,10 +117,10 @@ export default async function Page({ params }: PageProps) {
               </div>
             ))}
           </div>
-        </div>
+        </div>}
       </div>
 
-      {/* ========== Gallery Section (مرن حسب عدد الصور) ========== */}
+      {/* ========== Gallery Section: server renders thumbnails, client handles lightbox */}
       <div className="max-w-7xl mx-auto mt-24 px-6 md:px-12 mb-20">
         <div className="text-center mb-12">
           <h3 className="text-3xl font-bold text-[#333333] inline-block relative">
@@ -118,44 +129,8 @@ export default async function Page({ params }: PageProps) {
           </h3>
         </div>
 
-        {galleryImages.length < 4 ? (
-          <div className={`flex gap-3 ${galleryImages.length === 1 ? "" : "flex-wrap"}`}>
-            {galleryImages.map((img, i) => (
-              <div key={i} className={`flex-1 overflow-hidden rounded-2xl relative aspect-[4/3]`}>
-                <Image
-                  src={img}
-                  alt={`room-${i + 1}`}
-                  fill
-                  className="object-cover transition-transform duration-700 hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-black/5 transition-all" />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-12 grid-rows-2 gap-3 h-[500px] md:h-[650px]">
-            <div className="col-span-12 md:col-span-4 row-span-2 overflow-hidden rounded-2xl relative group">
-              <Image src={galleryImages[0]} alt="room-1" fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-all" />
-            </div>
-            <div className="col-span-12 md:col-span-5 row-span-1 overflow-hidden rounded-2xl relative group">
-              <Image src={galleryImages[1]} alt="room-2" fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
-            </div>
-            <div className="col-span-6 md:col-span-3 row-span-1 overflow-hidden rounded-2xl relative group">
-              <Image src={galleryImages[2]} alt="room-3" fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
-            </div>
-            {galleryImages[3] && (
-              <div className="col-span-6 md:col-span-3 row-span-1 overflow-hidden rounded-2xl relative group">
-                <Image src={galleryImages[3]} alt="room-4" fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
-              </div>
-            )}
-            {galleryImages[4] && (
-              <div className="col-span-12 md:col-span-5 row-span-1 overflow-hidden rounded-2xl relative group">
-                <Image src={galleryImages[4]} alt="room-5" fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
-              </div>
-            )}
-          </div>
-        )}
+        {/* render gallery thumbnails container but actual lightbox logic/handlers live in client component */}
+        <RoomGallery images={galleryImages} isArabic={isArabic} />
       </div>
 
       <div className="h-[150px] bg-gradient-to-t from-[#f5f5f5] to-transparent mt-20" />

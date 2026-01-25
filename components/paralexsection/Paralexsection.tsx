@@ -8,11 +8,18 @@ import restaurant from "@/public/images/restaurant.jpg";
 import restaurantlogo from "@/public/images/restaurantlogo.png";
 import Image from "next/image";
 import ContactHours from "../restaurant/ContactSection";
-
+import ImagesCarousel from "@/components/roomsAndTents/GallaryComponent" 
 interface Props {
   locale: "en" | "ar";
 }
 
+const galleryImages: string[] = [
+  "/images/omlete.jpg",
+  "/images/image1.jpg",
+  "/images/image2.jpg",
+  "/images/image3.jpg",
+  "/images/image4.jpg",
+];
 export default function ParalexSection({ locale }: Props) {
   const isAr = locale === "ar";
   const direction = isAr ? "rtl" : "ltr";
@@ -96,6 +103,9 @@ export default function ParalexSection({ locale }: Props) {
           </p>
         </div>
       </section>
+
+      <ImagesCarousel images={galleryImages}  isArabic={isAr}/>
+
 
       {/* Contact & Opening Hours */}
       <ContactHours locale={locale}/>

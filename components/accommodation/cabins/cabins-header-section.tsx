@@ -12,7 +12,7 @@ export default function CabinsHeaderSection({ isArabic }: Props) {
     >
       <div className="bg-black/50 w-full h-full absolute top-0 flex justify-center items-center">
         <h2 className="text-white text-center  text-4xl font-bold">
-          {isArabic ? "غفرتنا" : "cabins"}
+          {isArabic ? "غرفنا" : "cabins"}
         </h2>
       </div>
     </section>

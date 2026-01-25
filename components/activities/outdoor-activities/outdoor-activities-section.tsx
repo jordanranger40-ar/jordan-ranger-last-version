@@ -23,7 +23,7 @@ export default async function outdoorAvtivitiesSection({ isArabic }: Props) {
           : "These activities offer a complete adventure experience that combines challenge and nature. The experience includes high and low rope courses, tower climbing, and exhilarating swings above the treetops, with customizable difficulty levels to suit individual abilities and comfort. Visitors can enjoy fresh air and breathtaking views of the Jerash forests, along with authentic outdoor cooking experiences guided by locals using fresh and organic ingredients."}
       </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 px-6 w-full max-w-7xl">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 px-6 w-full max-w-7xl ">
         {data.map((data, idx) => (
           <Link
             key={idx}

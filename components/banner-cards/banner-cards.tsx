@@ -2,12 +2,13 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import { FiStar, FiActivity, FiCoffee, FiTarget } from 'react-icons/fi'; // example icons
 
 interface CardItem {
   label: { en: string; ar: string }; // bilingual labels
-  icon: string;
+  icon: React.ReactNode;
   color: string;
-  path: string; // path to navigate when clicked
+  path: string;
 }
 
 interface Props {
@@ -18,10 +19,10 @@ export default function Bannercards({ locale }: Props) {
   const router = useRouter();
 
   const cardItems: CardItem[] = [
-    { label: { en: 'Tent', ar: 'خيمة' }, icon: '🏕️', color: '#515151', path: '/Accommodation/Tents' },
-    { label: { en: 'Hiking', ar: 'تسلق' }, icon: '🥾', color: '#b3c820ff', path: '/activities/outdoor-activities' },
-    { label: { en: 'Cooking', ar: 'طبخ' }, icon: '🍳', color: '#676e32', path: '/activities/outdoor-activities' },
-    { label: { en: 'Telescope', ar: 'تلسكوب' }, icon: '🔭', color: '#9f721fff', path: '/activities/outdoor-activities' },
+    { label: { en: 'Sand Shaping', ar: 'تشكيل الرمال' }, icon: <FiStar size={48} color="white" />, color: '#515151', path: '/activities/indoor-activities/sand-shaping' },
+    { label: { en: 'Yoga', ar: 'يوغا' }, icon: <FiActivity size={48} color="white" />, color: '#b3c820ff', path: '/activities/indoor-activities/yoga-and-meditation' },
+    { label: { en: 'Outdoor Cooking', ar: 'الطبخ في الهواء الطلق' }, icon: <FiCoffee size={48} color="white" />, color: '#676e32', path: '/activities/outdoor-activities/Outdoor%20Cooking' },
+    { label: { en: 'Telescope', ar: 'تلسكوب' }, icon: <FiTarget size={48} color="white" />, color: '#9f721fff', path: '/activities/outdoor-activities/Telescope' },
   ];
 
   return (
@@ -37,9 +38,9 @@ export default function Bannercards({ locale }: Props) {
             boxShadow: '0 6px 20px rgba(0,0,0,0.25)',
           }}
         >
-          {/* محتوى البطاقة */}
+          {/* Card content */}
           <div className="xl:relative xl:z-10 flex flex-col items-center justify-center h-full text-center p-6 gap-3 transform transition-transform duration-500 group-hover:-translate-y-2">
-            <div className="text-6xl text-white drop-shadow-lg">{item.icon}</div>
+            <div className="text-white drop-shadow-lg">{item.icon}</div>
             <div className="text-white text-2xl font-bold tracking-wide">
               {item.label[locale]}
             </div>
@@ -50,7 +51,7 @@ export default function Bannercards({ locale }: Props) {
             </div>
           </div>
 
-          {/* shine subtle عند hover */}
+          {/* subtle shine on hover */}
           <div className="absolute inset-0 pointer-events-none">
             <div
               className="absolute top-0 left-0 w-full h-full bg-linear-to-trr from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-40 transition duration-500"
