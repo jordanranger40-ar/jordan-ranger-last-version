@@ -1,5 +1,5 @@
 "use client";
-
+export const dynamic= "force-static"
 import React from "react";
 import { useLocale } from "next-intl";
 import LightButton from "../ui/light-button";

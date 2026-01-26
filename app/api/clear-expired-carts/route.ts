@@ -1,7 +1,7 @@
 // /app/api/clear-expired-carts/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { pool } from "@/app/models/db/lib/index";
-import { removeCartItemByItemId } from "@/app/models/db/lib/services/cart_items";
+import { removeCartItemByItemIdSafe } from "@/app/models/db/lib/services/cart_items";
 
 const JOB_NAME = "clear_expired_carts";
 const THREE_HOURS_MS = 3 * 60 * 60 * 1000;
@@ -74,7 +74,7 @@ export async function GET(req: NextRequest) {
       for (const item of cartItems.rows) {
         if (item.id) {
           // uses your existing function which deletes the booking based on booking_type/booking_id
-          await removeCartItemByItemId(item.id, client);
+          await removeCartItemByItemIdSafe(item.id, client);
         }
       }
 

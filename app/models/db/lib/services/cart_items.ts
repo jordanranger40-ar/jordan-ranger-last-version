@@ -68,6 +68,90 @@ export const removeCartItemByItemId = async (item_id: string, client?: PoolClien
 };
  // remove one item from the cart
 
+
+export const removeCartItemByItemIdSafe = async (item_id: string, client?: PoolClient) => {
+  const db = client ?? await pool.connect();
+  const isStandalone = !client; // true if no client passed
+
+  try {
+    if (isStandalone) await db.query("BEGIN");
+
+    // Lock cart_item row to avoid races
+    const itemRes = await db.query(
+      "SELECT * FROM cart_items WHERE id = $1 FOR UPDATE",
+      [item_id]
+    );
+
+    if (itemRes.rows.length === 0) {
+      if (isStandalone) await db.query("ROLLBACK");
+      return { success: false, message: "Item Not Found", status: 409 };
+    }
+
+    const item = itemRes.rows[0];
+    const bookingId: string | null = item.booking_id;
+    const bookingType: string | null = item.booking_type;
+    const cartId: string = item.cart_id;
+
+    // Safety: do not remove items from a paid cart
+    const cartRes = await db.query("SELECT is_paid FROM cart WHERE id = $1", [cartId]);
+    if (cartRes.rows[0]?.is_paid) {
+      if (isStandalone) await db.query("ROLLBACK");
+      return { success: false, message: "Cannot remove item from a paid cart", status: 409 };
+    }
+
+    // If there's a booking, check its confirmation status before deleting
+    if (bookingId && bookingType) {
+      let bookingTable: string | null = null;
+      if (bookingType === "activity") bookingTable = "activities_booking";
+      else if (bookingType === "training") bookingTable = "training_booking";
+      else if (bookingType === "room") bookingTable = "room_booking";
+
+      if (bookingTable) {
+        const bookingRes = await db.query(
+          `SELECT is_confirmed FROM ${bookingTable} WHERE id = $1 FOR UPDATE`,
+          [bookingId]
+        );
+
+        if (bookingRes.rows.length > 0) {
+          const isConfirmed = !!bookingRes.rows[0].is_confirmed;
+          if (isConfirmed) {
+            if (isStandalone) await db.query("ROLLBACK");
+            return { success: false, message: "Cannot delete confirmed booking", status: 409 };
+          }
+
+          // booking exists and is not confirmed -> delete it
+          await db.query(`DELETE FROM ${bookingTable} WHERE id = $1`, [bookingId]);
+        } // else: booking row missing — continue and just remove cart_item
+      }
+    }
+
+    // Remove the cart_item
+    await db.query("DELETE FROM cart_items WHERE id = $1", [item_id]);
+
+    // Recalculate and update cart total
+    const totalResult = await db.query<{ total: number }>(
+      "SELECT COALESCE(SUM(price),0) AS total FROM cart_items WHERE cart_id = $1",
+      [cartId]
+    );
+
+    await db.query("UPDATE cart SET total_amount = $1 WHERE id = $2", [
+      totalResult.rows[0].total,
+      cartId,
+    ]);
+
+    if (isStandalone) await db.query("COMMIT");
+
+    return { success: true, message: "Item deleted successfully", status: 200 };
+  } catch (error) {
+    console.error("Error removing cart item (safe):", error);
+    if (isStandalone) await db.query("ROLLBACK");
+    return { success: false, message: "Error deleting item", status: 500 };
+  } finally {
+    if (isStandalone) db.release();
+  }
+};
+
+
 export const clearCart = async (cart_id: string) => {
   await pool.query("DELETE FROM cart_items WHERE cart_id = $1", [cart_id]);
   return { message: "Cart cleared Successfully", status: 200 };
