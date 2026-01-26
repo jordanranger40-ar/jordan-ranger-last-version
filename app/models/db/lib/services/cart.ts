@@ -81,7 +81,7 @@ export const clearExpiredCart = () => {
       await client.query("BEGIN");
 
       const expiredCarts = await client.query<newCart>(
-        "SELECT * FROM cart WHERE expires_at < NOW()"
+        "SELECT * FROM cart WHERE expires_at < NOW() AND is_paid =false"
       );
 
       if (expiredCarts.rows.length === 0) {

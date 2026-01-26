@@ -35,7 +35,7 @@ export default function PosterSection() {
           style={{ borderRadius: isArabic ? "0.5rem 2rem 0.5rem 2rem" : "2rem 0.5rem 2rem 0.5rem", overflow: "hidden" }}
         >
           <Image
-            src="/images/poster.jpg"
+            src="/images/poster.jpeg"
             alt="Camping"
             fill
             sizes="(max-width: 768px) 100vw, 50vw"
