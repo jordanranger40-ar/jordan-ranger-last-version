@@ -1,4 +1,5 @@
 "use client";
+
 import { newActivitySchema } from "@/app/models/db/lib/schemas/activitySchema";
 import { newActivity } from "@/types";
 import ImageUploader from "@/components/imageUpload";
@@ -24,11 +25,13 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import LightButton from "@/components/ui/light-button";
 import DarkButton from "@/components/ui/dark-button";
+
 interface Props {
   action: (
     data: newActivity
   ) => Promise<{ status: number; message: string; success: boolean }>;
 }
+
 export default function CreateActivityForm({ action }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -99,7 +102,9 @@ export default function CreateActivityForm({ action }: Props) {
     setErrors({});
     startTransition(async () => {
       try {
-        const result = await action({ ...form });
+        // ensure header_image always matches poster_image
+        const payload = { ...form, header_image: form.poster_image };
+        const result = await action(payload);
         if (result.status === 201) {
           toast.success(result.message);
           router.push("/admin/dashboard/activities");
@@ -160,68 +165,63 @@ export default function CreateActivityForm({ action }: Props) {
 
             {/* Activity Type */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-  {[
-    {
-      label: "English Location Type",
-      name: "location_type_en",
-      value: form.location_type_en,
-      options: [
-        { value: "indoor", label: "Indoor" },
-        { value: "outdoor", label: "Outdoor" },
-      ],
-    },
-    {
-      label: "Arabic Location Type",
-      name: "location_type_ar",
-      value: form.location_type_ar,
-      options: [
-        { value: "داخلي", label: "داخلي" },
-        { value: "خارجي", label: "خارجي" },
-      ],
-    },
-  ].map((field) => (
-    <div key={field.name} className="flex flex-col md:w-[90%]">
-      <label className="text-sm font-medium text-gray-700 mb-1">
-        <span className="text-red-500">*</span> {field.label}
-      </label>
+              {[
+                {
+                  label: "English Location Type",
+                  name: "location_type_en",
+                  value: form.location_type_en,
+                  options: [
+                    { value: "indoor", label: "Indoor" },
+                    { value: "outdoor", label: "Outdoor" },
+                  ],
+                },
+                {
+                  label: "Arabic Location Type",
+                  name: "location_type_ar",
+                  value: form.location_type_ar,
+                  options: [
+                    { value: "داخلي", label: "داخلي" },
+                    { value: "خارجي", label: "خارجي" },
+                  ],
+                },
+              ].map((field) => (
+                <div key={field.name} className="flex flex-col md:w-[90%]">
+                  <label className="text-sm font-medium text-gray-700 mb-1">
+                    <span className="text-red-500">*</span> {field.label}
+                  </label>
 
-      <Select
-        disabled={isPending}
-        value={field.value}
-        onValueChange={(value) =>
-          handleInputChange({
-            target: { name: field.name, value },
-          } as React.ChangeEvent<HTMLInputElement>)
-        }
-      >
-        <SelectTrigger
-          className={`h-10 w-full ${
-            errors[field.name]
-              ? "border-red-500"
-              : "border-gray-300"
-          } focus:ring-2 focus:ring-[#676e32]`}
-        >
-          <SelectValue placeholder={`Select ${field.label}`} />
-        </SelectTrigger>
+                  <Select
+                    disabled={isPending}
+                    value={field.value}
+                    onValueChange={(value) =>
+                      handleInputChange({
+                        target: { name: field.name, value },
+                      } as React.ChangeEvent<HTMLInputElement>)
+                    }
+                  >
+                    <SelectTrigger
+                      className={`h-10 w-full ${
+                        errors[field.name] ? "border-red-500" : "border-gray-300"
+                      } focus:ring-2 focus:ring-[#676e32]`}
+                    >
+                      <SelectValue placeholder={`Select ${field.label}`} />
+                    </SelectTrigger>
 
-        <SelectContent dir={field.name.endsWith("_ar") ? "rtl" : "ltr"}>
-          {field.options.map((opt) => (
-            <SelectItem key={opt.value} value={opt.value}>
-              {opt.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+                    <SelectContent dir={field.name.endsWith("_ar") ? "rtl" : "ltr"}>
+                      {field.options.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
 
-      {errors[field.name] && (
-        <p className="text-red-500 text-sm mt-1">
-          {errors[field.name]}
-        </p>
-      )}
-    </div>
-  ))}
-</div>
-
+                  {errors[field.name] && (
+                    <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>
+                  )}
+                </div>
+              ))}
+            </div>
 
             {/* Name Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -242,9 +242,7 @@ export default function CreateActivityForm({ action }: Props) {
                     className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
                   />
                   {errors[field.name] && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors[field.name]}
-                    </p>
+                    <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>
                   )}
                 </div>
               ))}
@@ -268,8 +266,8 @@ export default function CreateActivityForm({ action }: Props) {
                 )}
               </div>
             </div>
-            {/* Capacity And Minimum Quantity */}
 
+            {/* Capacity And Minimum Quantity */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="flex flex-col md:w-[90%] ">
                 <label className="text-sm font-medium text-gray-700 mb-1">
@@ -298,9 +296,7 @@ export default function CreateActivityForm({ action }: Props) {
                   className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
                 />
                 {errors.minimum_quantity && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.minimum_quantity}
-                  </p>
+                  <p className="text-red-500 text-sm mt-1">{errors.minimum_quantity}</p>
                 )}
               </div>
             </div>
@@ -308,16 +304,8 @@ export default function CreateActivityForm({ action }: Props) {
             {/* Descriptions */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[
-                {
-                  label: "English Description",
-                  name: "description_en",
-                  value: form.description_en,
-                },
-                {
-                  label: "Arabic Description",
-                  name: "description_ar",
-                  value: form.description_ar,
-                },
+                { label: "English Description", name: "description_en", value: form.description_en },
+                { label: "Arabic Description", name: "description_ar", value: form.description_ar },
               ].map((field) => (
                 <div key={field.name} className="flex flex-col md:w-[90%]">
                   <label className="text-sm font-medium text-gray-700 mb-1">
@@ -331,15 +319,14 @@ export default function CreateActivityForm({ action }: Props) {
                     className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 h-[12vh] resize-none focus:outline-none focus:ring-2 focus:ring-[#676e32]"
                   />
                   {errors[field.name] && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors[field.name]}
-                    </p>
+                    <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>
                   )}
                 </div>
               ))}
             </div>
 
-            <div className="flex items-center gap-3  rounded-2xl border border-gray-200 p-4 bg-gray-50  w-fit">
+            {/* Coming Soon */}
+            <div className="flex items-center gap-3 rounded-2xl border border-gray-200 p-4 bg-gray-50 w-fit">
               <Checkbox
                 id="coming_soon"
                 name="coming_soon"
@@ -355,7 +342,7 @@ export default function CreateActivityForm({ action }: Props) {
               </Label>
             </div>
 
-            {/* Card, Poster & Header Images */}
+            {/* Card & Poster Images */}
             <div className="flex flex-col gap-8 mt-4">
               {/* Card Image */}
               <div>
@@ -372,13 +359,11 @@ export default function CreateActivityForm({ action }: Props) {
                   onDelete={() => setForm({ ...form, card_image: "" })}
                 />
                 {errors.card_image && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.card_image}
-                  </p>
+                  <p className="text-red-500 text-sm mt-1">{errors.card_image}</p>
                 )}
               </div>
 
-              {/* Poster Image */}
+              {/* Poster Image (header_image will mirror this) */}
               <div>
                 <label className="text-base text-black mb-2">
                   <span className="text-red-500">*</span> Poster Image
@@ -387,39 +372,19 @@ export default function CreateActivityForm({ action }: Props) {
                   endpoint="activities"
                   initialImageUrl={form.poster_image ?? ""}
                   onUploadComplete={(url) =>
-                    setForm({ ...form, poster_image: url })
+                    setForm({ ...form, poster_image: url, header_image: url })
                   }
                   onUploadError={(e) => toast.error(e.message)}
-                  onDelete={() => setForm({ ...form, poster_image: "" })}
+                  onDelete={() =>
+                    setForm({ ...form, poster_image: "", header_image: "" })
+                  }
                 />
                 {errors.poster_image && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.poster_image}
-                  </p>
-                )}
-              </div>
-
-              {/* Header Image */}
-              <div>
-                <label className="text-base text-black mb-2">
-                  <span className="text-red-500">*</span> Header Image
-                </label>
-                <ImageUploader
-                  endpoint="activities"
-                  initialImageUrl={form.header_image ?? ""}
-                  onUploadComplete={(url) =>
-                    setForm({ ...form, header_image: url })
-                  }
-                  onUploadError={(e) => toast.error(e.message)}
-                  onDelete={() => setForm({ ...form, header_image: "" })}
-                />
-                {errors.header_image && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.header_image}
-                  </p>
+                  <p className="text-red-500 text-sm mt-1">{errors.poster_image}</p>
                 )}
               </div>
             </div>
+
             {/* Buttons */}
             <div className="flex justify-center mt-8">
               <div className="flex gap-4">

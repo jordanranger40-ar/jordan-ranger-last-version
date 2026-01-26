@@ -4,42 +4,42 @@ const f = createUploadthing();
 
 export const ourFileRouter = {
   banners: f({
-    image: { maxFileSize: "2MB", maxFileCount: 1 },
+    image: { maxFileSize: "16MB", maxFileCount: 1 },
   }).onUploadComplete(async ({ file }) => {
     console.log("Banner Upload Complete:", file.url);
     return { uploadedUrl: file.url };
   }),
 
   rooms: f({
-    image: { maxFileSize: "2MB", maxFileCount: 5 },
+    image: { maxFileSize: "16MB", maxFileCount: 5 },
   }).onUploadComplete(async ({ file }) => {
     console.log("Room Upload Complete:", file.url);
     return { uploadedUrl: file.url };
   }),
 
   activities: f({
-    image: { maxFileSize: "2MB", maxFileCount: 1 },
+    image: { maxFileSize: "16MB", maxFileCount: 1 },
   }).onUploadComplete(async ({ file }) => {
     console.log("Activity Upload Complete:", file.url);
     return { uploadedUrl: file.url };
   }),
 
   ourClients: f({
-    image: { maxFileSize: "2MB", maxFileCount: 1 },
+    image: { maxFileSize: "16MB", maxFileCount: 1 },
   }).onUploadComplete(async ({ file }) => {
     console.log("Our Clients Upload Complete:", file.url);
     return { uploadedUrl: file.url };
   }),
 
   services: f({
-    image: { maxFileSize: "2MB", maxFileCount: 1 },
+    image: { maxFileSize: "16MB", maxFileCount: 1 },
   }).onUploadComplete(async ({ file }) => {
     console.log("Services Upload Complete:", file.url);
     return { uploadedUrl: file.url };
   }),
 
   courses: f({
-    image: { maxFileSize: "2MB", maxFileCount: 2 },
+    image: { maxFileSize: "16MB", maxFileCount: 2 },
   }).onUploadComplete(async ({ file }) => {
     console.log("Courses Upload Complete:", file.url);
     return { uploadedUrl: file.url };

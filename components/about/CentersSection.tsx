@@ -9,7 +9,7 @@ export default function CentersSection({ isArabic }: Props) {
   // Full original texts preserved exactly (cleaned for whitespace)
   const COPY = {
     en: {
-      title: "Our Story",
+      title: "About Jordan Ranger",
       aboutHeading: "About Ranger Entrepreneurial Entities",
       about: `Entrepreneurial entities registered with the Ministry of Industry Trade & Supply and licensed according to Jordanian law, working to develop local communities.
 
@@ -22,7 +22,7 @@ We also provide a fully immersive natural experience for families, individuals, 
       list: [
         "The Jordanian Adventure and Exploration Center",
         "Adventure and Challenge Forest Camp",
-        "Eco-View Resort",
+        "Eco View Resort",
       ],
       centers: {
         center: {
@@ -34,15 +34,15 @@ We also provide a fully immersive natural experience for families, individuals, 
           body: `was founded in 2012 in Kufr Khal-Jarash and opened in May 2014, it is a unique permanent camp and the first of its kind in Arab world. It is set up on 1400 square meters of land in the middle of a breathtaking forest, it contains a tent yard, health care facilities, showers, a kitchen, an outdoor restaurant court, parking area, interesting adventure fields, training yards, five-a-side soccer field, a bonfire yard and seats under the trees. It is prepared to accommodate more than 150 participants who like camping, hiking and adventure, they are also given the opportunity to carry out challenging and adventurous activities, overcome obstacles and training, as well as enjoy the beauty of nature. In 2020, a representative branch/office was established in Ajloun, which works on programs and activities that integrate tourists with local communities, it also works on employed the housewives and young men and women. Moreover, provide an optimal opportunity for women to participate in various events.`,
         },
         resort: {
-          heading: "Eco-View Resort",
+          heading: "Eco View Resort",
           body: `Founded in 2015 and opened in 2019 in Kufr Khal–Jarash, Jordan Ranger Resort offers a unique eco-experience through rustic treehouses set in the natural beauty of Jerash. The resort combines tourism, training, and environmental activities, focusing on life skills, teamwork, and personal development. Spanning 1,100 square meters, it includes 10 cabins accommodating up to 40 guests—eight treehouses and two stone lodges inspired by ancient Jordanian living. The resort features modern facilities, a luxury restaurant, training halls, parking, and is located next to Jordan Ranger Camp. It welcomes families, tourists, and organizations seeking nature, adventure, and meaningful experiences.`,
         },
       },
     },
 
     ar: {
-      title: "قصتنا",
-      aboutHeading: "عن كياننا",
+      title: "عن رينجر الأردن",
+      aboutHeading: "عن مؤسساتنا",
       about: `كيانات ريادية مسجلة لدى وزارة الصناعة والتجارة والتموين ومرخصة وفقاً للقانون الأردني، تعمل على تطوير المجتمعات المحلية.
 
 تُعد جوردان رينجر مؤسسة ذات أثر اجتماعي وسياحة بيئية، ونسعى إلى إحداث تغيير إيجابي من خلال الإلهام والتعليم، وتشجيع الأفراد على القيادة بشجاعة، والعطاء بسخاء، والعمل بروح من التعاطف.
@@ -52,17 +52,17 @@ We also provide a fully immersive natural experience for families, individuals, 
 كما نعمل على توفير تجربة طبيعية فريدة ومتكاملة للعائلات، والأفراد، والمؤسسات.`,
       includesLabel: "تشمل جوردان رينجر:",
       list: [
-        "المركز الأردني للمغامرة والاستكشاف",
-        "مخيم غابة التحدي والمغامرة",
-        "منتجع إيكو فيو",
+         "مركز الاستكشاف والمغامرة الأردني",
+        "مخيم الغابات للمغامرة والتحدي",
+        "منتجع المطل البيئي",
       ],
       centers: {
         center: {
-          heading: "مركز المغامرة والاستكشاف الأردني",
+          heading: "مركز الاستكشاف والمغامرة الأردني",
           body: `تم تأسيس جوردن رينجر في عام 2006 كمؤسسة تدريبية وتعليمية متخصصة في المهارات الحياتية والتنمية البشرية في مرتفعات ثغرة عصفور وهي من أجمل الغابات الخلابة في جرش. حيث يعتبر جوردن رينجر من أهم المنتجعات في الوطن العربي الذي يمكنك من خوض تجربة ممتعة ومنعشة في الطبيعة. وبعد مرور أكثر من 10 سنوات، يقدم منتجع جوردان رينجر لمرتاديه خدمات فندقية ونشاطات ترفيهية للشركات والأفراد وتمنحكم الحرية للتواصل مع جميع العناصر المحيطة بكم وإعادة ضبط أسلوب حياتكم. يوفر جوردن رينجر قاعات داخلية وخارجية لاجتماعات الشركات وبناء الأفرقة ومجموعة من النشاطات الخارجية كالتخييم و تسلق الأبراج و ركوب الخيل وألعاب التحدي و العبارة الهوائية والمزيد من النشاطات. بالاضافة الى المنامات المميزة والفريدة من نوعها والمأكولات بنكهة محلية ومنتجات طبيعية.`,
         },
         camp: {
-          heading: "مخيم الغابة للمغامرات والتحديات",
+          heading: "مخيم الغابات للمغامرة والتحدي",
           body: `تم تأسيس مخيم غابة التحدي والمغامرة عام 2012 في كفر خال – جرش، وافتُتح رسميًا في شهر أيار عام 2014، ليكون مخيمًا دائمًا وفريدًا من نوعه، وهو الأول من هذا النوع في العالم العربي.
 يقع المخيم على مساحة تبلغ 1400 متر مربع في قلب غابة طبيعية خلابة تخطف الأنظار.
 
@@ -72,9 +72,9 @@ We also provide a fully immersive natural experience for families, individuals, 
 في عام 2020، تم إنشاء فرع في عجلون لدعم برامج تدمج السياح مع المجتمعات المحلية...`,
         },
         resort: {
-          heading: "منتجع إيكو فيو",
-          body: `تأسس منتجع Jordan Ranger عام 2015 وافتُتح رسميًا في عام 2019 في منطقة كفر خال – جرش، ليقدّم تجربة سياحية بيئية فريدة من نوعها من خلال بيوت شجر مصممة بطابع ريفي يعكس جمال طبيعة جرش الخلابة. يجمع المنتجع بين السياحة والترفيه والتدريب البيئي، مع تركيز خاص على تنمية المهارات الحياتية، والعمل الجماعي، وبناء الشخصية.
-يمتد المنتجع على مساحة 1100 متر مربع، ويضم 10 وحدات سكنية بسعة تصل إلى 40 شخصًا، تشمل 8 بيوت شجر ووحدتين حجريتين مستوحيتين من البيئة الأردنية القديمة وحياة الكهوف. كما يحتوي على مرافق صحية متكاملة، ومطعم سياحي فاخر، وقاعات تدريب متعددة الاستخدامات، ومواقف للسيارات، ويقع بجوار Jordan Ranger Camp. يستقبل المنتجع العائلات والأفراد والسياح، بالإضافة إلى المؤسسات المحلية والدولية التي تشترك في حب الطبيعة والمغامرة، ويهدف إلى توفير تجارب ملهمة تساعد الزوار على تحقيق أهدافهم الشخصية والاستمتاع بروح التحدي والاكتشاف.`,
+          heading: "منتجع المطل البيئي",
+          body: `تأسس منتجع رينجر الاأردن عام 2015 وافتُتح رسميًا في عام 2019 في منطقة كفر خال – جرش، ليقدّم تجربة سياحية بيئية فريدة من نوعها من خلال بيوت شجر مصممة بطابع ريفي يعكس جمال طبيعة جرش الخلابة. يجمع المنتجع بين السياحة والترفيه والتدريب البيئي، مع تركيز خاص على تنمية المهارات الحياتية، والعمل الجماعي، وبناء الشخصية.
+يمتد المنتجع على مساحة 1100 متر مربع، ويضم 10 وحدات سكنية بسعة تصل إلى 40 شخصًا، تشمل 8 بيوت شجر ووحدتين حجريتين مستوحيتين من البيئة الأردنية القديمة وحياة الكهوف. كما يحتوي على مرافق صحية متكاملة، ومطعم سياحي فاخر، وقاعات تدريب متعددة الاستخدامات، ومواقف للسيارات، ويقع بجوار رينجير الأردن. يستقبل المنتجع العائلات والأفراد والسياح، بالإضافة إلى المؤسسات المحلية والدولية التي تشترك في حب الطبيعة والمغامرة، ويهدف إلى توفير تجارب ملهمة تساعد الزوار على تحقيق أهدافهم الشخصية والاستمتاع بروح التحدي والاكتشاف.`,
         },
       },
     },
@@ -90,7 +90,6 @@ We also provide a fully immersive natural experience for families, individuals, 
         isArabic ? "text-gray-700 dark:text-gray-300 text-right" : "text-gray-700 dark:text-gray-300 text-left"
       }`}>
         <div className="col-span-2 space-y-4">
-          <h3 className="text-2xl font-bold text-[#b3c820]">{t.aboutHeading}</h3>
 
           <p className="text-base leading-relaxed text-gray-700 whitespace-pre-line">{t.about}</p>
 

@@ -1,4 +1,5 @@
 "use client";
+
 import { newRoomSchema } from "@/app/models/db/lib/schemas/roomsSchema";
 import { newRoom, roomFeatures } from "@/types";
 import ImageUploader from "@/components/imageUpload";
@@ -20,6 +21,10 @@ import {
 } from "@/components/ui/select";
 import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import LightButton from "../ui/light-button";
+import DarkButton from "../ui/dark-button";
+
 interface Props {
   room: newRoom;
   action: (
@@ -27,14 +32,13 @@ interface Props {
     data: newRoom
   ) => Promise<{ status: number; message: string; success: boolean }>;
 }
-import { toast } from "sonner";
-import LightButton from "../ui/light-button";
-import DarkButton from "../ui/dark-button";
 
 export default function EditRoomForm({ room, action }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+
   const [form, setForm] = useState<newRoom>({
+    // ensure numeric fields are numbers
     slug: room.slug ?? "",
     name_en: room.name_en ?? "",
     name_ar: room.name_ar ?? "",
@@ -42,7 +46,7 @@ export default function EditRoomForm({ room, action }: Props) {
     description_ar: room.description_ar ?? "",
     room_type_en: room.room_type_en ?? "",
     room_type_ar: room.room_type_ar ?? "",
-    price: room.price,
+    price: Number(room.price ?? 0),
     cover_image: room.cover_image ?? "",
     room_images: room.room_images ?? [],
     room_features: (room.room_features ?? []).filter(
@@ -52,14 +56,14 @@ export default function EditRoomForm({ room, action }: Props) {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+  // Text/Select/Textarea handler
+  const handleTextChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+
     setForm((prev) => {
-      const updated = { ...prev, [name]: value };
+      const updated: any = { ...prev, [name]: value };
 
       if (name === "name_en") {
         updated.slug = value
@@ -69,30 +73,48 @@ export default function EditRoomForm({ room, action }: Props) {
           .replace(/^-+|-+$/g, "");
       }
 
-      if (name === "price") {
-        updated.price = Number(value);
-      }
-
       return updated;
     });
   };
 
+  // Number inputs handler - uses valueAsNumber and falls back safely
+  const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name } = e.target;
+    // valueAsNumber is the correct way to get numeric input from <input type="number" />
+    const raw = (e.target as HTMLInputElement).valueAsNumber;
+    const value = Number.isNaN(raw) ? 0 : raw;
+
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleFormSubmit = () => {
-    const validation = newRoomSchema.safeParse(form);
+    // Extra normalization just before validation/submission
+    const normalized: newRoom = {
+      ...form,
+      price: Number(form.price ?? 0),
+      // ensure arrays are arrays and features are in expected shape
+      room_images: Array.isArray(form.room_images) ? form.room_images : [],
+      room_features: Array.isArray(form.room_features) ? form.room_features : [],
+    };
+
+    const validation = newRoomSchema.safeParse(normalized);
 
     if (!validation.success) {
       const fieldErrors: Record<string, string> = {};
       validation.error.issues.forEach((err) => {
-        fieldErrors[err.path[0] as string] = err.message;
+        // err.path can be nested; join if needed
+        const key = (err.path && err.path.length ? String(err.path[0]) : "form") as string;
+        fieldErrors[key] = err.message;
       });
       setErrors(fieldErrors);
       toast.error("Please fix the highlighted fields.");
       return;
     }
+
     setErrors({});
     startTransition(async () => {
       try {
-        const result = await action(room.id!, form);
+        const result = await action(room.id!, normalized);
         if (result.status === 201) {
           toast.success(result.message);
           setTimeout(() => {
@@ -172,70 +194,64 @@ export default function EditRoomForm({ room, action }: Props) {
 
             {/* Room Type */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-  {[
-    {
-      label: "English Room Type",
-      name: "room_type_en",
-      value: form.room_type_en,
-      options: [
-        { value: "cabins", label: "Cabins" },
-        { value: "tents", label: "Tents" },
-      ],
-    },
-    {
-      label: "Arabic Room Type",
-      name: "room_type_ar",
-      value: form.room_type_ar,
-      options: [
-        { value: "الغرف", label: "غرف" },
-        { value: "الخيام", label: "خيام" },
-      ],
-    },
-  ].map((field) => (
-    <div key={field.name} className="flex flex-col md:w-[90%]">
-      <label className="text-sm font-medium text-gray-700 mb-1">
-        <span className="text-red-500">*</span> {field.label}
-      </label>
+              {[
+                {
+                  label: "English Room Type",
+                  name: "room_type_en",
+                  value: form.room_type_en,
+                  options: [
+                    { value: "cabins", label: "Cabins" },
+                    { value: "tents", label: "Tents" },
+                  ],
+                },
+                {
+                  label: "Arabic Room Type",
+                  name: "room_type_ar",
+                  value: form.room_type_ar,
+                  options: [
+                    { value: "الغرف", label: "غرف" },
+                    { value: "الخيام", label: "خيام" },
+                  ],
+                },
+              ].map((field) => (
+                <div key={field.name} className="flex flex-col md:w-[90%]">
+                  <label className="text-sm font-medium text-gray-700 mb-1">
+                    <span className="text-red-500">*</span> {field.label}
+                  </label>
 
-      <Select
-        value={field.value}
-        disabled={isPending}
-        onValueChange={(value) =>
-          handleInputChange({
-            target: {
-              name: field.name,
-              value,
-            },
-          } as React.ChangeEvent<HTMLInputElement>)
-        }
-      >
-        <SelectTrigger
-          className={`h-10 w-full ${
-            errors[field.name]
-              ? "border-red-500"
-              : "border-gray-300"
-          } focus:ring-2 focus:ring-[#676e32]`}
-        >
-          <SelectValue placeholder={`Select ${field.label}`} />
-        </SelectTrigger>
+                  <Select
+                    value={field.value}
+                    disabled={isPending}
+                    onValueChange={(value) =>
+                      // Select returns strings; use text handler
+                      handleTextChange({
+                        target: { name: field.name, value },
+                      } as unknown as React.ChangeEvent<HTMLInputElement>)
+                    }
+                  >
+                    <SelectTrigger
+                      className={`h-10 w-full ${
+                        errors[field.name] ? "border-red-500" : "border-gray-300"
+                      } focus:ring-2 focus:ring-[#676e32]`}
+                    >
+                      <SelectValue placeholder={`Select ${field.label}`} />
+                    </SelectTrigger>
 
-        <SelectContent>
-          {field.options.map((opt) => (
-            <SelectItem key={opt.value} value={opt.value}>
-              {opt.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+                    <SelectContent>
+                      {field.options.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
 
-      {errors[field.name] && (
-        <p className="text-red-500 text-sm mt-1">
-          {errors[field.name]}
-        </p>
-      )}
-    </div>
-  ))}
-</div>
+                  {errors[field.name] && (
+                    <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>
+                  )}
+                </div>
+              ))}
+            </div>
 
             {/* Name Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -252,13 +268,11 @@ export default function EditRoomForm({ room, action }: Props) {
                     name={field.name}
                     value={field.value}
                     disabled={isPending}
-                    onChange={handleInputChange}
+                    onChange={handleTextChange}
                     className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
                   />
                   {errors[field.name] && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors[field.name]}
-                    </p>
+                    <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>
                   )}
                 </div>
               ))}
@@ -275,7 +289,7 @@ export default function EditRoomForm({ room, action }: Props) {
                   name="price"
                   value={form.price}
                   disabled={isPending}
-                  onChange={handleInputChange}
+                  onChange={handleNumberChange}
                   className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
                 />
                 {errors.price && (
@@ -306,13 +320,11 @@ export default function EditRoomForm({ room, action }: Props) {
                     name={field.name}
                     value={field.value}
                     disabled={isPending}
-                    onChange={handleInputChange}
+                    onChange={(e) => handleTextChange(e)}
                     className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 h-[12vh] resize-none focus:outline-none focus:ring-2 focus:ring-[#676e32]"
                   />
                   {errors[field.name] && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors[field.name]}
-                    </p>
+                    <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>
                   )}
                 </div>
               ))}
@@ -330,9 +342,7 @@ export default function EditRoomForm({ room, action }: Props) {
                 }
               />
               {errors.roomFeatures && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.roomFeatures}
-                </p>
+                <p className="text-red-500 text-sm mt-1">{errors.roomFeatures}</p>
               )}
             </div>
 
@@ -350,9 +360,7 @@ export default function EditRoomForm({ room, action }: Props) {
                   onDelete={handleImageDelete}
                 />
                 {errors.cover_image && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.cover_image}
-                  </p>
+                  <p className="text-red-500 text-sm mt-1">{errors.cover_image}</p>
                 )}
               </div>
 
@@ -369,9 +377,7 @@ export default function EditRoomForm({ room, action }: Props) {
                   onDelete={handleRoomImagesDelete}
                 />
                 {errors.room_images && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.room_images}
-                  </p>
+                  <p className="text-red-500 text-sm mt-1">{errors.room_images}</p>
                 )}
               </div>
             </div>

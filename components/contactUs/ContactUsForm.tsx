@@ -186,6 +186,49 @@ const ContactSection = ({ locale, action }: Props) => {
             </h3>
 
             <div className="grid gap-8 sm:grid-cols-2">
+              
+
+              {/* Phone Info */}
+              <div className="flex items-start gap-4">
+                <div className="bg-[#676e32]/10 p-3 rounded-xl text-[#676e32]">
+                  <Phone className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-[#515151] mb-1">
+                    {isRtl ? "رقم هاتف الحجوزات" : "Reservation Phone Number"}
+                  </h4>
+                  <div className="flex flex-col gap-1">
+                    <a
+                      href={`tel:${phoneNumber1}`}
+                      className="text-[#676e32] hover:underline hover:text-[#515151] transition-colors font-medium block"
+                      dir="ltr"
+                    >
+                      {phoneNumber1}
+                    </a>
+                    
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="bg-[#676e32]/10 p-3 rounded-xl text-[#676e32]">
+                  <Phone className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-[#515151] mb-1">
+                    {isRtl ? " رقم هاتف الإدارة" : "Adminstration Phone Number"}
+                  </h4>
+                  <div className="flex flex-col gap-1">
+                    
+                    <a
+                      href={`tel:${phoneNumber2}`}
+                      className="text-[#676e32] hover:underline hover:text-[#515151] transition-colors font-medium block"
+                      dir="ltr"
+                    >
+                      {phoneNumber2}
+                    </a>
+                  </div>
+                </div>
+              </div>
               {/* Email Info */}
               <div className="flex items-start gap-4">
                 <div className="bg-[#676e32]/10 p-3 rounded-xl text-[#676e32]">
@@ -199,34 +242,6 @@ const ContactSection = ({ locale, action }: Props) => {
                   >
                     {contactEmail}
                   </a>
-                </div>
-              </div>
-
-              {/* Phone Info */}
-              <div className="flex items-start gap-4">
-                <div className="bg-[#676e32]/10 p-3 rounded-xl text-[#676e32]">
-                  <Phone className="w-6 h-6" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-[#515151] mb-1">
-                    {isRtl ? "رقم الهاتف" : "Phone Numbers"}
-                  </h4>
-                  <div className="flex flex-col gap-1">
-                    <a
-                      href={`tel:${phoneNumber1}`}
-                      className="text-[#676e32] hover:underline hover:text-[#515151] transition-colors font-medium block"
-                      dir="ltr"
-                    >
-                      {phoneNumber1}
-                    </a>
-                    <a
-                      href={`tel:${phoneNumber2}`}
-                      className="text-[#676e32] hover:underline hover:text-[#515151] transition-colors font-medium block"
-                      dir="ltr"
-                    >
-                      {phoneNumber2}
-                    </a>
-                  </div>
                 </div>
               </div>
             </div>

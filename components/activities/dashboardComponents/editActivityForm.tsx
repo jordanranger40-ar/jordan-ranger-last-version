@@ -1,4 +1,5 @@
 "use client";
+
 import { newActivitySchema } from "@/app/models/db/lib/schemas/activitySchema";
 import { newActivity } from "@/types";
 import ImageUploader from "@/components/imageUpload";
@@ -24,6 +25,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import LightButton from "@/components/ui/light-button";
 import DarkButton from "@/components/ui/dark-button";
+
 interface Props {
   activity: newActivity;
   action: (
@@ -31,6 +33,7 @@ interface Props {
     data: newActivity
   ) => Promise<{ status: number; message: string; success: boolean }>;
 }
+
 export default function EditActivityForm({ activity, action }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -44,7 +47,7 @@ export default function EditActivityForm({ activity, action }: Props) {
     description_ar: activity.description_ar ?? "",
     location_type_en: activity.location_type_en ?? "",
     location_type_ar: activity.location_type_ar ?? "",
-    price: activity.price ?? 0,
+    price: Number(activity.price) ?? 0,
     card_image: activity.card_image ?? "",
     poster_image: activity.poster_image ?? "",
     header_image: activity.header_image ?? "",
@@ -103,7 +106,9 @@ export default function EditActivityForm({ activity, action }: Props) {
     setErrors({});
     startTransition(async () => {
       try {
-        const result = await action(activity.id!, form);
+        // Ensure header_image mirrors poster_image
+        const payload = { ...form, header_image: form.poster_image };
+        const result = await action(activity.id!, payload);
         if (result.status === 201) {
           toast.success(result.message);
           router.push("/admin/dashboard/activities");
@@ -125,12 +130,11 @@ export default function EditActivityForm({ activity, action }: Props) {
       }
     });
   };
+
   return (
     <main className="ml-3 xl:ml-7 mb-10 text-gray-800">
       <div className="flex flex-col border-b border-gray-300 pb-3 w-[65vw] mb-8">
-        <h1 className="text-2xl font-semibold text-[#676e32]">
-          Update Activity
-        </h1>
+        <h1 className="text-2xl font-semibold text-[#676e32]">Update Activity</h1>
       </div>
 
       <form
@@ -201,9 +205,7 @@ export default function EditActivityForm({ activity, action }: Props) {
                   >
                     <SelectTrigger
                       className={`h-10 w-full ${
-                        errors[field.name]
-                          ? "border-red-500"
-                          : "border-gray-300"
+                        errors[field.name] ? "border-red-500" : "border-gray-300"
                       } focus:ring-2 focus:ring-[#676e32]`}
                     >
                       <SelectValue placeholder={`Select ${field.label}`} />
@@ -221,9 +223,7 @@ export default function EditActivityForm({ activity, action }: Props) {
                   </Select>
 
                   {errors[field.name] && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors[field.name]}
-                    </p>
+                    <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>
                   )}
                 </div>
               ))}
@@ -248,9 +248,7 @@ export default function EditActivityForm({ activity, action }: Props) {
                     className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
                   />
                   {errors[field.name] && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors[field.name]}
-                    </p>
+                    <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>
                   )}
                 </div>
               ))}
@@ -266,6 +264,7 @@ export default function EditActivityForm({ activity, action }: Props) {
                   disabled={isPending}
                   type="number"
                   name="price"
+                  value={form.price}
                   onChange={handleInputChange}
                   className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
                 />
@@ -275,8 +274,7 @@ export default function EditActivityForm({ activity, action }: Props) {
               </div>
             </div>
 
-            {/* Capacity And Minimum Quantity */}
-
+            {/* Capacity & Minimum Quantity */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="flex flex-col md:w-[90%] ">
                 <label className="text-sm font-medium text-gray-700 mb-1">
@@ -307,9 +305,7 @@ export default function EditActivityForm({ activity, action }: Props) {
                   className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
                 />
                 {errors.minimum_quantity && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.minimum_quantity}
-                  </p>
+                  <p className="text-red-500 text-sm mt-1">{errors.minimum_quantity}</p>
                 )}
               </div>
             </div>
@@ -317,16 +313,8 @@ export default function EditActivityForm({ activity, action }: Props) {
             {/* Descriptions */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[
-                {
-                  label: "English Description",
-                  name: "description_en",
-                  value: form.description_en,
-                },
-                {
-                  label: "Arabic Description",
-                  name: "description_ar",
-                  value: form.description_ar,
-                },
+                { label: "English Description", name: "description_en", value: form.description_en },
+                { label: "Arabic Description", name: "description_ar", value: form.description_ar },
               ].map((field) => (
                 <div key={field.name} className="flex flex-col md:w-[90%]">
                   <label className="text-sm font-medium text-gray-700 mb-1">
@@ -335,27 +323,27 @@ export default function EditActivityForm({ activity, action }: Props) {
                   <textarea
                     name={field.name}
                     value={field.value}
+                    disabled={isPending}
                     onChange={handleInputChange}
                     className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 h-[12vh] resize-none focus:outline-none focus:ring-2 focus:ring-[#676e32]"
                   />
                   {errors[field.name] && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors[field.name]}
-                    </p>
+                    <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>
                   )}
                 </div>
               ))}
             </div>
 
-            <div className="flex items-center gap-3  rounded-2xl border border-gray-200 p-4 bg-gray-50  w-fit">
+            {/* Coming Soon */}
+            <div className="flex items-center gap-3 rounded-2xl border border-gray-200 p-4 bg-gray-50 w-fit">
               <Checkbox
                 id="coming_soon"
                 name="coming_soon"
                 checked={form.coming_soon}
                 disabled={isPending}
-                onCheckedChange={(checked) => {
-                  setForm({ ...form, coming_soon: checked === true });
-                }}
+                onCheckedChange={(checked) =>
+                  setForm({ ...form, coming_soon: checked === true })
+                }
                 className="shadow-black cursor-pointer"
               />
               <Label className="text-sm font-medium text-gray-800 cursor-pointer select-none">
@@ -363,7 +351,7 @@ export default function EditActivityForm({ activity, action }: Props) {
               </Label>
             </div>
 
-            {/* Card, Poster & Header Images */}
+            {/* Card & Poster Images (header mirrors poster) */}
             <div className="flex flex-col gap-8 mt-4">
               {/* Card Image */}
               <div>
@@ -373,20 +361,16 @@ export default function EditActivityForm({ activity, action }: Props) {
                 <ImageUploader
                   endpoint="activities"
                   initialImageUrl={form.card_image ?? ""}
-                  onUploadComplete={(url) =>
-                    setForm({ ...form, card_image: url })
-                  }
+                  onUploadComplete={(url) => setForm({ ...form, card_image: url })}
                   onUploadError={(e) => toast.error(e.message)}
                   onDelete={() => setForm({ ...form, card_image: "" })}
                 />
                 {errors.card_image && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.card_image}
-                  </p>
+                  <p className="text-red-500 text-sm mt-1">{errors.card_image}</p>
                 )}
               </div>
 
-              {/* Poster Image */}
+              {/* Poster Image (header mirrors this) */}
               <div>
                 <label className="text-base text-black mb-2">
                   <span className="text-red-500">*</span> Poster Image
@@ -395,39 +379,19 @@ export default function EditActivityForm({ activity, action }: Props) {
                   endpoint="activities"
                   initialImageUrl={form.poster_image ?? ""}
                   onUploadComplete={(url) =>
-                    setForm({ ...form, poster_image: url })
+                    setForm({ ...form, poster_image: url, header_image: url })
                   }
                   onUploadError={(e) => toast.error(e.message)}
-                  onDelete={() => setForm({ ...form, poster_image: "" })}
+                  onDelete={() =>
+                    setForm({ ...form, poster_image: "", header_image: "" })
+                  }
                 />
                 {errors.poster_image && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.poster_image}
-                  </p>
-                )}
-              </div>
-
-              {/* Header Image */}
-              <div>
-                <label className="text-base text-black mb-2">
-                  <span className="text-red-500">*</span> Header Image
-                </label>
-                <ImageUploader
-                  endpoint="activities"
-                  initialImageUrl={form.header_image ?? ""}
-                  onUploadComplete={(url) =>
-                    setForm({ ...form, header_image: url })
-                  }
-                  onUploadError={(e) => toast.error(e.message)}
-                  onDelete={() => setForm({ ...form, header_image: "" })}
-                />
-                {errors.header_image && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.header_image}
-                  </p>
+                  <p className="text-red-500 text-sm mt-1">{errors.poster_image}</p>
                 )}
               </div>
             </div>
+
             {/* Buttons */}
             <div className="flex justify-center mt-8">
               <div className="flex gap-4">
