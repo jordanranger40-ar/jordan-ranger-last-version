@@ -56,7 +56,7 @@ const galleryImages: string[] = (data.room_images || [])
           fill
           className="object-cover brightness-90"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/40 to-transparent" />
 
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white max-w-3xl mx-auto px-6">
           <h1 className="text-5xl md:text-6xl font-bold drop-shadow-lg mb-4">
@@ -78,6 +78,8 @@ const galleryImages: string[] = (data.room_images || [])
               {isArabic ? "د.ا / الليلة" : "JOD / night"}
             </span>
           </div>
+        
+
           <Link href={`/accommodationBooking/${data.id}`} className="w-full h-full">
             <button className="mt-6 px-12 py-4 bg-[#676e32] text-white text-lg font-semibold rounded-full shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300">
               {isArabic ? "احجز هذه الغرفة" : "Reserve This Room"}
@@ -93,7 +95,7 @@ const galleryImages: string[] = (data.room_images || [])
             {data.room_features.map((feature: roomFeatures, index: number) => (
               <div
                 key={index}
-                className="flex flex-col justify-center bg-gradient-to-br from-[#f0f8d0] to-white border border-[#d0d9a0] rounded-2xl p-6 hover:shadow-md transition"
+                className="flex flex-col justify-center bg-linear-to-br from-[#f0f8d0] to-white border border-[#d0d9a0] rounded-2xl p-6 hover:shadow-md transition"
               >
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-10 h-10 flex items-center justify-center bg-[#e1f0b3] rounded-full">
@@ -117,7 +119,13 @@ const galleryImages: string[] = (data.room_images || [])
               </div>
             ))}
           </div>
+            <p className="mt-2 text-sm text-gray-500">
+  {isArabic
+    ? "* يُعتبر الطفل من كان عمره أقل من 7 سنوات. "
+    : "* We consider a child to be anyone under 7 years old."}
+</p>
         </div>}
+        
       </div>
 
       {/* ========== Gallery Section: server renders thumbnails, client handles lightbox */}
@@ -133,7 +141,7 @@ const galleryImages: string[] = (data.room_images || [])
         <RoomGallery images={galleryImages} isArabic={isArabic} />
       </div>
 
-      <div className="h-[150px] bg-gradient-to-t from-[#f5f5f5] to-transparent mt-20" />
+      <div className="h-37.5 bg-linear-to-t from-[#f5f5f5] to-transparent mt-20" />
     </div>
   );
 }

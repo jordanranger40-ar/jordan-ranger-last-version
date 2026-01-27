@@ -9,6 +9,8 @@ import restaurantlogo from "@/public/images/restaurantlogo.png";
 import Image from "next/image";
 import ContactHours from "../restaurant/ContactSection";
 import ImagesCarousel from "@/components/roomsAndTents/GallaryComponent" 
+import MenuImages from "@/components/restaurant/MenuImages" 
+
 interface Props {
   locale: "en" | "ar";
 }
@@ -104,7 +106,7 @@ export default function ParalexSection({ locale }: Props) {
         </div>
       </section>
 
-      <ImagesCarousel images={galleryImages}  isArabic={isAr}/>
+      <MenuImages images={galleryImages}  isArabic={isAr}/>
 
 
       {/* Contact & Opening Hours */}

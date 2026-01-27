@@ -11,6 +11,10 @@ import {
   FaLinkedinIn,
   FaYoutube,
 } from "react-icons/fa";
+import {
+
+  SiX,
+} from "react-icons/si"
 import { Mail, Phone, MapPinIcon } from "lucide-react";
 import camp from "@/public/images/camp.webp";
 import Logo from "@/components/Logo/Logo";
@@ -30,7 +34,7 @@ const Footer: React.FC<Props> = ({ locale }) => {
   const facebookUrl = process.env.NEXT_PUBLIC_FACEBOOK_URL || "#";
   const linkedinUrl = process.env.NEXT_PUBLIC_LINKEDIN_URL || "#";
   const twitterUrl = process.env.NEXT_PUBLIC_TWITTER_URL || "#";
-  const youtubeUrl = process.env.NEXT_PUBLIC_YOUTUBE_URL || "#";
+//  const youtubeUrl = process.env.NEXT_PUBLIC_YOUTUBE_URL || "#";
   const instagramUrl = process.env.NEXT_PUBLIC_INSTAGRAM_URL || "#";
   const nurembergUrl = process.env.NEXT_PUBLIC_NUREMBERG_URL || "#";
   const arabicLocation= process.env.NEXT_PUBLIC_LOCATION_AR|| "الأردن - جرش"
@@ -192,10 +196,10 @@ const Footer: React.FC<Props> = ({ locale }) => {
             <div className="flex gap-3">
               {[
                 { Icon: FaFacebookF, url: facebookUrl, label: "Facebook" },
-                { Icon: FaTwitter, url: twitterUrl, label: "Twitter" },
+                { Icon: SiX, url: twitterUrl, label: "X" },
                 { Icon: FaInstagram, url: instagramUrl, label: "Instagram" },
                 { Icon: FaLinkedinIn, url: linkedinUrl, label: "LinkedIn" },
-                { Icon: FaYoutube, url: youtubeUrl, label: "YouTube" },
+               // { Icon: FaYoutube, url: youtubeUrl, label: "YouTube" },
               ].map(({ Icon, url, label }, idx) => (
                 <a
                   key={idx}

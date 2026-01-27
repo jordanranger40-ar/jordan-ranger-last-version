@@ -57,18 +57,10 @@ export default function RestaurantGallery({ images, isArabic = false }: Props) {
   return (
     <section className="max-w-7xl mx-auto mt-12 px-4 md:px-8 mb-20">
       {/* HEADER */}
-      <div className="text-center  mb-10">
-        <span className="text-amber-600 font-medium tracking-widest uppercase text-sm">
-          {isArabic ? 'تجربة طهي فريدة' : 'A Culinary Journey'}
-        </span>
-        <h2 className="text-3xl md:text-5xl font-serif font-bold text-gray-900 mt-2 mb-4">
-          {isArabic ? 'من مطبخنا' : 'Signature Dishes'}
-        </h2>
-        <div className="w-24 h-1 bg-amber-500 mx-auto rounded-full" />
-      </div>
+      
 
       {/* DYNAMIC BENTO GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-3 md:gap-4 h-auto md:h-[500px]">
+      <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-3 md:gap-4 h-auto md:h-125">
         {images.slice(0, 5).map((img, i) => (
           <div 
             key={i}

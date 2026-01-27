@@ -15,7 +15,7 @@ export default function TentsPage({ rooms, isArabic }: TentsPageProps) {
      
       <div className="text-center mb-12">
         <h2 className="text-4xl font-extrabold tracking-wide text-gray-900 dark:text-white">
-          {isArabic ? "اكتشف خيامنا المميزة" : "Discover Our Premium Tents"}
+          {isArabic ? "اكتشف خيمنا المميزة" : "Discover Our Premium Tents"}
         </h2>
 
         <p className="text-gray-600 dark:text-gray-300 mt-3 text-lg  max-w-[90%] mx-auto">
