@@ -1,6 +1,9 @@
 import React from "react";
 import SchoolTrainingHeader from "@/components/school-training/trainingHeader";
 import SchoolTrainingSection from "@/components/school-training/trainingSection";
+import {PAGE_METADATA} from "@/lib/constants/metadata"
+
+export const metadata= PAGE_METADATA["training/schools-training"]
 
 interface PageProps {
   params: Promise<{

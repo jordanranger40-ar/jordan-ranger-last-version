@@ -11,6 +11,9 @@ import ServicesSection from "@/components/services-section/services-section";
 import TestimonialsSection from "@/components/testimonials-section/testimonials-section";
 import { getComingSoonActivities } from "@/app/models/db/lib/services/activities";
 import CampMap from "@/components/CampMap";
+import {PAGE_METADATA} from "@/lib/constants/metadata"
+
+export const metadata= PAGE_METADATA.home
 
 interface PageProps {
   params: Promise<{

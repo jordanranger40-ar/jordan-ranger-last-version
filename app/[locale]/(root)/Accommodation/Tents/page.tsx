@@ -1,6 +1,9 @@
 import { getRoomsByRoomType } from "@/app/models/db/lib/services/rooms";
 import TentsSection from "@/components/accommodation/tents/tents-section";
 import TentsHeaderSection from "@/components/accommodation/tents/tents-header-section";
+import {PAGE_METADATA} from "@/lib/constants/metadata"
+
+export const metadata= PAGE_METADATA["accommodation/cabins"]
 
 interface PageProps {
   params: Promise<{ locale: string }>;

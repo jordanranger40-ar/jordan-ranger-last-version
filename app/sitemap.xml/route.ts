@@ -33,8 +33,8 @@ export async function GET() {
     { url: `${SITE_URL}/contact-us`, lastModified: now },
     { url: `${SITE_URL}/training-rooms`, lastModified: now },
     { url: `${SITE_URL}/tour-operators`, lastModified: now },
+    { url: `${SITE_URL}/Orienteering`, lastModified: now },
     /* { url: `${SITE_URL}/expedition-activities`, lastModified: now },
-        { url: `${SITE_URL}/Orienteering`, lastModified: now },
     { url: `${SITE_URL}/Ranger-Camp-Activity`, lastModified: now },*/
   ];
 

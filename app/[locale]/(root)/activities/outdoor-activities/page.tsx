@@ -1,6 +1,9 @@
 import React from 'react'
 import OutdoorActivitiesHeader from '@/components/activities/outdoor-activities/outdoor-activities-header'
 import OutdoorAvtivitiesSection from '@/components/activities/outdoor-activities/outdoor-activities-section'
+import {PAGE_METADATA} from "@/lib/constants/metadata"
+
+export const metadata= PAGE_METADATA["activities/outdoor-activities"]
 interface PageProps {
     params: Promise<{
       locale: string;

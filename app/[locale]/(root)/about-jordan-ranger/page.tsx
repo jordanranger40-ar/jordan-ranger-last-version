@@ -1,6 +1,6 @@
 import { getAllClients } from "@/app/models/db/lib/services/clients";
 import AboutSection from "@/components/about/AboutSection";
-
+import {PAGE_METADATA} from "@/lib/constants/metadata"
 import CentersSection from "@/components/about/CentersSection";
 import MissionSection from "@/components/about/MissionSection";
 import FounderSection from "@/components/about/FounderSection";
@@ -19,6 +19,9 @@ interface PageProps {
     locale: string;
   }>;
 }
+
+export const metadata= PAGE_METADATA.about
+
 
 export default async function AboutPage({ params }: PageProps) {
   const { locale } = await params;

@@ -5,10 +5,21 @@ import ActivityBookingPanel from "@/components/activities/activityBooking/Activi
 import DarkButton from "@/components/ui/dark-button";
 import { getServerSession } from "next-auth";
 import Image from "next/image";
-
+import type { Metadata } from 'next';
+import {generateDynamicMetadata} from "@/lib/constants/metadata"
 interface PageProps {
   params: Promise<{ locale: string; slug: string }>;
 }
+
+
+export async function generatemetadata(params:PageProps):Promise<Metadata> {
+    return generateDynamicMetadata.page({
+      type:"activity",
+      name:(await params.params).slug.replace(/-/g,""),
+      slug:`activity-${(await params.params).slug}`
+    })
+    
+  }
 
 export default async function Page({ params }: PageProps) {
   const par = await params;

@@ -7,10 +7,21 @@ import { newTraining } from "@/types/index";
 import { authOptions } from "@/app/models/db/authOptions";
 import { getCartItemsByUserId } from "@/app/models/db/lib/services/cart";
 import { getServerSession } from "next-auth";
-
+import type { Metadata } from 'next';
+import {generateDynamicMetadata, PAGE_METADATA} from "@/lib/constants/metadata"
 interface Props {
   params: Promise<{ slug: string; locale: string }>;
 }
+
+export const metadata= PAGE_METADATA
+export async function generatemetadata(params:Props):Promise<Metadata> {
+    return generateDynamicMetadata.page({
+      type:"training",
+      name:(await params.params).slug.replace(/-/g,""),
+      slug:`training-${(await params.params).slug}`
+    })
+    
+  }
 
 export default async function Page({ params }: Props) {
   const slug = (await params).slug;

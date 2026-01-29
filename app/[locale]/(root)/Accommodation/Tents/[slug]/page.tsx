@@ -2,9 +2,20 @@ import { getRoomBySlug } from "@/app/models/db/lib/services/rooms";
 import { roomFeatures } from "@/types";
 import Link from "next/link";
 import RoomGallery from "@/components/roomsAndTents/GallaryComponent";
+import type { Metadata } from "next";
+import { generateDynamicMetadata } from "@/lib/constants/metadata";
 
 interface PageProps {
   params: Promise<{ locale: string; slug: string }>;
+}
+
+export async function generatemetadata(params:PageProps):Promise<Metadata> {
+  return generateDynamicMetadata.page({
+    type:"accommodation",
+    name:(await params.params).slug.replace(/-/g,""),
+    slug:`accommodation/${(await params.params).slug}`
+  })
+  
 }
 
 export default async function Page({ params }: PageProps) {
@@ -12,7 +23,6 @@ export default async function Page({ params }: PageProps) {
   const data = await getRoomBySlug(`${par.slug}`);
   const isArabic = par.locale === "ar"; 
   const direction = isArabic ? "rtl" : "ltr"; 
-  console.log(";f,gmhjnfk: ",data.room_features);
   
 
   if (!data) {

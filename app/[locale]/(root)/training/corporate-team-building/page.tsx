@@ -1,6 +1,9 @@
 import React from "react";
 import CorporateTeamBuildingHeader from "@/components/corporate-team-building/CorporateTeamBuildingHeader";
 import CorporateTeamBuildingSection from "@/components/corporate-team-building/CorporateTeamBuildingSection";
+import {PAGE_METADATA} from "@/lib/constants/metadata"
+
+export const metadata= PAGE_METADATA["training/corporate-team-building"]
 
 interface PageProps {
   params: Promise<{

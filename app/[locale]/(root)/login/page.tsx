@@ -172,12 +172,23 @@ const Login = () => {
             {isArabic ? "التسجيل باستخدام Google" : "Login with Google"}
           </button>
 
-          <Link
-            href="/"
-            className="block pt-4 text-center text-sm underline-offset-4 text-[#676e32] hover:underline m-2 "
-          >
-            {isArabic ? "العودة إلى الصفحة الرئيسية" : "Back To Home Page"}
-          </Link>
+         {/* Register Link */}
+<div className="mt-4 text-center text-sm text-gray-600">
+  {isArabic ? "ليس لديك حساب؟" : "Don't have an account?"}{" "}
+  <Link
+    href="/register"
+    className="font-medium text-[#676e32] underline-offset-4 hover:underline"
+  >
+    {isArabic ? "إنشاء حساب جديد" : "Register here"}
+  </Link>
+</div>
+
+<Link
+  href="/"
+  className="block pt-4 text-center text-sm underline-offset-4 text-[#676e32] hover:underline m-2 "
+>
+  {isArabic ? "العودة إلى الصفحة الرئيسية" : "Back To Home Page"}
+</Link>
         </form>
       </main>
     </>

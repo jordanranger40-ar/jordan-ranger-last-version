@@ -3,10 +3,20 @@ import { roomFeatures } from "@/types";
 import Link from "next/link";
 import Image from "next/image";
 import RoomGallery from "@/components/roomsAndTents/GallaryComponent";
-
+import type { Metadata } from "next";
+import { generateDynamicMetadata } from "@/lib/constants/metadata";
 interface PageProps {
-  // your original pattern used a Promise for params; keep compatibility
   params: Promise<{ locale: string; slug: string }>;
+}
+
+export async function generateMetadata(
+  { params }: PageProps
+): Promise<Metadata> {
+  return generateDynamicMetadata.page({
+    type: "accommodation",
+    name: (await params).slug.replace(/-/g, " "),
+    slug: `accommodation/${(await params).slug}`,
+  });
 }
 
 export default async function Page({ params }: PageProps) {

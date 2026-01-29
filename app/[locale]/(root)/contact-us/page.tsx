@@ -2,6 +2,7 @@ import React from 'react'
 import {sendEmailAction} from "./(actions)/sendEmailAction"
 import ContactSection from "@/components/contactUs/ContactUsForm"
 
+
 interface Props {
   params: Promise <{locale:"en"|"ar"}>
 }

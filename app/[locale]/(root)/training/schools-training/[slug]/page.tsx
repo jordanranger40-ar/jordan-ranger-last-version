@@ -7,10 +7,20 @@ import { newTraining } from "@/types/index";
 import { authOptions } from "@/app/models/db/authOptions";
 import { getCartItemsByUserId } from "@/app/models/db/lib/services/cart";
 import { getServerSession } from "next-auth";
-
+import type { Metadata } from 'next';
+import {generateDynamicMetadata} from "@/lib/constants/metadata"
 interface Props {
   params: Promise<{ slug: string; locale: string }>;
 }
+
+export async function generatemetadata(params:Props):Promise<Metadata> {
+    return generateDynamicMetadata.page({
+      type:"training",
+      name:(await params.params).slug.replace(/-/g,""),
+      slug:`training-${(await params.params).slug}`
+    })
+    
+  }
 
 export default async function Page({ params }: Props) {
   const slug = (await params).slug;
@@ -75,7 +85,7 @@ export default async function Page({ params }: Props) {
 
       <section className="max-w-7xl mx-auto md:flex md:items-start md:gap-10">
         {/* Left: large header image (takes more space) */}
-        <div className="md:w-2/3 relative h-72 md:h-[420px] rounded-xl overflow-hidden group">
+        <div className="md:w-2/3 relative h-72 md:h-105 rounded-xl overflow-hidden group">
           {training.header_image || training.post_image ? (
             <div className="relative h-full w-full">
               <Image
