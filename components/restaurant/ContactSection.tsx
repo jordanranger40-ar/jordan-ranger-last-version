@@ -3,8 +3,8 @@
 import React from "react";
 import { Phone, Mail, MapPin } from "lucide-react";
 
-const SITE_PHONE = process.env.NEXT_PUBLIC_PHONE_NUMBER1 || "+962790340140";
-const SITE_EMAIL = process.env.NEXT_PUBLIC_EMAIL || "info@jordanranger.com";
+const SITE_PHONE = process.env.NEXT_PUBLIC_PHONE_NUMBER1 || "+9627xxxxxxx";
+const SITE_EMAIL = process.env.NEXT_PUBLIC_EMAIL || "info@Example.com";
 const SITE_ADDRESS_EN =
   process.env.NEXT_PUBLIC_LOCATION_EN || "Thaghret Asfour, near Jerash, Jordan";
 const SITE_ADDRESS_AR =
