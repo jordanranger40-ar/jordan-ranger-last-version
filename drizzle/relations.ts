@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm/relations";
-import { users, resetPasswordToken, activities, activitiesBooking, accommodation, services, cart, trainingBooking, training, cartItems, roomBooking, rooms, roomsWithFeatures, roomFeatures } from "./schema";
+import { users, resetPasswordToken, activities, activitiesBooking, cart, payments, accommodation, services, trainingBooking, training, cartItems, roomBooking, rooms, roomsWithFeatures, roomFeatures } from "./schema";
 
 export const resetPasswordTokenRelations = relations(resetPasswordToken, ({one}) => ({
 	user: one(users, {
@@ -11,6 +11,7 @@ export const resetPasswordTokenRelations = relations(resetPasswordToken, ({one})
 export const usersRelations = relations(users, ({many}) => ({
 	resetPasswordTokens: many(resetPasswordToken),
 	activitiesBookings: many(activitiesBooking),
+	payments: many(payments),
 	carts: many(cart),
 	trainingBookings: many(trainingBooking),
 	roomBookings: many(roomBooking),
@@ -31,6 +32,26 @@ export const activitiesRelations = relations(activities, ({many}) => ({
 	activitiesBookings: many(activitiesBooking),
 }));
 
+export const paymentsRelations = relations(payments, ({one}) => ({
+	cart: one(cart, {
+		fields: [payments.cartId],
+		references: [cart.id]
+	}),
+	user: one(users, {
+		fields: [payments.userId],
+		references: [users.id]
+	}),
+}));
+
+export const cartRelations = relations(cart, ({one, many}) => ({
+	payments: many(payments),
+	user: one(users, {
+		fields: [cart.userId],
+		references: [users.id]
+	}),
+	cartItems: many(cartItems),
+}));
+
 export const servicesRelations = relations(services, ({one}) => ({
 	accommodation: one(accommodation, {
 		fields: [services.categoryId],
@@ -40,14 +61,6 @@ export const servicesRelations = relations(services, ({one}) => ({
 
 export const accommodationRelations = relations(accommodation, ({many}) => ({
 	services: many(services),
-}));
-
-export const cartRelations = relations(cart, ({one, many}) => ({
-	user: one(users, {
-		fields: [cart.userId],
-		references: [users.id]
-	}),
-	cartItems: many(cartItems),
 }));
 
 export const trainingBookingRelations = relations(trainingBooking, ({one}) => ({

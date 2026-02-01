@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, text, timestamp, foreignKey, unique, integer, boolean, numeric, pgEnum } from "drizzle-orm/pg-core"
+import { pgTable, uuid, varchar, text, timestamp, foreignKey, unique, integer, boolean, numeric, jsonb, pgEnum } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
 export const bookingType = pgEnum("booking_type", ['activity', 'training', 'room'])
@@ -109,6 +109,46 @@ export const training = pgTable("training", {
 	postImage: varchar("post_image", { length: 255 }),
 }, (table) => [
 	unique("training_slug_key").on(table.slug),
+]);
+
+export const systemJobs = pgTable("system_jobs", {
+	name: text().primaryKey().notNull(),
+	lastRun: timestamp("last_run", { mode: 'string' }),
+});
+
+export const payments = pgTable("payments", {
+	id: uuid().defaultRandom().primaryKey().notNull(),
+	cartId: uuid("cart_id").notNull(),
+	userId: uuid("user_id").notNull(),
+	amount: numeric({ precision: 10, scale:  2 }).notNull(),
+	currency: varchar({ length: 3 }).default('JOD').notNull(),
+	provider: varchar({ length: 50 }).default('hyperpay').notNull(),
+	checkoutId: varchar("checkout_id", { length: 255 }),
+	transactionId: varchar("transaction_id", { length: 255 }),
+	status: varchar({ length: 20 }).notNull(),
+	rawResponse: jsonb("raw_response"),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
+	method: varchar({ length: 20 }).default('CARD').notNull(),
+	billingCountry: varchar("billing_country", { length: 2 }),
+	billingState: varchar("billing_state", { length: 100 }),
+	billingCity: varchar("billing_city", { length: 100 }),
+	billingStreet: varchar("billing_street", { length: 255 }),
+	customerEmail: varchar("customer_email", { length: 255 }),
+	customerFirstName: varchar("customer_first_name", { length: 225 }),
+	customerLastName: varchar("customer_last_name", { length: 225 }),
+	billingPostalCode: varchar("billing_postal_code", { length: 255 }),
+}, (table) => [
+	foreignKey({
+			columns: [table.cartId],
+			foreignColumns: [cart.id],
+			name: "fk_payment_cart"
+		}).onDelete("cascade"),
+	foreignKey({
+			columns: [table.userId],
+			foreignColumns: [users.id],
+			name: "fk_payment_user"
+		}).onDelete("cascade"),
 ]);
 
 export const careers = pgTable("careers", {
@@ -296,7 +336,7 @@ export const rooms = pgTable("rooms", {
 	nameAr: varchar("name_ar", { length: 255 }).notNull(),
 	descriptionAr: varchar("description_ar", { length: 255 }),
 	coverImage: varchar("cover_image", { length: 255 }),
-	price: integer(),
+	price: numeric({ precision: 6, scale:  2 }),
 	roomImages: text("room_images").array(),
 	isDeleted: boolean("is_deleted").default(false),
 	roomTypeEn: roomTypeEn("room_type_en").default('cabins').notNull(),

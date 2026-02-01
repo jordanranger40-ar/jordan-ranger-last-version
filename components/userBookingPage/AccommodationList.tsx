@@ -32,7 +32,7 @@ export default function AccommodationList({ bookings, locale = "en" }: Props) {
           {isArabic ? "الإقامة" : "Accommodation"}
         </h2>
         <Link
-          href="/accommodation"
+          href="/Accommodation/Cabins"
           className="text-sm text-[#676e32] hover:underline"
         >
           {isArabic ? "تصفح الغرف" : "Browse Accommodation"}
