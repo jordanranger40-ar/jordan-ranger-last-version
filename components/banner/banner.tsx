@@ -52,7 +52,7 @@ export function Banner({ banners, locale, isThereComingSoon }: Props) {
 
             return (
               <CarouselItem key={banner.id}>
-                <article className="relative aspect-20/9 overflow-hidden rounded-b-[55px] md:rounded-b-[100px]">
+                <article className="relative aspect-20/9 overflow-hidden rounded-0 md:rounded-b-[100px]">
                   <Image
                     src={banner.image ?? "/default-image.png"}
                     alt={title}
@@ -67,13 +67,17 @@ export function Banner({ banners, locale, isThereComingSoon }: Props) {
                       <p className=" hidden md:block text-base md:text-lg lg:text-xl mt-6 max-w-3xl mx-auto">
                         {description}
                       </p>
-                      <LightButton
+                      <div className="hidden md:block">
+                         <LightButton
                         onClick={() => {
                           router.push("/about-jordan-ranger");
                         }}
+                       
                       >
                         {isArabic ? "اعرف المزيد" : "Learn More"}
                       </LightButton>
+                      </div>
+                     
                     </div>
                   </div>
                 </article>

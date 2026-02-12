@@ -7,22 +7,23 @@ interface Props {
 
 export default function ServicesSection({ isArabic }: Props) {
   return (
-    <section className="w-full mt-20 px-6 md:px-20">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-12">
+    <section className="w-full mt-20 px-2  lg:px-20">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-12">
         {[
           { title: isArabic ? "الفعاليات الداخلية" : "Indoor Activities", icon: "🏠",link:"/activities/indoor-activities" },          
           { title: isArabic ? "الفعاليات الخارجية" : "Outdoor Activities", icon: "🌳",link:"/activities/outdoor-activities" },       
-          { title: isArabic ? "الاقامات" : "Accommodation", icon: "🛏️",link:"/Accommodation/Cabins" },                      
+          { title: isArabic ? "الاقامات" : "Accommodation", icon: "🛏️",link:"/Accommodation/Cabins" },     
+          { title: isArabic ? "المطعم" : "Restaurant", icon: "🍽️" ,link:"/restaurant"},                    
           { title: isArabic ? "التدريب المدرسي" : "School Training", icon: "📚",link:"/training/schools-training" },               
           { title: isArabic ? "تدريبات وبناء فرق" : "Corporate Team Building", icon: "🤝" ,link:"/training/corporate-team-building"},  
-          { title: isArabic ? "المطعم" : "Restaurant", icon: "🍽️" ,link:"/restaurant"},                            
+                                   
         ].map((service, i) => (
           <Link  key={i} href={service.link} >
           <div
            
-            className="relative overflow-hidden group transition-transform duration-500 transform-gpu hover:-translate-y-2 hover:shadow-[0_12px_25px_rgba(0,0,0,0.25)]"
+            className="relative overflow-hidden group h-48 transition-transform duration-500 transform-gpu hover:-translate-y-2 hover:shadow-[0_12px_25px_rgba(0,0,0,0.25)]"
             style={{
-              borderRadius: '2rem 0.5rem 2rem 0.5rem', // زوايا غير متماثلة
+              borderRadius: '2rem 0.5rem 2rem 0.5rem', 
               border: '2px solid transparent',
               boxShadow: '0 6px 15px rgba(0,0,0,0.15)',
             }}
@@ -34,7 +35,7 @@ export default function ServicesSection({ isArabic }: Props) {
               />
             </div>
 
-            <div className="bg-white rounded-xl p-8 text-center transition-all duration-300 group-hover:border-[#484d23]">
+            <div className=" rounded-xl px-2 py-8 sm:px-8 text-center transition-all duration-300 group-hover:border-[#484d23]">
               <div className="text-5xl mb-4">{service.icon}</div>
               <h3 className="text-xl font-semibold text-[#484d23]">{service.title}</h3>
             </div>

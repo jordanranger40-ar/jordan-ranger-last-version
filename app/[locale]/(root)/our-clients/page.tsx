@@ -24,7 +24,7 @@ export default async function OurClients({ params }: PageProps) {
     <main className="flex flex-col items-center mt-12 w-full">
       <HeaderSection isArabic={isArabic} />
 
-      <div className="w-full max-w-6xl px-4 py-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="w-full max-w-7xl px-4 py-8 grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
         {clients.map((client) => (
           <div
             key={client.id} 
