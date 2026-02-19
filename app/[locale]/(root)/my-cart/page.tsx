@@ -13,6 +13,8 @@ interface Props {
 export default async function Page({ params }: Props) {
   const locale=(await params).locale
   const session = await getServerSession(authOptions);
+  console.log("session: ",session);
+  
 
   if (!session?.user?.id) {
     return (

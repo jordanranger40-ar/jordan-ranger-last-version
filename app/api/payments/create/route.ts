@@ -58,10 +58,10 @@ export async function POST(req: Request) {
       provider: "Hyperpay",
     });
 
-    // merchantTransactionId <= 32 chars
+    // merchantTransactionId <= 18 chars
     const merchantTransactionId = String(payment.id)
       .replace(/[^a-zA-Z0-9]/g, "")
-      .slice(0, 32);
+      .slice(0, 18);
 
     // HyperPay params
     const params = new URLSearchParams({
@@ -72,6 +72,7 @@ export async function POST(req: Request) {
       testMode: "EXTERNAL",
       integrity: "true",
       merchantTransactionId,
+      //"customParameters[3DS2_enrolled]": "true",
 
       // customer
       "customer.email": billing.customer_email,

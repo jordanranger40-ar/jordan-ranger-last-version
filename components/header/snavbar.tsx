@@ -35,8 +35,8 @@ export default function Navbar() {
   const menuItems = [
     {
       type: "link",
-      href: "/Ranger-Camp-Activity",
-      label: t("Ranger Camp Activity"),
+      href: "/roots-of-our-civilization",
+      label: t("Roots Of Our Civilization"),
       key: "Ranger Camp Activity",
     },
     {
@@ -51,9 +51,9 @@ export default function Navbar() {
     },
     {
       type: "link",
-      href: "/expedition-activities/",
-      label: t("expedition activities"),
-      key: "expedition activities",
+      href: "/summer-program",
+      label: t("summer program"),
+      key: "summer program",
     },
     {
       type: "link",

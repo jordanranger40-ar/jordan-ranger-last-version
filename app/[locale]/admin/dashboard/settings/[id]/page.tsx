@@ -1,5 +1,5 @@
 import { getSettingbyId } from "@/app/models/db/lib/services/settings";
-import { editSetting } from "../(fetch)/editSetting";
+import { editSettingAction } from "../(fetch)/editSetting";
 import EditSettingForm from "@/components/settings/editSettingForm";
 async function page(prop: { params: Promise<{ id: string }> }) {
   const params = await prop.params;
@@ -8,7 +8,7 @@ async function page(prop: { params: Promise<{ id: string }> }) {
 
   return (
     <div>
-      <EditSettingForm setting={setting[0]} action={editSetting} />
+      <EditSettingForm setting={setting[0]} action={editSettingAction} />
     </div>
   );
 }

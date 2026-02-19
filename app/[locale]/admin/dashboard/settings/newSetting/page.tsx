@@ -1,5 +1,5 @@
 import React from "react";
-import { createSettings } from "../(fetch)/createNewSetting";
+import { createSettingsAction } from "../(fetch)/createNewSetting";
 import CreateNewSetting from "@/components/settings/createNewSettingFrom";
 import { getSettingsData } from "@/app/models/db/lib/services/settings";
 async function page() {
@@ -11,7 +11,7 @@ async function page() {
 
   return (
     <>
-      <CreateNewSetting action={createSettings} existingKeys={existingKeys} />
+      <CreateNewSetting action={createSettingsAction} existingKeys={existingKeys} />
     </>
   );
 }

@@ -1,28 +1,70 @@
-"use server"
-import { authOptions } from "@/app/models/db/authOptions";
-import { newSetting } from "@/types";
+"use server";
+
 import { getServerSession } from "next-auth";
 import { revalidatePath } from "next/cache";
+import { authOptions } from "@/app/models/db/authOptions";
+import { editSetting } from "@/app/models/db/lib/services/settings";
+import { newSetting } from "@/types";
 
+export async function editSettingAction(settingId:string,data: Partial<newSetting>) {
+  const session = await getServerSession(authOptions);
 
-export async function editSetting (data:newSetting){
-    const session= await getServerSession(authOptions)
-    const token= session?.user.token
+  // 2️⃣ Auth
+  if (!session) {
+    return {
+      success: false,
+      status: 401,
+      message: "Please Login To Perform This Action",
+    };
+  }
 
-   const result= await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/settings/${data.id}`,
-        {method:"PUT",
-            headers:{
-                "Content-Type":"application/json",
-                Authorization:`Bearer ${token}`
-            },
-            body: JSON.stringify(data)
-        }
-    )
+  // 3️⃣ Authorization
+  if (session.user.role !== "admin") {
+    return {
+      success: false,
+      status: 403,
+      message: "You Are Not Allowed To Perform This Action",
+    };
+  }
 
-    if(!result.ok)  throw new Error("Failed to update Setting")
+  // 4️⃣ Validate ID
+  if (!data.id) {
+    return {
+      success: false,
+      status: 400,
+      message: "Invalid Setting ID",
+    };
+  }
 
-        revalidatePath("/dashboard/settings")
-          return result.json();
+  
 
+  try {
+    // 6️⃣ DB update
+    const updated = await editSetting(settingId, data);
 
+    if (!updated) {
+      return {
+        success: false,
+        status: 409,
+        message: "Setting Not Found Or Not Updated",
+      };
+    }
+
+    // 7️⃣ Revalidate
+    revalidatePath("/dashboard/settings");
+
+    return {
+      success: true,
+      status: 201,
+      message: "Setting Updated Successfully",
+      data: updated,
+    };
+  } catch (error) {
+    console.error("Edit Setting Error:", error);
+    return {
+      success: false,
+      status: 500,
+      message: "Failed To Update The Setting",
+    };
+  }
 }

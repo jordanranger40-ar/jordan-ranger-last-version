@@ -12,6 +12,8 @@ import TestimonialsSection from "@/components/testimonials-section/testimonials-
 import { getComingSoonActivities } from "@/app/models/db/lib/services/activities";
 import CampMap from "@/components/CampMap";
 import {PAGE_METADATA} from "@/lib/constants/metadata"
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/models/db/authOptions";
 
 export const metadata= PAGE_METADATA.home
 
@@ -23,6 +25,9 @@ interface PageProps {
 export default async function Home({ params }: PageProps) {
   const { locale } = await params;
   const isArabic = locale === "ar";
+  const session= await getServerSession(authOptions)
+  console.log("session: ",session);
+  
 
   let banners: newBanner[] = [];
   const comingSoonActivities = await getComingSoonActivities();
