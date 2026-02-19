@@ -62,6 +62,11 @@ const items = [
   { title: "All Bookings ", url: "/admin/dashboard/bookingConfirmation", icon: Warehouse },
 
   { title: "Clients", url: "/admin/dashboard/clients", icon: Crown },
+  {
+    title: "Settings",
+    url: "/admin/dashboard/setting",
+    icon: Settings,
+  },
 ];
 
 export function AppSidebar() {
