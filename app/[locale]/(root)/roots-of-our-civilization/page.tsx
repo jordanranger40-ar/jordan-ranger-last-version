@@ -5,7 +5,7 @@ import DarkButton from "@/components/ui/dark-button"; // Adjust path as needed
 import { FileDown, MapPin, Sparkles, Calendar } from "lucide-react";
 
 interface PageProps {
-  params: Promise<{ locale: string }>;
+  params: Promise<{ locale: "en" | "ar" }>;
 }
 
 async function Page({ params }: PageProps) {
@@ -15,7 +15,8 @@ async function Page({ params }: PageProps) {
 
   // Data Fetching
   const settingData = await getSettingsData();
-  const pdfLink = settingData.find((s) => s.key_name_en === "link_of_pdf_root")?.value_en;
+  const pdfLinkEn = settingData.find((s) => s.key_name_en === "link_of_pdf_root")?.value_en;
+  const pdfLinkAr = settingData.find((s) => s.key_name_en === "link_of_pdf_root")?.value_ar
   const rootImage = settingData.find((s) => s.key_name_en === "image_root_page")?.value_en;
 
   // Fallback Content
@@ -66,10 +67,10 @@ Moving towards the heart of Jordan, we'll explore the vibrant streets of Amman, 
             </div>
 
             {/* Action Area */}
-            {pdfLink && (
-  <div className="flex flex-col sm:flex-row gap-4 items-center sm:items-start w-full">
+            {pdfLinkEn && (
+  <div className="flex flex-col sm:flex-row gap-4  items-center sm:items-start w-full">
     <a 
-      href={pdfLink} 
+      href={isArabic?pdfLinkAr: pdfLinkEn} 
       target="_blank" 
       rel="noopener noreferrer"
       /* w-full makes the clickable area cover the screen width on mobile */
@@ -95,7 +96,7 @@ Moving towards the heart of Jordan, we'll explore the vibrant streets of Amman, 
                 src={rootImage}
                 alt="Roots of Civilization"
                 fill
-                className="object-cover"
+                className="object-contain"
                 priority
               />
             ) : (
@@ -108,13 +109,7 @@ Moving towards the heart of Jordan, we'll explore the vibrant streets of Amman, 
             {/* Visual Accents over Image */}
             <div className="absolute inset-0 bg-gradient-to-t from-[#484d23]/60 via-transparent to-transparent lg:hidden" />
             
-            {/* Floating Info Card (Desktop Only) */}
-            <div className={`absolute bottom-10 ${isArabic ? 'left-10' : 'right-10'} hidden md:block bg-white/5 backdrop-blur-xl border border-white/20 p-6 rounded-2xl text-black max-w-50`}>
-              <p className="text-3xl font-bold mb-1">9</p>
-              <p className="text-sm opacity-80 leading-tight">
-                {isArabic ? "مدن أردنية سيتم استكشافها" : "Jordanian Cities to explore"}
-              </p>
-            </div>
+          
           </div>
         </div>
 

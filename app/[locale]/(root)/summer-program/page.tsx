@@ -18,6 +18,7 @@ async function SummerProgramPage({ params }: PageProps) {
   
   // Update these keys in your DB to match
   const pdfLink = settingData.find((s) => s.key_name_en === "link_of_pdf_summer_program")?.value_en;
+ 
   const programImage = settingData.find((s) => s.key_name_en === "image_summer_program_page")?.value_en;
 
   const content = {
@@ -34,7 +35,7 @@ async function SummerProgramPage({ params }: PageProps) {
 
   return (
     <main className="min-h-screen bg-[#fafafa] pt-28 pb-16 px-2" dir={direction}>
-      <div className="max-w-full mx-auto">
+      <div className="max-w-[95%] mx-auto">
         
         {/* Hero Section Card */}
         <div className="relative bg-white rounded-[3rem_1rem_3rem_1rem] shadow-2xl overflow-hidden flex flex-col lg:flex-row items-stretch border border-gray-100">
@@ -66,7 +67,7 @@ async function SummerProgramPage({ params }: PageProps) {
             {pdfLink && (
               <div className="flex flex-col sm:flex-row gap-4 items-center sm:items-start w-full">
                 <a 
-                  href={pdfLink} 
+                  href={ pdfLink} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="group w-full sm:w-auto"
@@ -90,7 +91,7 @@ async function SummerProgramPage({ params }: PageProps) {
                 src={programImage}
                 alt="Summer Program"
                 fill
-                className="object-cover"
+                className="object-contain"
                 priority
               />
             ) : (
