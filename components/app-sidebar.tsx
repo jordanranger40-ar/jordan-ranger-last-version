@@ -64,7 +64,7 @@ const items = [
   { title: "Clients", url: "/admin/dashboard/clients", icon: Crown },
   {
     title: "Settings",
-    url: "/admin/dashboard/setting",
+    url: "/admin/dashboard/settings",
     icon: Settings,
   },
 ];
