@@ -85,7 +85,7 @@ export default function Menu({
 
         {/* max-h + overflow-y-auto ensures vertical scrolling inside the sheet */}
         <SheetContent
-          className="p-6 bg-white shadow-xl max-h-[calc(100vh-4rem)] overflow-y-auto"
+          className="p-2 bg-white shadow-xl max-h-[calc(100vh-4rem)] overflow-y-auto"
           style={{ direction: isArabic ? "rtl" : "ltr" }}
         >
           
@@ -185,13 +185,30 @@ export default function Menu({
             <nav className="flex flex-col space-y-4">
               <Link
                 onClick={closeMenu}
-                href="/Ranger-Camp-Activity"
+                href="/summer-program"
                 className={blackHeader}
               >
-                {t("Ranger Camp Activity")}
+                {t("summer program")}
               </Link>
 
-              <div>
+             
+
+              <Link
+                onClick={closeMenu}
+                href="/roots-of-our-civilization"
+                className={blackHeader}
+              >
+                {t("Roots Of Our Civilization")}
+              </Link>
+
+              <Link
+                onClick={closeMenu}
+                href="/Orienteering/"
+                className={blackHeader}
+              >
+                {t("Orienteering")}
+              </Link>
+               <div>
                 <div className={blackHeader}>{t("facilities")}</div>
                 <div className="mt-2 flex flex-col space-y-2">
                   {facilitiesItems.map((it, i) => (
@@ -206,22 +223,6 @@ export default function Menu({
                   ))}
                 </div>
               </div>
-
-              <Link
-                onClick={closeMenu}
-                href="/expedition-activities/"
-                className={blackHeader}
-              >
-                {t("expedition activities")}
-              </Link>
-
-              <Link
-                onClick={closeMenu}
-                href="/Orienteering/"
-                className={blackHeader}
-              >
-                {t("Orienteering")}
-              </Link>
             </nav>
 
             {/* visual divider */}
