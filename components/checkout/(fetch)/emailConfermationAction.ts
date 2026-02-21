@@ -22,7 +22,7 @@ function toJordanTime(date: Date) {
 
 export async function emailConfermationAction(data: EmailData) {
   const adminEmail = process.env.EMAIL_ADMIN ?? "";
-  const from = process.env.EMAIL_FROM ?? "";
+  const from = process.env.Email_From ?? "";
   const siteBase = process.env.NEXT_PUBLIC_APP_URL ?? "";
 
   // ---------- RECEIVED AT (Jordan +3h) ----------
