@@ -502,7 +502,7 @@ export const updateBookingStatus = async (
 
     
     await resend.emails.send({
-      from: process.env.Email_from || "onboarding@resend.dev",
+      from: process.env.Email_From || "onboarding@resend.dev",
       to: booking.email,
       subject: "Your Booking Has Been Confirmed ✔️",
       html: `

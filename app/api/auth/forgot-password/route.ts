@@ -19,7 +19,7 @@ export const POST = async (request: Request) => {
 
     const resendEmail = new Resend(process.env.RESEND_API_KEY);
     await resendEmail.emails.send({
-      from: process.env.Email_from || "onboarding@resend.dev",
+      from: process.env.Email_From || "onboarding@resend.dev",
       to: email,
       subject: "Reset Password Email",
       html: `<p> Click <a href="${resetUrl}">here<a/> to reset your password. Link expires in 1 hour</p>`,
