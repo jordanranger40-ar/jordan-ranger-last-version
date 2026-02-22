@@ -13,13 +13,11 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
-
 export default function Navbar() {
   const t = useTranslations("Navbar");
   const locale = useLocale();
   const isArabic = locale === "ar";
 
-  
   const facilitiesItems = [
     {
       href: "/training-rooms",
@@ -29,7 +27,6 @@ export default function Navbar() {
       href: "/tour-operators",
       label: t("tour operators"),
     },
-
   ];
 
   const menuItems = [
@@ -68,16 +65,27 @@ export default function Navbar() {
   return (
     <NavigationMenu
       viewport={false}
-      className="text-white focus:text-white hidden md:block  "
+      className="text-white focus:text-white hidden md:block"
       style={{ direction: isArabic ? "rtl" : "ltr" }}
     >
       <NavigationMenuList className="flex-row">
         {finalMenu.map((item) => {
           if (item.type === "link") {
+            const isOlive =
+              item.key === "Ranger Camp Activity" ||
+              item.key === "summer program";
+
             return (
               <NavigationMenuItem key={item.key}>
-                <NavigationMenuLink asChild className="bg-transparent ">
-                  <Link className={navigationMenuTriggerStyle()} href={item.href ?? "/"}>
+                <NavigationMenuLink asChild className="bg-transparent">
+                  <Link
+                    className={`${navigationMenuTriggerStyle()} ${
+                      isOlive
+                        ? "  font-semibold text-[15px] hover:underline "
+                        : ""
+                    }`}
+                    href={item.href ?? "/"}
+                  >
                     {item.label}
                   </Link>
                 </NavigationMenuLink>
@@ -85,10 +93,12 @@ export default function Navbar() {
             );
           } else if (item.type === "dropdown") {
             return (
-              <NavigationMenuItem key={item.key} >
-                <NavigationMenuTrigger className="bg-transparent ">{item.label}</NavigationMenuTrigger>
+              <NavigationMenuItem key={item.key}>
+                <NavigationMenuTrigger className="bg-transparent">
+                  {item.label}
+                </NavigationMenuTrigger>
                 <NavigationMenuContent
-                  className={`grid gap-3 p-4 md:w-[400px] lg:w-[250px] ${
+                  className={`grid gap-3  p-4 md:w-[400px] lg:w-[250px] ${
                     isArabic ? "text-right" : "text-left"
                   }`}
                 >

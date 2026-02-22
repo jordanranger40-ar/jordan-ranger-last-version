@@ -61,7 +61,7 @@ export default function RestaurantGallery({ images, isArabic = false }: Props) {
         <span className="text-amber-600 font-medium tracking-widest uppercase text-sm">
           {isArabic ? 'تجربة طهي فريدة' : 'A Culinary Journey'}
         </span>
-        <h2 className="text-3xl md:text-5xl font-serif font-bold text-gray-900 mt-2 mb-4">
+        <h2 className="text-3xl md:text-5xl  font-bold text-gray-900 mt-2 mb-4">
           {isArabic ? 'من مطبخنا' : 'Signature Dishes'}
         </h2>
         <div className="w-24 h-1 bg-amber-500 mx-auto rounded-full" />

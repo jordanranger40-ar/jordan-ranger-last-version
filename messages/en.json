@@ -13,7 +13,7 @@
     "facilities": "Facilities",
     "Orienteering": "Orienteering",
     "expedition activities": "Expedition Activities",
-    "summer program": "Summer Program",
+    "summer program": "Interactive Arabic Program",
     "Roots Of Our Civilization": "Roots Of Our Civilization",
     "Ranger Camp Activity": "Ranger Camp Activity",
     "tour operators": "Tour Operators",
@@ -26,13 +26,13 @@
     "corporateteambuilding": "Corporate Team Building",
     "schooltraining": "School Training",
     "rangeracademy": "Ranger Academy",
-    "mycart":"My Cart",
-    "mybookings":"My Bookings",
-    "dashboard":"Dashboard",
-    "changepassword":"Change Password",
-    "logout":"Logout",
-    "login":"Login",
-    "myaccount":"My Account"
+    "mycart": "My Cart",
+    "mybookings": "My Bookings",
+    "dashboard": "Dashboard",
+    "changepassword": "Change Password",
+    "logout": "Logout",
+    "login": "Login",
+    "myaccount": "My Account"
   },
 
   "Footer": {
@@ -60,8 +60,8 @@
     "tents": "Tents",
     "corporateteambuilding": "Corporate Team Building",
     "schooltraining": "School Training",
-    "booking":"Bookings",
-    "contactUs":"Contact Us"
+    "booking": "Bookings",
+    "contactUs": "Contact Us"
   },
 
   "stats": {

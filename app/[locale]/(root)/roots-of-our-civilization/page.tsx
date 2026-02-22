@@ -23,10 +23,10 @@ async function Page({ params }: PageProps) {
   const content = {
     title: isArabic ? "جذور حضارتنا" : "Roots Of Our Civilization",
     description: isArabic 
-      ? `انضموا إلينا هذا الصيف من 5 أيلول حتى 14 آب في رحلة استثنائية مع جذور حضارتنا ✨، مغامرة لا تُنسى صُممت خصيصًا للشباب من أصول أردنية أو للراغبين في عيش التجربة الأردنية بكل جوانبها. سنأخذكم في رحلة عبر حضارات مملكة الزمن، المملكة الأردنية الهاشمية 🇯🇴، خلال 9 أيام غامرة بالتجارب.
+      ? `انضموا إلينا هذا الصيف من 5 آب حتى 14 آب في رحلة استثنائية مع جذور حضارتنا ✨، مغامرة لا تُنسى صُممت خصيصًا للشباب من أصول أردنية أو للراغبين في عيش التجربة الأردنية بكل جوانبها. سنأخذكم في رحلة عبر حضارات مملكة الزمن، المملكة الأردنية الهاشمية 🇯🇴، خلال 9 أيام غامرة بالتجارب.
       
 اختبروا دفء الضيافة الأردنية من خلال العيش مع المزارعين والعائلات المحلية والبدو، واكتشاف كنوز الحضارات القديمة والحديثة. سنزور تسع مدن أردنية، بدءًا من آثار جرش العريقة وروائع الشمال، ثم نتجه نحو قلب الأردن لاستكشاف شوارع عمّان النابضة بالحياة، مع التوقف عند شاطئ البحر الميت الهادئ. ونواصل مغامرتنا جنوبًا حيث سننبهر بجمال وادي رم الساحر، وروعة البترا الخلابة، لنختتم الرحلة بيوم مميز في العقبة.`
-      : `Join us this summer from Sep 5th to Aug 14th in an extraordinary journey with Roots of Our Civilization ✨ unforgettable adventure, designed for young people of Jordanian origin or wishing to live the Jordanian experience in all its aspects. We'll take you through the civilizations in the Kingdom of Time, the Hashemite Kingdom of Jordan 🇯🇴 over 9 immersive days.
+      : `Join us this summer from Aug 5th to Aug 14th in an extraordinary journey with Roots of Our Civilization ✨ unforgettable adventure, designed for young people of Jordanian origin or wishing to live the Jordanian experience in all its aspects. We'll take you through the civilizations in the Kingdom of Time, the Hashemite Kingdom of Jordan 🇯🇴 over 9 immersive days.
 
 Experience the warmth of Jordanian hospitality as you live among farmers, local families, and Bedouins, discovering the treasures of ancient and modern civilizations. We are going through nine Jordanian cities, beginning with the ancient ruins of Jerash and the northern wonders.
 
