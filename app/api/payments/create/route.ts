@@ -69,7 +69,6 @@ export async function POST(req: Request) {
       amount: formatAmount(cart.total_amount),
       currency: "JOD",
       paymentType: "DB",
-      testMode: "EXTERNAL",
       integrity: "true",
       merchantTransactionId,
     
