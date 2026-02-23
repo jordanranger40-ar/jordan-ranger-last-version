@@ -231,7 +231,7 @@ export default function Menu({
 
             <div>
               <div className="text-lg font-semibold text-[#676e32]">
-                My Account
+                {t("myaccount")}
               </div>
 
               <div className="mt-2 flex flex-col space-y-2">

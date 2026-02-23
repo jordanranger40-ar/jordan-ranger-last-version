@@ -72,7 +72,7 @@ export async function POST(req: Request) {
       testMode: "EXTERNAL",
       integrity: "true",
       merchantTransactionId,
-      //"customParameters[3DS2_enrolled]": "true",
+    
 
       // customer
       "customer.email": billing.customer_email,
