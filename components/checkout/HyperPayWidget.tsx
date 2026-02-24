@@ -23,8 +23,7 @@ interface Props {
   className?: string;
 }
 
-const ACCENT = "#484d23"; // user-specified accent color
-
+const ACCENT = "#484d23"; 
 export default function HyperPayWidget({
   checkoutId,
   locale,
@@ -61,7 +60,7 @@ export default function HyperPayWidget({
       paymentTarget: "_top",
     };
 
-    const host = process.env.HYPERPAY_HOST ?? "eu-test.oppwa.com";
+    const host = process.env.NEXT_PUBLIC_HYPERPAY_HOST ?? "eu-test.oppwa.com";
     const src = `https://${host}/v1/paymentWidgets.js?checkoutId=${checkoutId}`;
 
     const existing = document.getElementById(scriptId.current);
@@ -95,7 +94,7 @@ export default function HyperPayWidget({
 
     scriptId.current = `hyperpay-widget-${checkoutId}-${Date.now()}`;
 
-    const host = process.env.HYPERPAY_HOST ?? "eu-test.oppwa.com";
+    const host = process.env.NEXT_PUBLIC_HYPERPAY_HOST ?? "eu-test.oppwa.com";
     const src = `https://${host}/v1/paymentWidgets.js?checkoutId=${checkoutId}`;
     const script = document.createElement("script");
     script.id = scriptId.current;
