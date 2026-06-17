@@ -10,12 +10,13 @@ import { newBanner } from "@/types";
 import ServicesSection from "@/components/services-section/services-section";
 import TestimonialsSection from "@/components/testimonials-section/testimonials-section";
 import { getComingSoonActivities } from "@/app/models/db/lib/services/activities";
+import { getComingSoonTraining } from "@/app/models/db/lib/services/training";
 import CampMap from "@/components/CampMap";
-import {PAGE_METADATA} from "@/lib/constants/metadata"
+import { PAGE_METADATA } from "@/lib/constants/metadata";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/models/db/authOptions";
 
-export const metadata= PAGE_METADATA.home
+export const metadata = PAGE_METADATA.home;
 
 interface PageProps {
   params: Promise<{
@@ -25,25 +26,27 @@ interface PageProps {
 export default async function Home({ params }: PageProps) {
   const { locale } = await params;
   const isArabic = locale === "ar";
-  const session= await getServerSession(authOptions)
-  console.log("session: ",session);
-  
+  const session = await getServerSession(authOptions);
+  console.log("session: ", session);
+  const [banners, comingSoonActivities, comingSoonTrainings] =
+    await Promise.all([
+      getBannerData(),
+      getComingSoonActivities(),
+      (await getComingSoonTraining()).data,
+    ]);
 
-  let banners: newBanner[] = [];
-  const comingSoonActivities = await getComingSoonActivities();
-  const isThereComingSoon = comingSoonActivities.length !== 0;
-
-  try {
-    banners = await getBannerData();
-  } catch (error) {
-    console.error("Failed to fetch data:", error);
-  }
+  const isThereComingSoon =
+    comingSoonActivities.length !== 0 || comingSoonTrainings.length !== 0;
 
   return (
     <main className="relative bg-[#f8f8f4]">
       {/* Banner */}
       <div className="mt-14">
-        <BannerSection banners={banners} locale={locale} isThereComingSoon={isThereComingSoon} />
+        <BannerSection
+          banners={banners}
+          locale={locale}
+          isThereComingSoon={isThereComingSoon}
+        />
       </div>
 
       {/* Poster */}
@@ -72,10 +75,11 @@ export default async function Home({ params }: PageProps) {
           <ComingSoon
             isArabic={isArabic}
             comingSoonActivities={comingSoonActivities}
+            comingSoonTrainings={comingSoonTrainings}
           />
         </div>
       )}
-     <CampMap locale={locale as "ar"|"en"} />
-     </main>
+      <CampMap locale={locale as "ar" | "en"} />
+    </main>
   );
 }

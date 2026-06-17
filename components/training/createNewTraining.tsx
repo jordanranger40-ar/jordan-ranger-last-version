@@ -16,6 +16,9 @@ import { toast } from "sonner";
 import { LightBulbIcon } from "@heroicons/react/24/solid";
 import LightButton from "../ui/light-button";
 import DarkButton from "../ui/dark-button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@radix-ui/react-label";
+
 interface Props {
   action: (
     data: newTraining
@@ -42,6 +45,7 @@ export default function CreateEventForm({ action }: Props) {
     is_deleted: false,
     post_image: "",
     header_image: "",
+    coming_soon:false
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -87,7 +91,7 @@ export default function CreateEventForm({ action }: Props) {
         const result = await action({ ...form });
         if (result.status === 201) {
           toast.success(result.message);
-          router.push("/admin/dashboard/trainings");
+          router.push("/admin/dashboard/training");
           return;
         } else if (result.status === 401) {
           toast.error(result.message);
@@ -189,6 +193,9 @@ export default function CreateEventForm({ action }: Props) {
                   <option value="Corporate Team Building">
                     Corporate Team Building
                   </option>
+                   <option value="Training For Work">
+                    Training For Work
+                  </option>
                 </select>
                 {errors.category_en && (
                   <p className="text-red-500 text-sm mt-1">
@@ -212,6 +219,7 @@ export default function CreateEventForm({ action }: Props) {
                   <option value="">اختر الفئة</option>
                   <option value="تدريب المدارس">تدريب المدارس</option>
                   <option value="بناء فرق الشركات">بناء فرق الشركات</option>
+                  <option value="التدريب من أجل العمل">التدريب من أجل العمل</option>
                 </select>
                 {errors.category_ar && (
                   <p className="text-red-500 text-sm mt-1">
@@ -264,13 +272,13 @@ export default function CreateEventForm({ action }: Props) {
                   label: "Price",
                   name: "price",
                   value: form.price,
-                  type: "number",
+                  type: "text",
                 },
                 {
                   label: "Capacity",
                   name: "capacity",
                   value: form.capacity,
-                  type: "number",
+                  type: "text",
                 },
               ].map((field) => (
                 <div key={field.name} className="flex flex-col md:w-[90%]">
@@ -326,6 +334,22 @@ export default function CreateEventForm({ action }: Props) {
                   )}
                 </div>
               ))}
+            </div>
+
+            <div className="flex items-center gap-3 rounded-2xl border border-gray-200 p-4 bg-gray-50 w-fit">
+              <Checkbox
+                id="coming_soon"
+                name="coming_soon"
+                checked={form.coming_soon}
+                disabled={isPending}
+                onCheckedChange={(checked) => {
+                  setForm({ ...form, coming_soon: checked === true });
+                }}
+                className="shadow-black cursor-pointer"
+              />
+              <Label className="text-sm font-medium text-gray-800 cursor-pointer select-none">
+                Coming Soon
+              </Label>
             </div>
 
             {/* Image Upload */}

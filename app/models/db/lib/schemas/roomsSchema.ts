@@ -1,4 +1,4 @@
-import {z} from "zod"
+import { z } from "zod";
 import { getRoomFeaturesSchema } from "./roomFeaturesSchema";
 export const newRoomSchema = z.object({
   id: z.string().uuid().optional(),
@@ -7,7 +7,11 @@ export const newRoomSchema = z.object({
   name_ar: z.string().min(1, "Arabic name is required"),
   description_ar: z.string().min(1, "Arabic description is required"),
   cover_image: z.string().url("Cover image must be a valid URL"),
-  price: z.number().min(1,"Price must be positive"),
+  price: z
+    .union([z.string(), z.number()])
+    .transform((val) => Number(val))
+    .refine((val) => !isNaN(val), "Price must be a number")
+    .refine((val) => val >= 0, "Price must be a positive number"),
   room_images: z.array(z.string().url("Each room image must be a valid URL")),
   is_deleted: z.boolean().optional(),
   room_features: z.array(getRoomFeaturesSchema()),
@@ -15,7 +19,5 @@ export const newRoomSchema = z.object({
   room_type_ar: z.string().min(1, "Arabic room type is required"),
   slug: z.string().min(1, "Slug is required"),
 });
-
-
 
 export type NewRoomInput = z.infer<typeof newRoomSchema>;

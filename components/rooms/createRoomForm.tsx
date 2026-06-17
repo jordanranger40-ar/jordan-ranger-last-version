@@ -65,9 +65,7 @@ export default function CreateRoomForm({ action }: Props) {
           .replace(/^-+|-+$/g, "");
       }
 
-      if (name === "price") {
-        updated.price = Number(value);
-      }
+  
 
       return updated;
     });
@@ -264,7 +262,7 @@ export default function CreateRoomForm({ action }: Props) {
                 </label>
                 <input
                   disabled={isPending}
-                  type="number"
+                  type="text"
                   name="price"
                   value={form.price}
                   onChange={handleInputChange}

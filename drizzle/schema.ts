@@ -3,8 +3,8 @@ import { sql } from "drizzle-orm"
 
 export const bookingType = pgEnum("booking_type", ['activity', 'training', 'room'])
 export const bookingTypeEnum = pgEnum("booking_type_enum", ['activity', 'training', 'room'])
-export const categoryArEnum = pgEnum("category_ar_enum", ['تدريب المدارس', 'بناء فرق الشركات'])
-export const categoryEnEnum = pgEnum("category_en_enum", ['Schools Training', 'Corporate Team Building'])
+export const categoryArEnum = pgEnum("category_ar_enum", ['تدريب المدارس', 'بناء فرق الشركات', 'التدريب من أجل العمل'])
+export const categoryEnEnum = pgEnum("category_en_enum", ['Schools Training', 'Corporate Team Building', 'Training For Work'])
 export const locationAr = pgEnum("location_ar", ['داخلي', 'خارجي'])
 export const locationEn = pgEnum("location_en", ['indoor', 'outdoor'])
 export const roomTypeAr = pgEnum("room_type_ar", ['الغرف', 'الخيام'])
@@ -90,6 +90,11 @@ export const activities = pgTable("activities", {
 	unique("activities_slug_key").on(table.slug),
 ]);
 
+export const systemJobs = pgTable("system_jobs", {
+	name: text().primaryKey().notNull(),
+	lastRun: timestamp("last_run", { mode: 'string' }),
+});
+
 export const training = pgTable("training", {
 	id: uuid().defaultRandom().primaryKey().notNull(),
 	nameEn: varchar("name_en", { length: 225 }).notNull(),
@@ -107,14 +112,10 @@ export const training = pgTable("training", {
 	slug: varchar({ length: 255 }).notNull(),
 	headerImage: varchar("header_image", { length: 255 }),
 	postImage: varchar("post_image", { length: 255 }),
+	comingSoon: boolean("coming_soon").default(false),
 }, (table) => [
 	unique("training_slug_key").on(table.slug),
 ]);
-
-export const systemJobs = pgTable("system_jobs", {
-	name: text().primaryKey().notNull(),
-	lastRun: timestamp("last_run", { mode: 'string' }),
-});
 
 export const payments = pgTable("payments", {
 	id: uuid().defaultRandom().primaryKey().notNull(),

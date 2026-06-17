@@ -68,14 +68,6 @@ export default function EditActivityForm({ activity, action }: Props) {
     setForm((prev) => {
       let updated = { ...prev, [name]: value };
 
-      // convert numeric inputs to numbers
-      if (
-        name === "price" ||
-        name === "capacity" ||
-        name === "minimum_quantity"
-      ) {
-        updated = { ...prev, [name]: Number(value.trim()) };
-      }
 
       // auto-generate slug from English name
       if (name === "name_en") {
@@ -262,7 +254,7 @@ export default function EditActivityForm({ activity, action }: Props) {
                 </label>
                 <input
                   disabled={isPending}
-                  type="number"
+                  type="text"
                   name="price"
                   value={form.price}
                   onChange={handleInputChange}
@@ -282,7 +274,7 @@ export default function EditActivityForm({ activity, action }: Props) {
                 </label>
                 <input
                   disabled={isPending}
-                  type="number"
+                  type="text"
                   name="capacity"
                   value={form.capacity}
                   onChange={handleInputChange}
@@ -298,7 +290,7 @@ export default function EditActivityForm({ activity, action }: Props) {
                 </label>
                 <input
                   disabled={isPending}
-                  type="number"
+                  type="text"
                   value={form.minimum_quantity}
                   name="minimum_quantity"
                   onChange={handleInputChange}

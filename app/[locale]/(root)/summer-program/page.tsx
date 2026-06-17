@@ -56,12 +56,12 @@ async function SummerProgramPage({ params }: PageProps) {
             <p className="text-sm text-gray-700 leading-relaxed mb-10">
               {content.description}
             </p>
-            <div className="flex items-start gap-3 p-4 bg-[#484d23]/5 rounded-2xl border-s-4 border-[#b3c820]">
+           {pdfLink&& <div className="flex items-start gap-3 p-4 bg-[#484d23]/5 rounded-2xl border-s-4 border-[#b3c820]">
                 <Calendar className="text-[#484d23] mt-1 shrink-0" size={20} />
                 <p className="font-medium text-[#484d23]">
                   {content.cta}
                 </p>
-              </div>
+              </div>}
 
             {/* Responsive PDF Button */}
             {pdfLink && (
@@ -100,11 +100,7 @@ async function SummerProgramPage({ params }: PageProps) {
               </div>
             )}
             
-            {/* Design Element: Floating badge */}
-            <div className={`absolute top-8 ${isArabic ? 'left-8' : 'right-8'} bg-[#b3c820] text-[#484d23] p-4 rounded-2xl font-bold shadow-xl rotate-3 hidden md:block`}>
-              <Sparkles className="mb-1" />
-              <p className="text-xl">2026</p>
-            </div>
+          
           </div>
         </div>
 

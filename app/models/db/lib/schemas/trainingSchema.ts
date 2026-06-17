@@ -34,16 +34,24 @@ export const newTrainingSchema = z.object({
     invalid_type_error: "Invalid end date format.",
   }),
 
-  price: z.coerce.number().min(0, "Price must be a positive number."),
+ price: z
+  .union([z.string(), z.number()])
+  .transform((val) => Number(val))
+  .refine((val) => !isNaN(val), "Price must be a number")
+  .refine((val) => val >= 0, "Price must be a positive number"),
 
-  capacity: z.coerce.number().min(1, "Capacity must be at least 1."),
+capacity: z
+  .union([z.string(), z.number()])
+  .transform((val) => Number(val))
+  .refine((val) => !isNaN(val), "Capacity must be a number")
+  .refine((val) => val >= 1, "Capacity must be at least 1"),
 
   card_image: z.string().url("Card image must be a valid URL"),
   post_image: z.string().url("Poster image must be a valid URL"),
   header_image: z.string().url("Header image must be a valid URL"),
 
   is_deleted: z.boolean().default(false),
-
+coming_soon:z.boolean(),
   slug: z
     .string()
     .min(1, "Slug is required.")

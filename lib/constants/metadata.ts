@@ -128,6 +128,34 @@ export const PAGE_METADATA: Record<string, Metadata> = {
       ],
     },
   },
+  "training/training-for-work": {
+  title: "Training for Work — Jordan Ranger Camp",
+  description:
+    "Training for Work program designed to equip trainees with essential skills, practical abilities, and professional readiness to succeed in the workplace and improve employability through hands-on learning and real-world scenarios.",
+  keywords: [
+    ...COMMON_KEYWORDS,
+    "training for work",
+    "job readiness training",
+    "employability skills",
+    "work skills development",
+    "professional training program",
+    "career preparation",
+  ].join(", "),
+  openGraph: {
+    title: "Training for Work — Jordan Ranger Camp",
+    description:
+      "A practical training program that prepares individuals with workplace skills, professional behavior, and real-world employability experience.",
+    type: "website",
+    images: [
+      {
+        url: `${SERVER_URL}/og/training-for-work.jpg`,
+        width: 1200,
+        height: 630,
+        alt: "Training for Work - Jordan Ranger",
+      },
+    ],
+  },
+},
 
   "activities/indoor-activities": {
     title: "Indoor Activities — Jordan Ranger Camp",

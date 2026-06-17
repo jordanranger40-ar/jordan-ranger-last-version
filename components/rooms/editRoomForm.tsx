@@ -60,11 +60,10 @@ export default function EditRoomForm({ room, action }: Props) {
   const handleTextChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
-    const { name, value } = e.target;
-
+  const { name, value } = e.target;
     setForm((prev) => {
-      const updated: any = { ...prev, [name]: value };
-
+      const updated = { ...prev, [name]: value };
+      
       if (name === "name_en") {
         updated.slug = value
           .toLowerCase()
@@ -72,26 +71,26 @@ export default function EditRoomForm({ room, action }: Props) {
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/^-+|-+$/g, "");
       }
-
       return updated;
     });
   };
 
+  console.log("errors: ",errors);
+  
+
   // Number inputs handler - uses valueAsNumber and falls back safely
   const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name } = e.target;
-    // valueAsNumber is the correct way to get numeric input from <input type="number" />
-    const raw = (e.target as HTMLInputElement).valueAsNumber;
-    const value = Number.isNaN(raw) ? 0 : raw;
+    const raw = e.target ;
 
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm((prev) => ({ ...prev, [name]: raw }));
   };
 
   const handleFormSubmit = () => {
     // Extra normalization just before validation/submission
     const normalized: newRoom = {
       ...form,
-      price: Number(form.price ?? 0),
+      
       // ensure arrays are arrays and features are in expected shape
       room_images: Array.isArray(form.room_images) ? form.room_images : [],
       room_features: Array.isArray(form.room_features) ? form.room_features : [],
@@ -285,11 +284,11 @@ export default function EditRoomForm({ room, action }: Props) {
                   <span className="text-red-500">*</span> Price
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   name="price"
                   value={form.price}
                   disabled={isPending}
-                  onChange={handleNumberChange}
+                  onChange={handleTextChange}
                   className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
                 />
                 {errors.price && (

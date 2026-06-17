@@ -18,7 +18,6 @@ export const register = async (newUser: newUser) => {
     newUser.email,
   ]);
 
- 
   
   if (checkEmail.rows.length > 0) {
      console.log("inwds");

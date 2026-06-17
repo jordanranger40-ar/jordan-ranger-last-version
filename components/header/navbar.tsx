@@ -46,6 +46,10 @@ export default function Navbar() {
       href: "/training/corporate-team-building",
       label: t("corporateteambuilding"),
     },
+    {
+      href: "/training/training-for-work",
+      label: t("trainingforwork"),
+    },
 
   ];
   const accommodationItems = [

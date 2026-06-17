@@ -56,6 +56,21 @@ export type newTraining = {
   slug: string;
   post_image: string;
   header_image: string;
+  coming_soon: boolean;
+};
+
+export type comingSoonTraining = {
+  id: string;
+  name_en: string;
+  name_ar: string;
+  description_en: string;
+  description_ar: string;
+  category_en: string;
+  category_ar: string;
+ 
+  header_image:string;
+  slug:string;
+ 
 };
 export type newUser = {
   id?: string;
@@ -397,7 +412,6 @@ export type UnifiedBooking = {
   is_confirmed: boolean;
 };
 
-
 export type NewPayment = {
   user_id?: string;
   cart_id?: string;
@@ -406,12 +420,12 @@ export type NewPayment = {
   provider?: "Hyperpay";
   checkout_id?: string;
   transaction_id?: string;
-  status?: "PENDING"| "PAID"| "FAILED";
+  status?: "PENDING" | "PAID" | "FAILED";
   raw_response?: string;
   billing_country: string;
   billing_street: string;
   billing_city: string;
-  billing_state:string;
+  billing_state: string;
   billing_postal_code: string;
   customer_first_name: string;
   customer_last_name: string;

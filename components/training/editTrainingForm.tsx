@@ -23,6 +23,8 @@ interface Props {
 import { toast } from "sonner";
 import LightButton from "../ui/light-button";
 import DarkButton from "../ui/dark-button";
+import { Checkbox } from "../ui/checkbox";
+import { Label } from "@radix-ui/react-label";
 export default function EditTrainingForm({ training, action }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -46,6 +48,7 @@ export default function EditTrainingForm({ training, action }: Props) {
     is_deleted: training.is_deleted ?? false,
     header_image: training.header_image ?? "",
     post_image: training.post_image ?? "",
+    coming_soon:training.coming_soon ?? false,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -72,11 +75,16 @@ export default function EditTrainingForm({ training, action }: Props) {
     });
   };
 
+  
+  
+
   const handleFormSubmit = () => {
     const validation = newTrainingSchema.safeParse(form);
+console.log("errors: ",errors );
+console.log("validation: ",validation);
 
     if (!validation.success) {
-      const fieldErrors: Record<string, string> = {};
+       const fieldErrors: Record<string, string> = {};
       validation.error.issues.forEach((err) => {
         fieldErrors[err.path[0] as string] = err.message;
       });
@@ -196,6 +204,9 @@ export default function EditTrainingForm({ training, action }: Props) {
                   <option value="Corporate Team Building">
                     Corporate Team Building
                   </option>
+                   <option value="Training For Work">
+                    Training For Work
+                  </option>
                 </select>
                 {errors.category_en && (
                   <p className="text-red-500 text-sm mt-1">
@@ -218,6 +229,7 @@ export default function EditTrainingForm({ training, action }: Props) {
                   <option value="">اختر الفئة</option>
                   <option value="تدريب المدارس">تدريب المدارس</option>
                   <option value="بناء فرق الشركات">بناء فرق الشركات</option>
+                  <option value="التدريب من أجل العمل">التدريب من أجل العمل</option>
                 </select>
                 {errors.category_ar && (
                   <p className="text-red-500 text-sm mt-1">
@@ -265,13 +277,13 @@ export default function EditTrainingForm({ training, action }: Props) {
                   label: "Price",
                   name: "price",
                   value: form.price,
-                  type: "number",
+                  type: "text",
                 },
                 {
                   label: "Capacity",
                   name: "capacity",
                   value: form.capacity,
-                  type: "number",
+                  type: "text",
                 },
               ].map((field) => (
                 <div key={field.name} className="flex flex-col md:w-[90%]">
@@ -286,10 +298,14 @@ export default function EditTrainingForm({ training, action }: Props) {
                     onChange={handleInputChange}
                     className="border border-gray-300 px-3 py-2 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#676e32]"
                   />
+                  {errors[field.name] && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors[field.name]}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
-
             {/* Descriptions */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[
@@ -317,6 +333,22 @@ export default function EditTrainingForm({ training, action }: Props) {
                   />
                 </div>
               ))}
+            </div>
+
+            <div className="flex items-center gap-3 rounded-2xl border border-gray-200 p-4 bg-gray-50 w-fit">
+              <Checkbox
+                id="coming_soon"
+                name="coming_soon"
+                checked={form.coming_soon}
+                disabled={isPending}
+                onCheckedChange={(checked) => {
+                  setForm({ ...form, coming_soon: checked === true });
+                }}
+                className="shadow-black cursor-pointer"
+              />
+              <Label className="text-sm font-medium text-gray-800 cursor-pointer select-none">
+                Coming Soon
+              </Label>
             </div>
 
             {/* Image Upload */}
@@ -397,7 +429,7 @@ export default function EditTrainingForm({ training, action }: Props) {
                 </LightButton>
                 <DarkButton
                   disabled={isPending}
-                  type="button"
+                  type="submit"
                   
                 >
                   {isPending ? "Updating..." : "Save Changes"}

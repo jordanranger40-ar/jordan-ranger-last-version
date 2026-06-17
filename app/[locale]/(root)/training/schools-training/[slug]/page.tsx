@@ -7,44 +7,42 @@ import { newTraining } from "@/types/index";
 import { authOptions } from "@/app/models/db/authOptions";
 import { getCartItemsByUserId } from "@/app/models/db/lib/services/cart";
 import { getServerSession } from "next-auth";
-import type { Metadata } from 'next';
-import {generateDynamicMetadata} from "@/lib/constants/metadata"
+import type { Metadata } from "next";
+import { generateDynamicMetadata } from "@/lib/constants/metadata";
+import DarkButton from "@/components/ui/dark-button";
+
 interface Props {
   params: Promise<{ slug: string; locale: string }>;
 }
 
-export async function generatemetadata(params:Props):Promise<Metadata> {
-    return generateDynamicMetadata.page({
-      type:"training",
-      name:(await params.params).slug.replace(/-/g,""),
-      slug:`training-${(await params.params).slug}`
-    })
-    
-  }
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+
+  return generateDynamicMetadata.page({
+    type: "training",
+    name: slug.replace(/-/g, " "),
+    slug: `training-${slug}`,
+  });
+}
 
 export default async function Page({ params }: Props) {
-  const slug = (await params).slug;
-  const locale = (await params).locale;
+  const { slug, locale } = await params;
 
   const isArabic = locale === "ar";
   const direction = isArabic ? "rtl" : "ltr";
+
   const userInfo = await getServerSession(authOptions);
-  const uniqueTypes: string[] = [];
   const userId = userInfo?.user.id;
 
-  const trainingData = await getTrainingBySlug(slug);
-  if (userId) {
-    const cartItems = await getCartItemsByUserId(userId ?? "");
-    if (cartItems.data !== null) {
-      const bookingsTypes = cartItems.data.map((ele, i) => {
-        if (!uniqueTypes.includes(ele.booking_type)) {
-          uniqueTypes.push(ele.booking_type);
-        }
-        return uniqueTypes;
-      });
-    } else {
-    }
-  }
+  const uniqueTypes: string[] = [];
+
+  const cleanSlug = decodeURIComponent(slug)
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/\s+/g, "-");
+
+  const trainingData = await getTrainingBySlug(cleanSlug);
+
   if (!trainingData || trainingData.data.length === 0) {
     return (
       <p className="text-center mt-20 text-gray-500" dir={direction}>
@@ -54,6 +52,20 @@ export default async function Page({ params }: Props) {
   }
 
   const training: newTraining = trainingData.data[0];
+  const isComingSoon = !!training.coming_soon;
+
+  if (userId) {
+    const cartItems = await getCartItemsByUserId(userId);
+
+    if (cartItems.data !== null) {
+      cartItems.data.forEach((item) => {
+        if (!uniqueTypes.includes(item.booking_type)) {
+          uniqueTypes.push(item.booking_type);
+        }
+      });
+    }
+  }
+
   const bookedResult = await getQuantityOfATraining(training.id ?? "");
   const numberOfBooked = Number(bookedResult?.total_booked || 0);
   const capacity = Number(training.capacity || 0);
@@ -70,89 +82,79 @@ export default async function Page({ params }: Props) {
     }).format(date);
   };
 
-   const startDate = new Date(training.start_date);
+  const startDate = new Date(training.start_date);
   const today = new Date();
-
-  // normalize "today" to start of day to avoid time issues
   today.setHours(0, 0, 0, 0);
 
   const isExpired = startDate < today;
 
-
   return (
     <main className="w-[92%] mx-auto py-16 mt-16 mb-10" dir={direction}>
-      {/* Removed card wrapper - this section is integrated into the main page flow */}
-
       <section className="max-w-7xl mx-auto md:flex md:items-start md:gap-10">
-        {/* Left: large header image (takes more space) */}
-        <div className="md:w-2/3 relative h-72 md:h-105 rounded-xl overflow-hidden group">
-          {training.header_image || training.post_image ? (
-            <div className="relative h-full w-full">
-              <Image
-                src={training.header_image || training.post_image}
-                alt={isArabic ? training.name_ar : training.name_en}
-                fill
-                className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-                priority
-              />
+        <div className="md:w-2/3 relative h-72 md:h-[420px] rounded-xl overflow-hidden group">
+                 {training.header_image || training.post_image ? (
+                   <div className="relative h-full w-full">
+                     <Image
+                       src={training.header_image || training.post_image}
+                       alt={isArabic ? training.name_ar : training.name_en}
+                       fill
+                       className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                       priority
+                     />
+       
+                     <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent" />
+       
+                     <div className="absolute top-4 left-4 flex flex-col gap-2">
+                       <span className="inline-block bg-white/80 text-sm px-3 py-1 rounded-full font-medium text-gray-800">
+                         {isArabic ? training.category_ar : training.category_en}
+                       </span>
+       
+                      
+                     </div>
+       
+                     <div className="absolute left-6 right-6 bottom-6 text-white">
+                       <h1 className="text-2xl md:text-3xl font-bold leading-tight drop-shadow-md">
+                         {isArabic ? training.name_ar : training.name_en}
+                       </h1>
+       
+                       <div className="mt-2 flex items-center gap-3 flex-wrap">
+                         <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-2 rounded-lg">
+                           <svg
+                             xmlns="http://www.w3.org/2000/svg"
+                             className="h-5 w-5"
+                             viewBox="0 0 20 20"
+                             fill="currentColor"
+                           >
+                             <path d="M6 2a1 1 0 00-1 1v1H3.5A1.5 1.5 0 002 5.5v9A1.5 1.5 0 003.5 16H16.5A1.5 1.5 0 0018 14.5v-9A1.5 1.5 0 0016.5 4H15V3a1 1 0 00-1-1H6zM7 6h6v2H7V6z" />
+                           </svg>
+                           <span className="text-sm">{fmtDate(training.start_date)}</span>
+                         </div>
+       
+                         <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-2 rounded-lg">
+                           <svg
+                             xmlns="http://www.w3.org/2000/svg"
+                             className="h-5 w-5"
+                             viewBox="0 0 20 20"
+                             fill="currentColor"
+                           >
+                             <path d="M10 3a1 1 0 011 1v1h1a1 1 0 011 1v1h1a1 1 0 011 1v5a2 2 0 01-2 2H6a2 2 0 01-2-2V8a1 1 0 011-1h1V6a1 1 0 011-1h1V4a1 1 0 011-1h2z" />
+                           </svg>
+                           <span className="text-sm">
+                             {capacity} {isArabic ? "مكان" : "seats"}
+                           </span>
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+                 ) : (
+                   <div className="h-full w-full bg-gray-100 flex items-center justify-center rounded-xl">
+                     <span className="text-gray-500">
+                       {isArabic ? "لا توجد صورة" : "No image"}
+                     </span>
+                   </div>
+                 )}
+               </div>
 
-              {/* subtle overlay for legibility */}
-              <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent" />
-
-              {/* top-left tag for category */}
-              <div className="absolute top-4 left-4">
-                <span className="inline-block bg-white/80 text-sm px-3 py-1 rounded-full font-medium text-gray-800">
-                  {isArabic ? training.category_ar : training.category_en}
-                </span>
-              </div>
-
-              {/* bottom-left title */}
-              <div className="absolute left-6 right-6 bottom-6 text-white">
-                <h1 className="text-2xl md:text-3xl font-bold leading-tight drop-shadow-md">
-                  {isArabic ? training.name_ar : training.name_en}
-                </h1>
-
-                <div className="mt-2 flex items-center gap-3">
-                  <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-2 rounded-lg">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path d="M6 2a1 1 0 00-1 1v1H3.5A1.5 1.5 0 002 5.5v9A1.5 1.5 0 003.5 16H16.5A1.5 1.5 0 0018 14.5v-9A1.5 1.5 0 0016.5 4H15V3a1 1 0 00-1-1H6zM7 6h6v2H7V6z" />
-                    </svg>
-                    <span className="text-sm">
-                      {fmtDate(training.start_date)}
-                    </span>
-                  </div>
-
-                  <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-2 rounded-lg">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path d="M10 3a1 1 0 011 1v1h1a1 1 0 011 1v1h1a1 1 0 011 1v5a2 2 0 01-2 2H6a2 2 0 01-2-2V8a1 1 0 011-1h1V6a1 1 0 011-1h1V4a1 1 0 011-1h2z" />
-                    </svg>
-                    <span className="text-sm">
-                      {capacity} {isArabic ? "مكان" : "seats"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="h-full w-full bg-gray-100 flex items-center justify-center rounded-xl">
-              <span className="text-gray-500">
-                {isArabic ? "لا توجد صورة" : "No image"}
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* Right: details column (integrated, not a separate card) */}
         <aside className="md:w-1/3 flex flex-col gap-6 mt-6 md:mt-0">
           <div className="flex flex-col gap-2">
             <div className="flex items-start justify-between">
@@ -164,70 +166,82 @@ export default async function Page({ params }: Props) {
                   {isArabic ? training.name_ar : training.name_en}
                 </h2>
               </div>
-
-              {/* Price badge - more prominent as requested */}
             </div>
 
             <p className="mt-3 text-sm text-gray-600 leading-relaxed">
               {isArabic ? training.description_ar : training.description_en}
             </p>
           </div>
+
           <div className="flex flex-col">
-            <div className="text-right md:text-left w-full flex items-start  ">
-              <div className="inline-flex flex-col items-baseline gap-2 w-full p-3 ">
+            <div className="text-right md:text-left w-full flex items-start">
+              <div className="inline-flex flex-col items-baseline gap-2 w-full p-3">
                 <span className="text-sm text-gray-500">
                   {isArabic ? "السعر" : "Price"}
                 </span>
-                <span className=" font-bold text-gray-800 w-full">
+                <span className="font-bold text-gray-800 w-full">
                   {training.price} JOD
                 </span>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3 text-sm text-gray-700">
-              <InfoCard
-                label={isArabic ? "البدء" : "Starts"}
-                value={fmtDate(training.start_date)}
-              />
-              <InfoCard
-                label={isArabic ? "الانتهاء" : "Ends"}
-                value={fmtDate(training.end_date)}
-              />
-              <InfoCard
-                label={isArabic ? "الفئة" : "Category"}
-                value={isArabic ? training.category_ar : training.category_en}
-              />
-              <InfoCard
-                label={isArabic ? "القدرة" : "Capacity"}
-                value={`${capacity}`}
-              />
-            </div>
+
+            {!training.coming_soon && (
+              <div className="grid grid-cols-2 gap-3 text-sm text-gray-700">
+                <InfoCard
+                  label={isArabic ? "البدء" : "Starts"}
+                  value={fmtDate(training.start_date)}
+                />
+                <InfoCard
+                  label={isArabic ? "الانتهاء" : "Ends"}
+                  value={fmtDate(training.end_date)}
+                />
+                <InfoCard
+                  label={isArabic ? "الفئة" : "Category"}
+                  value={isArabic ? training.category_ar : training.category_en}
+                />
+                <InfoCard
+                  label={isArabic ? "القدرة" : "Capacity"}
+                  value={`${capacity}`}
+                />
+              </div>
+            )}
           </div>
 
-          <div>
-            <div className="flex items-center justify-between text-sm mb-2">
-              <span className="font-medium text-gray-700">
-                {isArabic ? "التوافر" : "Availability"}
-              </span>
-              <span className="text-gray-600">
-                {remaining > 0
-                  ? `${remaining} ${isArabic ? "متبقي" : "left"}`
-                  : isArabic
-                  ? "ممتلئ"
-                  : "Full"}
-              </span>
+          {!training.coming_soon && (
+            <div>
+              <div className="flex items-center justify-between text-sm mb-2">
+                <span className="font-medium text-gray-700">
+                  {isArabic ? "التوافر" : "Availability"}
+                </span>
+                <span className="text-gray-600">
+                  {remaining > 0
+                    ? `${remaining} ${isArabic ? "متبقي" : "left"}`
+                    : isArabic
+                    ? "ممتلئ"
+                    : "Full"}
+                </span>
+              </div>
+
+              <ProgressBar progress={progress} />
             </div>
+          )}
 
-            <ProgressBar progress={progress} />
-          </div>
-
-          {/* Booking panel placed inline (not sticky), integrated into the page flow */}
           <div className="mt-2">
-            {training.id &&  !isExpired && (
-              <TrainingBookingPanel
-                training={training}
-                numberOfBooked={numberOfBooked}
-                uniqueTypes={uniqueTypes}
-              />
+            {isComingSoon ? (
+              <div className="flex w-full">
+                <div className={isArabic ? "self-end" : "self-start"}>
+                  <DarkButton>{isArabic ? "قريباً" : "Coming Soon"}</DarkButton>
+                </div>
+              </div>
+            ) : (
+              training.id &&
+              !isExpired && (
+                <TrainingBookingPanel
+                  training={training}
+                  numberOfBooked={numberOfBooked}
+                  uniqueTypes={uniqueTypes}
+                />
+              )
             )}
           </div>
 
@@ -242,7 +256,13 @@ export default async function Page({ params }: Props) {
   );
 }
 
-function InfoCard({ label, value }: { label: string; value: string | number }) {
+function InfoCard({
+  label,
+  value,
+}: {
+  label: string;
+  value: string | number;
+}) {
   return (
     <div className="bg-transparent rounded-lg p-3 flex flex-col gap-1 border border-transparent">
       <span className="text-xs text-gray-500">{label}</span>
