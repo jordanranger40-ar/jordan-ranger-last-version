@@ -557,7 +557,7 @@ export const updateBookingStatus = async (
   }
 
   return {
-    data: result,
+    data: result.rows[0],
     message: "Booking Has Been Updated Successfully",
     status: 201,
   };

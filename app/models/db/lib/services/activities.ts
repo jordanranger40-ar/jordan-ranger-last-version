@@ -1,6 +1,7 @@
 import pool from "../index";
 import { newActivity } from "@/types/index";
-
+import { PoolClient } from "pg";
+import { removeCartItemsByBookingIds } from "./cart_items"; 
 export const addNewActivity = async (newActivity: newActivity) => {
   const result = await pool.query<newActivity>(
     "INSERT INTO activities (name_en,  name_ar, description_en, description_ar, location_type_en,location_type_ar, card_image, header_image,poster_image,capacity,price,slug,minimum_quantity,coming_soon ) VALUES ($1,$2,$3,$4,$5,$6, $7,$8,$9,$10,$11,$12,$13,$14) RETURNING *",
@@ -67,15 +68,64 @@ export const editActivity = async (
   };
 };
 
-export const deleteActivityById = async (id: string) => {
-  const result = await pool.query(
-    " delete from activities where id=$1 returning *",
-    [id]
-  );
 
-  return result.rows;
+export const deleteActivityById = async (
+  id: string,
+  client?: PoolClient
+) => {
+  const localClient = client ?? (await pool.connect());
+  const shouldManageTransaction = !client;
+
+  try {
+    if (shouldManageTransaction) await localClient.query("BEGIN");
+
+    // 1. check activity exists
+    const activity = await localClient.query(
+      "SELECT id FROM activities WHERE id = $1",
+      [id]
+    );
+
+    if (activity.rows.length === 0) {
+      if (shouldManageTransaction) await localClient.query("ROLLBACK");
+      return { data: null, message: "No Activity With This ID", status: 404 };
+    }
+
+    // 2. get related bookings
+    const bookings = await localClient.query(
+      "SELECT id FROM activities_booking WHERE activity_id = $1",
+      [id]
+    );
+
+    const bookingIds = bookings.rows.map((r) => r.id);
+
+    // 3. remove cart items (same transaction client)
+    await removeCartItemsByBookingIds(bookingIds, localClient);
+
+    // 4. delete activity
+    const result = await localClient.query(
+      "DELETE FROM activities WHERE id = $1 RETURNING *",
+      [id]
+    );
+
+    if (shouldManageTransaction) await localClient.query("COMMIT");
+
+    return {
+      data: result.rows[0],
+      message: "Activity Has Been Deleted Successfully",
+      status: 200,
+    };
+  } catch (error) {
+    if (shouldManageTransaction) await localClient.query("ROLLBACK");
+    console.error("Error in deleting activity:", error);
+    return {
+      data: null,
+      message: "Error deleting activity",
+      status: 500,
+    };
+  } finally {
+    if (shouldManageTransaction) localClient.release();
+  }
 };
-
 export const getActivityById = async (id: string) => {
   const result = await pool.query(" select * from activities where id=$1 ", [
     id,

@@ -25,6 +25,9 @@ export default function BookingDetailsCard({ data }: Props) {
     });
   };
 
+  console.log("in booking");
+  
+
   const handleStatusChange = () => {
     startTransition(async () => {
       try {
@@ -32,6 +35,9 @@ export default function BookingDetailsCard({ data }: Props) {
           !booking.is_confirmed,
           booking.id ?? ""
         );
+
+        console.log("result BOokings:",result);
+        
         if (result.status === 201) {
           toast.success(result.message);
           return;
@@ -48,6 +54,8 @@ export default function BookingDetailsCard({ data }: Props) {
           return;
         }
       } catch (_error) {
+        console.log("_error: ",_error);
+        
         toast.error("Could not update booking status. Please try again later.");
       }
     });

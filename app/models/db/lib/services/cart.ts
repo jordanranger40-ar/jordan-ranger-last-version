@@ -57,12 +57,51 @@ export const updateCartTotalAmount = async (
   data: newCart,
   client?: PoolClient
 ) => {
-  const db = client ?? pool;
-  const result = await db.query<newCart>(
-    "update cart set total_amount= coalesce($2,total_amount) where id=$1",
-    [data.id, data.total_amount]
-  );
-  return { data: result, message: "Cart Updated Successfully", status: 201 };
+  const localClient = client ?? (await pool.connect());
+  const shouldRelease = !client;
+
+  try {
+    const result = await localClient.query<{
+      id: string;
+      total_amount: number;
+    }>(
+      `UPDATE cart
+       SET total_amount = COALESCE($2, total_amount)
+       WHERE id = $1
+       RETURNING id, total_amount`,
+      [data.id, data.total_amount]
+    );
+
+    if (result.rows.length === 0) {
+      return { data: null, message: "Cart Not Found", status: 404 };
+    }
+
+    const updatedCart = result.rows[0];
+console.log("updatedCart: ",updatedCart);
+
+    if (Number(updatedCart.total_amount) <= 0) {
+      console.log("in delete");
+      
+      await localClient.query(`DELETE FROM cart WHERE id = $1`, [data.id]);
+
+      return {
+        data: null,
+        message: "Cart Deleted Successfully",
+        status: 200,
+      };
+    }
+
+    return {
+      data: updatedCart,
+      message: "Cart Updated Successfully",
+      status: 200,
+    };
+  } catch (error) {
+    console.error("Error updating cart total amount:", error);
+    return { data: null, message: "Error updating cart", status: 500 };
+  } finally {
+    if (shouldRelease) localClient.release();
+  }
 };
 
 export const getCartById = async (cart_id: string) => {

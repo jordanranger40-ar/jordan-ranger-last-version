@@ -1,5 +1,7 @@
 import pool from "../index";
 import { roomFeatures, newRoom, modifiedRoom } from "@/types/index";
+import { PoolClient } from "pg";
+import { removeCartItemsByBookingIds } from "./cart_items"; 
 
 export const addNewRoom = async (newRoom: newRoom) => {
   const {
@@ -154,15 +156,71 @@ export const editRoom = async (id: string, modifiedRoom: modifiedRoom) => {
   return { room: result.rows[0] };
 };
 
-export const deleteRoomById = async (id: string) => {
-  await pool.query("delete from rooms_with_features where room_id= $1", [id]);
 
-  const result = await pool.query(
-    " delete from rooms where id=$1 returning *",
-    [id]
-  );
 
-  return result.rows;
+
+export const deleteRoomById = async (
+  id: string,
+  client?: PoolClient
+) => {
+  const localClient = client ?? (await pool.connect());
+  const shouldManageTransaction = !client;
+
+  try {
+    if (shouldManageTransaction) await localClient.query("BEGIN");
+
+    // 1. validate room exists
+    const room = await localClient.query(
+      "SELECT id FROM rooms WHERE id = $1",
+      [id]
+    );
+
+    if (room.rows.length === 0) {
+      if (shouldManageTransaction) await localClient.query("ROLLBACK");
+      return { data: null, message: "No Room With This ID", status: 404 };
+    }
+
+    // 2. get related bookings
+    const bookings = await localClient.query(
+      "SELECT id FROM room_booking WHERE room_id = $1",
+      [id]
+    );
+
+    const bookingIds = bookings.rows.map((r) => r.id);
+
+    // 3. remove cart items using SAME transaction client
+    await removeCartItemsByBookingIds(bookingIds, localClient);
+
+    // 4. delete dependent features
+    await localClient.query(
+      "DELETE FROM rooms_with_features WHERE room_id = $1",
+      [id]
+    );
+
+    // 5. delete room
+    const result = await localClient.query(
+      "DELETE FROM rooms WHERE id = $1 RETURNING *",
+      [id]
+    );
+
+    if (shouldManageTransaction) await localClient.query("COMMIT");
+
+    return {
+      data: result.rows[0],
+      message: "Room deleted successfully",
+      status: 200,
+    };
+  } catch (error) {
+    if (shouldManageTransaction) await localClient.query("ROLLBACK");
+    console.error("Error deleting room:", error);
+    return {
+      data: null,
+      message: "Error deleting room",
+      status: 500,
+    };
+  } finally {
+    if (shouldManageTransaction) localClient.release();
+  }
 };
 
 export const getRoomById = async (id: string) => {

@@ -2,6 +2,10 @@ import { ne } from "drizzle-orm";
 import pool from "../index";
 
 import { newTraining } from "@/types/index";
+import {
+  removeCartItemByBookingId,
+  removeCartItemsByBookingIds,
+} from "./cart_items";
 
 export const addNewTraining = async (newTraining: newTraining) => {
   const result = await pool.query<newTraining>(
@@ -77,21 +81,53 @@ export const editTraining = async (
 };
 
 export const deleteTraining = async (id: string) => {
-  const isValidId = await pool.query("select * from training where id=$1 ", [
-    id,
-  ]);
-  if (isValidId.rows.length === 0) {
-    return { data: null, message: "No Training With This ID", status: 409 };
-  } else {
-    const result = await pool.query("delete from training where id=$1", [id]);
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    const training = await client.query(
+      "SELECT id FROM training WHERE id = $1",
+      [id],
+    );
+
+    if (training.rows.length === 0) {
+      await client.query("ROLLBACK");
+      return { data: null, message: "Training not found", status: 404 };
+    }
+
+    const bookings = await client.query(
+      "SELECT id FROM training_booking WHERE training_id = $1",
+      [id],
+    );
+
+    const bookingIds = bookings.rows.map((r) => r.id);
+
+    // 🔥 batch remove cart items using SAME connection
+    await removeCartItemsByBookingIds(bookingIds, client);
+
+    await client.query("DELETE FROM training_booking WHERE training_id = $1", [
+      id,
+    ]);
+
+    await client.query("DELETE FROM training WHERE id = $1", [id]);
+
+    await client.query("COMMIT");
+
     return {
-      data: result.rows,
-      message: "Training Has Been Deleted Successfully",
-      status: 201,
+      data: null,
+      message: "Training deleted successfully",
+      status: 200,
     };
+  } catch (err) {
+    console.log("err: ",err);
+    
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
   }
 };
-
 export const getTrainingById = async (id: string) => {
   const result = await pool.query<newTraining>(
     "SELECT * FROM training WHERE id=$1",
@@ -130,7 +166,6 @@ export const getComingSoonTraining = async () => {
       description_ar,
       category_en,
       category_ar,
-      
       header_image
     FROM training
     WHERE coming_soon = true
