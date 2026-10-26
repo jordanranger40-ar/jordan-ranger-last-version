@@ -44,7 +44,7 @@ const Footer: React.FC<Props> = ({ locale }) => {
         src={camp}
         alt="Camping background"
         fill
-        className="object-cover opacity-[0.05] z-0"
+        className="object-cover opacity-[0.05] z-0 pointer-events-none"
       />
 
       <div
@@ -146,12 +146,12 @@ const Footer: React.FC<Props> = ({ locale }) => {
           {isArabic ? (
             <>
               © 2025 Jordan Ranger. جميع الحقوق محفوظة. مملوك لمنتجع إيكو فيو. تم الإنشاء بواسطة{" "}
-              <a href={nurembergUrl} target="_blank" className="underline hover:text-gray-300">Nuremberg Group</a>.
+              <a rel="noopener noreferrer" href={nurembergUrl} target="_blank" className="underline hover:text-gray-300">Nuremberg Group</a>.
             </>
           ) : (
             <>
               © 2025 Jordan Ranger. All rights reserved. Owned by Eco View Resort. Powered by{" "}
-              <a href={nurembergUrl} target="_blank" className="underline hover:text-white">Nuremberg Group</a>.
+              <a rel="noopener noreferrer" href={nurembergUrl} target="_blank" className="underline hover:text-white">Nuremberg Group</a>.
             </>
           )}
         </p>
